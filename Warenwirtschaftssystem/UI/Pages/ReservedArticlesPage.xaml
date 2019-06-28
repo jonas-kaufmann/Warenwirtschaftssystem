@@ -1,0 +1,64 @@
+﻿<Page    x:Class="Warenwirtschaftssystem.UI.Pages.ReservedArticlesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+      xmlns:db="clr-namespace:Warenwirtschaftssystem.Model.Db"
+      mc:Ignorable="d" 
+      Title="ReservedArticlesPage"
+      Height="400"
+      Width="600"
+      FocusManager.FocusedElement="{Binding ElementName=SupplierIdTb}">
+
+    <Page.Resources>
+        <CollectionViewSource x:Key="ArticlesCVS" d:DesignSource="{d:DesignInstance {x:Type db:Article}, CreateList=True}"/>
+    </Page.Resources>
+
+    <DockPanel DataContext="{StaticResource ArticlesCVS}" Margin="8">
+        <StackPanel DockPanel.Dock="Left" Margin="0 0 8 0" Width="136">
+            <Expander Header="Filter" IsExpanded="True" Padding="2" BorderBrush="LightGray">
+                <StackPanel>
+                    <toolkit:WatermarkTextBox Name="SupplierIdTb" Watermark="K-Nr" PreviewKeyDown="SupplierIdTb_PreviewKeyDown" />
+                    <ToggleButton Name="ShowReservationExpired" Click="ShowReservationExpired_Click" Content="Nur abgelaufene" Margin="0 2 0 0" />
+                    <Button Name="ResetFilterBtn" Click="ResetFilterBtn_Click" Margin="0 2 0 0" Content="Zurücksetzen" />
+                </StackPanel>
+            </Expander>
+            <Expander Margin="0 4 0 0" Header="Aktionen" IsExpanded="True" BorderBrush="LightGray" Padding="2">
+                <StackPanel>
+                    <Button Name="UnreserveBtn" Click="UnreserveBtn_Click" Content="Reservierung aufheben&#xD;&#xA;(Auswahl)" />
+                </StackPanel>
+            </Expander>
+        </StackPanel>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="8" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            
+            <DataGrid Name="ArticlesDG" AutoGenerateColumns="False" HorizontalScrollBarVisibility="Disabled" HeadersVisibility="Column" ItemsSource="{Binding}" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Reservation.Supplier.Id, Mode=OneTime}" CanUserResize="False" Header="K-Nr" SortDirection="Ascending" />
+                    <DataGridTextColumn Binding="{Binding ConvertedId, Mode=OneTime}" Header="A-Nr" CanUserResize="False" />
+                    <DataGridTextColumn Binding="{Binding Description, Mode=OneTime}" Header="Artikel" Width="*" />
+                    <DataGridTextColumn Binding="{Binding Reservation.From, ConverterCulture=de-DE, StringFormat=d, Mode=OneTime}" Header="Von" CanUserResize="False" />
+                    <DataGridTextColumn Binding="{Binding Reservation.Until, ConverterCulture=de-DE, StringFormat=d, Mode=OneTime}" Header="Bis" CanUserResize="False" />
+                    <DataGridTextColumn Binding="{Binding Price, ConverterCulture=de-DE, StringFormat=C, Mode=OneTime}" Header="Preis" CanUserResize="False" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="2" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="K-Name" VerticalAlignment="Center" />
+                <TextBox IsEnabled="False" Text="{Binding Reservation.Supplier.Name, Mode=OneTime}" Grid.Column="2" MinWidth="160" />
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Page>

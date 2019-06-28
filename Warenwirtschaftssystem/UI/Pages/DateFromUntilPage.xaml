@@ -1,0 +1,37 @@
+﻿<Page x:Class="Warenwirtschaftssystem.UI.Pages.DateFromUntilPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d"
+      Width="240"
+      Height="70"
+      Margin="8">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="2" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="2" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Von" />
+        <DatePicker Name="DP1" Text="DP1" Grid.Column="2" />
+        <TextBlock Text="Bis" Grid.Column="4" />
+        <DatePicker Name="DP2" Text="DP2" Grid.Column="6" />
+
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="7" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Name="SaveBtn" Click="SaveBtn_Click" Content="Speichern" />
+            <Button Name="CancelBtn" Click="CancelBtn_Click" Content="Abbrechen" Margin="4 0 0 0" />
+        </StackPanel>
+    </Grid>
+</Page>

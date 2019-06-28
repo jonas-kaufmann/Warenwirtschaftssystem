@@ -1,0 +1,50 @@
+﻿<Page x:Class="Warenwirtschaftssystem.UI.Pages.ConfigureDbPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+      mc:Ignorable="d" 
+      Title="ConfigureDbPage">
+
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="bool2visibility" />
+    </Page.Resources>
+
+    <DockPanel Margin="8">
+        <Button Name="SaveBtn" Click="SaveBtn_Click" DockPanel.Dock="Bottom" Margin="0 8 0 0" HorizontalAlignment="Right" Content="Speichern und Verbinden" />
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="4" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="2" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="2" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="2" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="4" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="2" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="4" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <RadioButton Name="NewDbRB" Content="Neue Datenbank anlegen" GroupName="DatabaseType" IsChecked="True" />
+            <RadioButton Name="ExistingDbRB" Grid.Column="2" Content="Existierende Datenbank" GroupName="DatabaseType" />
+
+            <toolkit:WatermarkTextBox Name="AddressTb" KeyDown="OnKeyDown_SaveAndConnect" Grid.Row="2" Grid.ColumnSpan="3" Watermark="Adresse des Datenbankservers" />
+            <toolkit:WatermarkTextBox Name="DbNameTb" KeyDown="OnKeyDown_SaveAndConnect" Grid.Row="4" Grid.ColumnSpan="3" Watermark="Datenbankname" />
+            <toolkit:WatermarkTextBox Name="UserTb" KeyDown="OnKeyDown_SaveAndConnect" Grid.Row="6" Grid.ColumnSpan="3"  Watermark="Anzulegender User" />
+            <toolkit:WatermarkPasswordBox Name="PasswordTb" KeyDown="OnKeyDown_SaveAndConnect" Grid.Row="8" Grid.ColumnSpan="3" Watermark="Passwort für User" />
+            <CheckBox Name="ImportFromEasyToRunCbx" Content="Daten aus EasyToRun Datenbank importieren&#xD;&#xA;(nur auf Computer mit Datenbankserver möglich)" Grid.ColumnSpan="3" Grid.Row="10" Visibility="{Binding ElementName=NewDbRB, Path=IsChecked, Converter={StaticResource bool2visibility}}" />
+            <CheckBox Name="ReworkAttributesCbx" Content="Artikelattribute überarbeiten" Grid.ColumnSpan="3" Grid.Row="12" Visibility="{Binding ElementName=ImportFromEasyToRunCbx, Path=IsChecked, Converter={StaticResource bool2visibility}}" />
+        </Grid>
+    </DockPanel>
+</Page>
