@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,12 +13,12 @@ namespace Warenwirtschaftssystem
         public App()
         {
             AppDomain currentDomain = AppDomain.CurrentDomain;
-            currentDomain.UnhandledException += CurrentDomain_UnhandledException; ;
+            currentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Exception exception = (e.ExceptionObject as Exception);
+            Exception exception = (e.ExceptionObject as Exception).InnerException;
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\WWS - Crashreport.txt",
                 "Message:\n" + exception.Message + "\n\n\nSource:\n" + exception.Source + "\n\n\nStackTrace:\n" + exception.StackTrace);
             Current.Shutdown();
