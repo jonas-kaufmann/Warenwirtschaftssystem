@@ -370,6 +370,23 @@ namespace Warenwirtschaftssystem.Model.Documents
 
             #endregion
 
+            #region Footer
+
+            Setting bonFooter = MainDb.Settings.Where(setting => setting.Key == "Bon-Footer").FirstOrDefault();
+
+            if (bonFooter != null && !string.IsNullOrWhiteSpace(bonFooter.Value))
+            {
+                pageContent.Children.Add(new TextBlock
+                {
+                    Text = "\n\n" + bonFooter.Value,
+                    FontFamily = FontFamily,
+                    FontSize = FontSize,
+                    HorizontalAlignment = HorizontalAlignment.Left
+                });
+            }
+
+            #endregion
+
             #region Drucken
 
             pD.PrintDocument(Bon.DocumentPaginator, "Warenwirtschaftssystem - Rechnungsbon");

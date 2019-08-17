@@ -104,6 +104,18 @@
                             <TextBox Name="PlaceTb" Grid.Row="4" Grid.Column="2" />
                         </Grid>
                     </GroupBox>
+                    <GroupBox Header="Bon-Fuß" Padding="4">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="4" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Fußtext" />
+                            <TextBox Name="bonFooterTb" Grid.Column="2" AcceptsReturn="True" Height="75" />
+                        </Grid>
+                    </GroupBox>
                 </StackPanel>
             </TabItem>
         </TabControl>

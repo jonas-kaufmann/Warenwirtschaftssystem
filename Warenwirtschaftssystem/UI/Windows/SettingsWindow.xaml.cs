@@ -66,9 +66,9 @@ namespace Warenwirtschaftssystem.UI.Windows
 
             #region Dokumentenkopf Abschnitt - vorhandene Werte aus Db laden
 
-            Setting shopdescription = MainDb.Settings.Where(s => s.Key == "Shopdescription").SingleOrDefault();
-            Setting shopinformation = MainDb.Settings.Where(s => s.Key == "Shopinformation").SingleOrDefault();
-            Setting shopplace = MainDb.Settings.Where(s => s.Key == "Shopplace").SingleOrDefault();
+            Setting shopdescription = MainDb.Settings.Where(s => s.Key == "Shopdescription").FirstOrDefault();
+            Setting shopinformation = MainDb.Settings.Where(s => s.Key == "Shopinformation").FirstOrDefault();
+            Setting shopplace = MainDb.Settings.Where(s => s.Key == "Shopplace").FirstOrDefault();
 
             if (shopdescription != null)
                 ShopdescriptionTb.Text = shopdescription.Value;
@@ -76,6 +76,15 @@ namespace Warenwirtschaftssystem.UI.Windows
                 ShopinfoTb.Text = shopinformation.Value;
             if (shopplace != null)
                 PlaceTb.Text = shopplace.Value;
+
+            #endregion
+
+            #region Bon-Footer - Load values from db
+
+            Setting bonFooter = MainDb.Settings.Where(s => s.Key == "Bon-Footer").FirstOrDefault();
+
+            if (bonFooter != null)
+                bonFooterTb.Text = bonFooter.Value;
 
             #endregion
         }
@@ -115,9 +124,9 @@ namespace Warenwirtschaftssystem.UI.Windows
 
             #region Dokumentenkopf
 
-            Setting shopdescription = MainDb.Settings.Where(s => s.Key == "Shopdescription").SingleOrDefault();
-            Setting shopinformation = MainDb.Settings.Where(s => s.Key == "Shopinformation").SingleOrDefault();
-            Setting shopplace = MainDb.Settings.Where(s => s.Key == "Shopplace").SingleOrDefault();
+            Setting shopdescription = MainDb.Settings.Where(s => s.Key == "Shopdescription").FirstOrDefault();
+            Setting shopinformation = MainDb.Settings.Where(s => s.Key == "Shopinformation").FirstOrDefault();
+            Setting shopplace = MainDb.Settings.Where(s => s.Key == "Shopplace").FirstOrDefault();
 
             if (shopdescription == null)
             {
@@ -156,6 +165,21 @@ namespace Warenwirtschaftssystem.UI.Windows
             {
                 shopplace.Value = PlaceTb.Text;
             }
+
+            #endregion
+
+            #region Save Bon-Footer
+
+            Setting bonFooter = MainDb.Settings.Where(s => s.Key == "Bon-Footer").FirstOrDefault();
+
+            if (bonFooter == null)
+                MainDb.Settings.Add(new Setting
+                {
+                    Key = "Bon-Footer",
+                    Value = bonFooterTb.Text
+                });
+            else
+                bonFooter.Value = bonFooterTb.Text;
 
             #endregion
 

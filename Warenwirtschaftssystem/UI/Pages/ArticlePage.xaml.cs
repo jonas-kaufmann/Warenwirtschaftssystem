@@ -104,9 +104,6 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             if (SelectedArticle != null)
             {
-                MainDb.Entry(SelectedArticle).Reload();
-                ArticlesDG.Items.Refresh();
-
                 ArticlesDG_SelectionChanged(null, null);
 
                 //Rows von ArticlesDG anpassen
@@ -339,9 +336,9 @@ namespace Warenwirtschaftssystem.UI.Pages
                 NewArticlePage newArticlePage;
 
                 if (SelectedArticle.Status != Status.PayedOut && SelectedArticle.Status != Status.Sold)
-                    newArticlePage = new NewArticlePage(Data, OwnerWindow, SelectedArticle, this, true);
+                    newArticlePage = new NewArticlePage(Data, MainDb, OwnerWindow, SelectedArticle, this, true);
                 else
-                    newArticlePage = new NewArticlePage(Data, OwnerWindow, SelectedArticle, this, false);
+                    newArticlePage = new NewArticlePage(Data, MainDb, OwnerWindow, SelectedArticle, this, false);
 
                 OwnerWindow.Content = newArticlePage;
             }

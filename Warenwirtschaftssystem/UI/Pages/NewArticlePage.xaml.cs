@@ -334,7 +334,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         /// <summary>
         /// Bestehenden Artikel von ArticlePage aus bearbeiten
         /// </summary>
-        public NewArticlePage(DataModel data, ToolWindow ownerWindow, Article articleToEdit, ArticlePage articlePage, bool editable)
+        public NewArticlePage(DataModel data, DbModel mainDb, ToolWindow ownerWindow, Article articleToEdit, ArticlePage articlePage, bool editable)
         {
             Data = data;
             OwnerWindow = ownerWindow;
@@ -372,7 +372,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                 SaveBtn.IsEnabled = false;
             }
 
-            MainDb = new DbModel(Data.MainConnectionString);
+            MainDb = mainDb;
 
             Article referencedArticle = articleToEdit;
 
@@ -627,11 +627,12 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             if (NewArticlesPage == null)
             {
+                Article.notifyAllPropertiesChanged();
+
                 OwnerWindow.Title = "Artikel";
                 OwnerWindow.Content = ArticlePage;
-                MainDb.SaveChanges();
 
-                Article.notifyAllPropertiesChanged();
+                MainDb.SaveChangesAsync();
             }
             else
             {
