@@ -544,6 +544,11 @@ namespace Warenwirtschaftssystem.UI.Pages
             CurrencyTBs_TextChanged(null, null);
         }
 
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Article.PropertyChanged -= Article_PropertyChanged;
+        }
+
         private void DataGridsDisableUserSelection_PreviewMouseButton(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
@@ -627,12 +632,10 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             if (NewArticlesPage == null)
             {
-                Article.notifyAllPropertiesChanged();
-
                 OwnerWindow.Title = "Artikel";
                 OwnerWindow.Content = ArticlePage;
 
-                MainDb.SaveChangesAsync();
+                MainDb.SaveChanges();
             }
             else
             {

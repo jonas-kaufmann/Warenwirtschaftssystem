@@ -335,10 +335,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             {
                 NewArticlePage newArticlePage;
 
-                if (SelectedArticle.Status != Status.PayedOut && SelectedArticle.Status != Status.Sold)
-                    newArticlePage = new NewArticlePage(Data, MainDb, OwnerWindow, SelectedArticle, this, true);
-                else
-                    newArticlePage = new NewArticlePage(Data, MainDb, OwnerWindow, SelectedArticle, this, false);
+                newArticlePage = new NewArticlePage(Data, MainDb, OwnerWindow, SelectedArticle, this, SelectedArticle.Status != Status.PayedOut && SelectedArticle.Status != Status.Sold);
 
                 OwnerWindow.Content = newArticlePage;
             }
@@ -677,7 +674,8 @@ namespace Warenwirtschaftssystem.UI.Pages
                     differentSuppliers = true;
             }
 
-            if (differentSuppliers) {
+            if (differentSuppliers)
+            {
                 MessageBoxResult result = MessageBox.Show("Es sind Artikel, die auf verschiedene Lieferanten gebucht sind, ausgewählt. Sollen diese wirklich auf einen anderen Lieferanten gebucht werden?", "Ausgewählte Artikel haben unterschiedliche Lieferanten", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
 
                 if (result != MessageBoxResult.Yes)
