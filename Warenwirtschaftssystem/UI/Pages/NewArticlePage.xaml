@@ -72,7 +72,7 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <DataGrid Name="TypesDG" PreviewMouseDoubleClick="DGs_MouseDoubleClick" CellEditEnding="DGs_CellEditEnding" BeginningEdit="DGs_BeginningEdit" DataContext="{StaticResource TypesCVS}" Grid.Row="4" SelectionMode="Single" RowHeaderWidth="0" RowHeaderTemplate="{x:Null}" AutoGenerateColumns="False" EnableRowVirtualization="True" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding}">
+                <DataGrid Name="TypesDG" PreviewMouseDoubleClick="DGs_MouseDoubleClick" CellEditEnding="DGs_CellEditEnding" BeginningEdit="DGs_BeginningEdit" DataContext="{StaticResource TypesCVS}" Grid.Row="4" SelectionMode="Single" RowHeaderWidth="0" RowHeaderTemplate="{x:Null}" AutoGenerateColumns="False" EnableRowVirtualization="True" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding}" >
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding Title}" Header="Art (abhängig von Kategorie)" Width="*" SortDirection="Ascending" />
                     </DataGrid.Columns>

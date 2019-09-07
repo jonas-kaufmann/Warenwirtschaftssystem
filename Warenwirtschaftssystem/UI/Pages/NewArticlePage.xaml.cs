@@ -686,6 +686,8 @@ namespace Warenwirtschaftssystem.UI.Pages
                 TypesDG.DataContext = TypesCVS;
                 TypesDG.IsEnabled = true;
             }
+
+            TypesDG.SelectedItem = null;
         }
 
         private void DataGrids_PreviewKeyDown(object sender, KeyEventArgs e)
