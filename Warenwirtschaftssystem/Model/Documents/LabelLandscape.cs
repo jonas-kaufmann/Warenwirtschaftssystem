@@ -125,7 +125,7 @@ namespace Warenwirtschaftssystem.Model.Documents
             };
             grid.Children.Add(tb);
 
-            string id = article.ConvertedId.ToString();
+            string id = article.ConvertedId.ToString("d8");
             if (id.Length % 2 == 1)
                 id.Insert(0, "0");
 

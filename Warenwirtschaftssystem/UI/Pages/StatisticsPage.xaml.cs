@@ -46,7 +46,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         private void Articles_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            #region Summe aktualisieren
+            #region Summe & Einträge aktualisieren
 
             decimal sumSupplierProportion = 0;
             decimal sum = 0;
@@ -55,7 +55,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                 sumSupplierProportion += a.Payout;
                 sum += a.Price;
             }
-            SumTB.Text = "Eigenanteil " + (sum - sumSupplierProportion).ToString("C") + " - Lieferantenanteil " + sumSupplierProportion.ToString("C") + " - Summe " + sum.ToString("C");
+            SumTB.Text = "Eigenanteil " + (sum - sumSupplierProportion).ToString("C") + " - Lieferantenanteil " + sumSupplierProportion.ToString("C") + " - Summe " + sum.ToString("C") + " - Einträge " + Articles.Count;
 
             #endregion
 

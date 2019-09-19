@@ -233,11 +233,11 @@ namespace Warenwirtschaftssystem.UI.Pages
                     mainDb.Settings.Remove(mainDb.Settings.Where(s => s.Key == "ConnectionTest").Single());
                     mainDb.SaveChanges();
                 }
-                catch
+                catch (Exception e)
                 {
                     if (mainDb != null)
                         mainDb.Dispose();
-                    MessageBox.Show("Fehler beim Herstellen einer Verbindung zur neuen Datenbank.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(e.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
 
                     return;
                 }

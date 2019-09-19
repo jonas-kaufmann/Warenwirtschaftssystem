@@ -1,4 +1,5 @@
-﻿using System.Data.Entity.Migrations;
+﻿using System;
+using System.Data.Entity.Migrations;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Windows;
@@ -83,12 +84,12 @@ namespace Warenwirtschaftssystem.UI.Pages
                     MainDb.Settings.Remove(MainDb.Settings.Where(s => s.Key == "ConnectionTest").Single());
                     MainDb.SaveChanges();
                 }
-                catch
+                catch (Exception e)
                 {
                     if (MainDb != null)
                         MainDb.Dispose();
 
-                    MessageBox.Show("Fehler beim Herstellen einer Verbindung zur Datenbank.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(e.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
