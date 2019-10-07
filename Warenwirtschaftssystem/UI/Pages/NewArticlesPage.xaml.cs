@@ -55,18 +55,14 @@ namespace Warenwirtschaftssystem.UI.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             OwnerWindow.Title += " L-Nr: " + Supplier.Id;
-            if (NewArticle != null)
+            if (NewArticle != null && !Articles.Contains(NewArticle) )
             {
                 Articles.Add(NewArticle);
-                MainDb.Articles.Add(NewArticle);
 
                 ArticlesDG.SelectedItem = NewArticle;
                 ArticlesDG.ScrollIntoView(NewArticle);
 
                 NewArticle = null;
-            } else
-            {
-                ArticlesDG.Items.Refresh();
             }
         }
 

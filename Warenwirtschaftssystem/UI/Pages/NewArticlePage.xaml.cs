@@ -630,20 +630,25 @@ namespace Warenwirtschaftssystem.UI.Pages
                        && (Article.Price != OldPrice || Article.SupplierProportion != OldSupplierProportion))
                 new Documents(Data, MainDb).NotifyArticlePropertiesChanged(Article.Id);
 
+            if (IsNewArticle)
+            {
+                Article.AddedToSortiment = DateTime.Now;
+                MainDb.Articles.Add(Article);
+            }
+
+            if (Editable)
+                MainDb.SaveChanges();
+
             if (NewArticlesPage == null)
             {
                 OwnerWindow.Title = "Artikel";
                 OwnerWindow.Content = ArticlePage;
-
-                MainDb.SaveChanges();
             }
             else
             {
                 if (IsNewArticle)
-                {
-                    Article.AddedToSortiment = DateTime.Now;
                     NewArticlesPage.NewArticle = Article;
-                }
+
                 OwnerWindow.Title = "Artikel anlegen";
                 OwnerWindow.Content = NewArticlesPage;
             }
