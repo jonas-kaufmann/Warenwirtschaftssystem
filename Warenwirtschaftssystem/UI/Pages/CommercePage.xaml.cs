@@ -11,6 +11,7 @@ using System;
 using Warenwirtschaftssystem.Model.Documents;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Windows.Media;
 
 namespace Warenwirtschaftssystem.UI.Pages
 {
@@ -109,6 +110,15 @@ namespace Warenwirtschaftssystem.UI.Pages
                         ArticlesDG.Columns[1].Width = 0;
                         ArticlesDG.UpdateLayout();
                         ArticlesDG.Columns[1].Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+
+                        // Scroll to end
+                        if (ArticlesDG.Items.Count > 0)
+                        {
+                            if (VisualTreeHelper.GetChild(ArticlesDG, 0) is Decorator border)
+                            {
+                                if (border.Child is ScrollViewer scroll) scroll.ScrollToEnd();
+                            }
+                        }
                     }
                 }
             }
