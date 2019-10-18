@@ -176,7 +176,7 @@
                         </Grid.ColumnDefinitions>
 
 
-                        <CheckBox Name="AsNewCB" Content="Neuware" IsChecked="{Binding AsNew, Mode=OneWayToSource}" />
+                        <CheckBox Name="AsNewCB" Content="Neuware" IsChecked="{Binding AsNew, Mode=TwoWay}" />
 
                         <TextBlock Text="Abholung" Grid.Row="2" />
                         <DatePicker Name="PickUpDP" Grid.Row="2" Grid.Column="2" SelectedDate="{Binding Path=PickUp, Mode=TwoWay}" />

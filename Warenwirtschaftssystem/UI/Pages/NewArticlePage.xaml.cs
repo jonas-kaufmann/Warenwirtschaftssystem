@@ -210,47 +210,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             ThirdColumnGrid.DataContext = Article;
             LoadDataFromDbIntoView();
-
-            #region Artikeleigenschaften in DGs auswählen
-
-            // Gender
-            GenderDG.SelectedItem = Article.Gender;
-            // Categories
-            CategoriesDG.SelectedItem = Article.Category;
-            // Type
-            TypesDG.SelectedItem = Article.Type;
-            // Brand
-            BrandsDG.SelectedItem = Article.Brand;
-            // Size
-            SizesDG.SelectedItem = Article.Size;
-            // Materials
-            if (Article.Materials != null)
-            {
-                foreach (Material m in Article.Materials)
-                {
-                    MaterialsDG.SelectedItems.Add(m);
-                }
-            }
-            // Parts
-            PartsDG.SelectedItem = Article.Parts;
-            // Defects
-            if (Article.Defects != null)
-            {
-                foreach (Defect d in Article.Defects)
-                {
-                    DefectsDG.SelectedItems.Add(d);
-                }
-            }
-            // Colors
-            if (Article.Colors != null)
-            {
-                foreach (Color c in Article.Colors)
-                {
-                    ColorsDG.SelectedItems.Add(c);
-                }
-            }
-
-            #endregion
+            SelectArticleAttributes();
         }
 
         /// <summary>
@@ -286,47 +246,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             ThirdColumnGrid.DataContext = Article;
 
             LoadDataFromDbIntoView();
-
-            #region Artikeleigenschaften in DGs auswählen
-
-            // Gender
-            GenderDG.SelectedItem = Article.Gender;
-            // Categories
-            CategoriesDG.SelectedItem = Article.Category;
-            // Type
-            TypesDG.SelectedItem = Article.Type;
-            // Brand
-            BrandsDG.SelectedItem = Article.Brand;
-            // Size
-            SizesDG.SelectedItem = Article.Size;
-            // Materials
-            if (Article.Materials != null)
-            {
-                foreach (Material m in Article.Materials)
-                {
-                    MaterialsDG.SelectedItems.Add(m);
-                }
-            }
-            // Parts
-            PartsDG.SelectedItem = Article.Parts;
-            // Defects
-            if (Article.Defects != null)
-            {
-                foreach (Defect d in Article.Defects)
-                {
-                    DefectsDG.SelectedItems.Add(d);
-                }
-            }
-            // Colors
-            if (Article.Colors != null)
-            {
-                foreach (Color c in Article.Colors)
-                {
-                    ColorsDG.SelectedItems.Add(c);
-                }
-            }
-
-            #endregion
+            SelectArticleAttributes();
 
             Article.PropertyChanged += Article_PropertyChanged;
         }
@@ -383,47 +303,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             ThirdColumnGrid.DataContext = Article;
 
             LoadDataFromDbIntoView();
-
-            #region Artikeleigenschaften in DGs auswählen
-
-            // Gender
-            GenderDG.SelectedItem = Article.Gender;
-            // Categories
-            CategoriesDG.SelectedItem = Article.Category;
-            // Type
-            TypesDG.SelectedItem = Article.Type;
-            // Brand
-            BrandsDG.SelectedItem = Article.Brand;
-            // Size
-            SizesDG.SelectedItem = Article.Size;
-            // Materials
-            if (Article.Materials != null)
-            {
-                foreach (Material m in Article.Materials)
-                {
-                    MaterialsDG.SelectedItems.Add(m);
-                }
-            }
-            // Parts
-            PartsDG.SelectedItem = Article.Parts;
-            // Defects
-            if (Article.Defects != null)
-            {
-                foreach (Defect d in Article.Defects)
-                {
-                    DefectsDG.SelectedItems.Add(d);
-                }
-            }
-            // Colors
-            if (Article.Colors != null)
-            {
-                foreach (Color c in Article.Colors)
-                {
-                    ColorsDG.SelectedItems.Add(c);
-                }
-            }
-
-            #endregion
+            SelectArticleAttributes();
 
             Article.PropertyChanged += Article_PropertyChanged;
         }
@@ -476,6 +356,46 @@ namespace Warenwirtschaftssystem.UI.Pages
             ColorsDG.SelectedItem = null;
             // Types
             TypesCVS = (CollectionViewSource)FindResource("TypesCVS");
+        }
+
+        private void SelectArticleAttributes()
+        {
+            // Gender
+            GenderDG.SelectedItem = Article.Gender;
+            // Categories
+            CategoriesDG.SelectedItem = Article.Category;
+            // Type
+            TypesDG.SelectedItem = Article.Type;
+            // Brand
+            BrandsDG.SelectedItem = Article.Brand;
+            // Size
+            SizesDG.SelectedItem = Article.Size;
+            // Materials
+            if (Article.Materials != null)
+            {
+                foreach (Material m in Article.Materials)
+                {
+                    MaterialsDG.SelectedItems.Add(m);
+                }
+            }
+            // Parts
+            PartsDG.SelectedItem = Article.Parts;
+            // Defects
+            if (Article.Defects != null)
+            {
+                foreach (Defect d in Article.Defects)
+                {
+                    DefectsDG.SelectedItems.Add(d);
+                }
+            }
+            // Colors
+            if (Article.Colors != null)
+            {
+                foreach (Color c in Article.Colors)
+                {
+                    ColorsDG.SelectedItems.Add(c);
+                }
+            }
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
