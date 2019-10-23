@@ -60,28 +60,28 @@
             <ComboBox Name="TitleCB" ItemsSource="{Binding Source={model:EnumBindingSource {x:Type db:Title}}}" Grid.Column="2"/>
             <TextBlock Text="Name" Grid.Row="2"/>
             <TextBox Name="NameTB" Grid.Column="2" Grid.Row="2"/>
-            <TextBlock Text="Ort" Grid.Row="4"/>
-            <TextBox Name="PlaceTB" Grid.Column="2" Grid.Row="4"/>
-            <TextBlock Text="E-Mail" Grid.Row="6"/>
-            <TextBox Name="EMailTB" Grid.Column="6" Grid.Row="6"/>
-            <TextBlock Text="Telefon" Grid.Row="8"/>
-            <TextBox Name="PhoneTB" Grid.Column="2" Grid.Row="8"/>
-            <TextBlock Text="Straße" Grid.Row="10"/>
-            <TextBox Name="StreetTB" Grid.Column="2" Grid.Row="10"/>
-            <TextBlock Text="PLZ" Grid.Row="12"/>
-            <TextBox Name="PostcodeTb" Grid.Row="12" Grid.Column="2" />
-            <TextBlock Text="Lieferantenanteil fest in %" Grid.Row="14" />
-            <Grid Grid.Column="2" Grid.Row="14" >
+            <TextBlock Text="Straße" Grid.Row="4"/>
+            <TextBox Name="StreetTB" Grid.Column="2" Grid.Row="4"/>
+            <TextBlock Text="PLZ" Grid.Row="6"/>
+            <TextBox Name="PostcodeTb" Grid.Row="6" Grid.Column="2" />
+            <TextBlock Text="Ort" Grid.Row="8"/>
+            <TextBox Name="PlaceTB" Grid.Column="2" Grid.Row="8"/>
+            <TextBlock Text="E-Mail" Grid.Row="10"/>
+            <TextBox Name="EMailTB" Grid.Column="6" Grid.Row="10"/>
+            <TextBlock Text="Telefon" Grid.Row="12"/>
+            <TextBox Name="PhoneTB" Grid.Column="2" Grid.Row="12"/>
+            <TextBlock Text="Firma" Grid.Row="14"/>
+            <TextBox Name="CompanyTB" Grid.Column="2" Grid.Row="14"/>
+            <TextBlock Text="Lieferantenanteil fest in %" Grid.Row="16" />
+            <Grid Grid.Column="2" Grid.Row="16" >
                 <toolkit:ValueRangeTextBox Validation.ErrorTemplate="{x:Null}" Name="SupplierProportionTb" TextChanged="SupplierProportionTb_TextChanged" MinValue="{StaticResource SupplierProportionTb_ MinValue}" MaxValue="{StaticResource SupplierProportionTb_ MaxValue}" ValueDataType="{x:Type system:Decimal}"/>
                 <Border Name="SupplierProportionBorder" BorderBrush="Red" BorderThickness="0"/>
             </Grid>
-            <TextBlock Grid.Row="16" Text="Abholung in Wochen" />
-            <Grid VerticalAlignment="Top" Grid.Column="2" Grid.Row="16">
+            <TextBlock Grid.Row="18" Text="Abholung in Wochen" />
+            <Grid VerticalAlignment="Top" Grid.Column="2" Grid.Row="18">
                 <toolkit:ValueRangeTextBox Validation.ErrorTemplate="{x:Null}" Name="PickUpTb" ValueDataType="{x:Type system:Int16}" MinValue="{StaticResource PickUpTb_MinValue}"/>
                 <Border Name="PickUpBorder" BorderBrush="Red" BorderThickness="0"/>
             </Grid>
-            <TextBlock Text="Firma" Grid.Row="18"/>
-            <TextBox Name="CompanyTB" Grid.Column="2" Grid.Row="18"/>
             <TextBlock Text="Bemerkungen" Grid.Row="20" />
             <TextBox Name="NotesTb" MaxHeight="100" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Grid.Column="6" Grid.Row="20" />
 
