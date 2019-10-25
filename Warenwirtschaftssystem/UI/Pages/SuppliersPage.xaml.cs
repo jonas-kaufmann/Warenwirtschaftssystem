@@ -257,7 +257,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             if (e.Key == Key.Tab && SuppliersDG.CurrentColumn.DisplayIndex == 6)
             {
-                StreetTB.Focus();
+                SupplierProportionTb.Focus();
                 e.Handled = true;
             }
 

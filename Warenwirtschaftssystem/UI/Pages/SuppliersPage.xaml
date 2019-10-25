@@ -75,6 +75,7 @@
                         </DataGridTemplateColumn.CellEditingTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}" Header="Name" Width="*" />
+                    <DataGridTextColumn Binding="{Binding Street, Mode=TwoWay}" Header="Straße" />
                     <DataGridTextColumn Binding="{Binding Postcode, Mode=TwoWay}" Header="PLZ" />
                     <DataGridTextColumn Binding="{Binding Place, Mode=TwoWay}" Header="Ort" />
                     <DataGridTextColumn Binding="{Binding EMail, Mode=TwoWay}" Header="E-Mail" />
@@ -84,8 +85,6 @@
 
             <Grid Name="SupplierCharacteristicsG" Grid.Row="2" DataContext="{StaticResource SuppliersCVS}">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="2" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="2" />
                     <RowDefinition Height="Auto" />
@@ -103,21 +102,18 @@
                     <ColumnDefinition Width="3*" />
                 </Grid.ColumnDefinitions>
 
-
-                <TextBlock Text="Straße" />
-                <TextBox Name="StreetTB" Text="{Binding Street, Mode=OneWayToSource, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Grid.Column="2" />
-                <TextBlock Text="Lieferantenanteil fest in %" Grid.Row="2" />
-                <Grid Grid.Column="2" Grid.Row="2" >
+                <TextBlock Text="Lieferantenanteil fest in %" />
+                <Grid Grid.Column="2" >
                     <toolkit:WatermarkTextBox Watermark="Standard" Validation.ErrorTemplate="{x:Null}" Name="SupplierProportionTb" TextChanged="SupplierProportionTb_TextChanged" Text="{Binding SupplierProportion, Mode=OneWayToSource, ConverterCulture=de-DE}" />
                     <Border Name="SupplierProportionBorder" BorderBrush="Red" BorderThickness="0"/>
                 </Grid>
-                <TextBlock Grid.Row="4"><Run Text="Abholung in Wochen"/><LineBreak/><Run Text="(-1 = ∞)"/></TextBlock>
-                <Grid VerticalAlignment="Top" Grid.Column="2" Grid.Row="4">
+                <TextBlock Grid.Row="2"><Run Text="Abholung in Wochen"/><LineBreak/><Run Text="(-1 = ∞)"/></TextBlock>
+                <Grid VerticalAlignment="Top" Grid.Column="2" Grid.Row="2">
                     <toolkit:ValueRangeTextBox Validation.ErrorTemplate="{x:Null}" TextChanged="PickUpTb_TextChanged" Name="PickUpTb" Value="{Binding PickUp, Mode=TwoWay}" ValueDataType="{x:Type system:Int32}" MinValue="{StaticResource PickUpTb_MinValue}"/>
                     <Border Name="PickUpBorder" BorderBrush="Red" BorderThickness="0"/>
                 </Grid>
-                <TextBlock Text="Neuanlage" Grid.Row="6" />
-                <TextBox Text="{Binding CreationDate, Mode=OneTime, NotifyOnValidationError=true, ValidatesOnExceptions=true, StringFormat=d, ConverterCulture=de-DE}" IsEnabled="False" Grid.Column="2" Grid.Row="6" />
+                <TextBlock Text="Neuanlage" Grid.Row="4" />
+                <TextBox Text="{Binding CreationDate, Mode=OneTime, NotifyOnValidationError=true, ValidatesOnExceptions=true, StringFormat=d, ConverterCulture=de-DE}" IsEnabled="False" Grid.Column="2" Grid.Row="4" />
 
                 <TextBlock Text="Firma" Grid.Column="4" />
                 <TextBox Text="{Binding Company, Mode=OneWayToSource, NotifyOnValidationError=true, ValidatesOnExceptions=true}" AcceptsReturn="True" Grid.Column="6" />
