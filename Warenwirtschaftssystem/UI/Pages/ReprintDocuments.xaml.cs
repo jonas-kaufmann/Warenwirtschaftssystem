@@ -102,14 +102,18 @@ namespace Warenwirtschaftssystem.UI.Pages
                     }
                 }
 
-                //Fill Sum attribute of Document
+                //fill Sum and SupplierSum properties of document
                 if (document.Sum == null && (document.DocumentType == DocumentType.Bill || document.DocumentType == DocumentType.Return || document.DocumentType == DocumentType.Reservation || document.DocumentType == DocumentType.Payout))
                 {
                     if (document.Articles != null && document.Articles.Count > 0)
                     {
                         document.Sum = 0;
+                        document.SupplierSum = 0;
                         foreach (Article article in document.Articles)
+                        {
                             document.Sum += article.Price;
+                            document.SupplierSum += article.SupplierProportion;
+                        }
                     }
                 }
             }

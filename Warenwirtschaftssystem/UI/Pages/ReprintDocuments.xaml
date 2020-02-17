@@ -9,8 +9,7 @@
       mc:Ignorable="d" 
       Title="ReprintDocuments"
       Loaded="Page_Loaded"
-      d:DesignWidth="800" d:DesignHeight="600"
-      FocusManager.FocusedElement="{Binding ElementName=FilterIdTb}">
+      d:DesignWidth="800" d:DesignHeight="600">
 
     <Page.Resources>
         <CollectionViewSource x:Key="DocumentsCVS" d:DesignSource="{d:DesignInstance {x:Type db:Document}, CreateList=True}"/>
@@ -45,6 +44,7 @@
                 <DataGridTextColumn Header="Lieferant/Kunde" Binding="{Binding Supplier.Name, Mode=OneTime}"/>
                 <DataGridTextColumn Header="L-/K-Nr" Binding="{Binding Supplier.Id, Mode=OneTime}"/>
                 <DataGridTextColumn Header="Summe" Binding="{Binding Sum, ConverterCulture=de-DE, StringFormat=C, Mode=OneTime}"/>
+                <DataGridTextColumn Header="L-Summe" Binding="{Binding SupplierSum, ConverterCulture=de-DE, StringFormat=C, Mode=OneTime}"/>
             </DataGrid.Columns>
 
             <DataGrid.RowDetailsTemplate>

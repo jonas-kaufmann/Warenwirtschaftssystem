@@ -490,6 +490,8 @@
 
         [NotMapped]
         public decimal? Sum { get; set; }
+        [NotMapped]
+        public decimal? SupplierSum { get; set; }
 
         public virtual ObservableCollection<Article> Articles { get; set; }
         public virtual ObservableCollection<SavedArticleAttributes> SavedArticleAttributes { get; set; }
