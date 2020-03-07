@@ -20,8 +20,8 @@
                 <RowDefinition Height="2" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
-            <toolkit:WatermarkTextBox Name="UserTb" KeyDown="OnKeyDown_Connect" Watermark="User" />
-            <toolkit:WatermarkPasswordBox Name="PasswordTb" KeyDown="OnKeyDown_Connect" Grid.Row="2" Watermark="Passwort" />
+            <toolkit:WatermarkTextBox Name="UserTb" KeyUp="OnKeyUp_Connect" Watermark="User" />
+            <toolkit:WatermarkPasswordBox Name="PasswordTb" KeyUp="OnKeyUp_Connect" Grid.Row="2" Watermark="Passwort" />
         </Grid>
 
     </DockPanel>

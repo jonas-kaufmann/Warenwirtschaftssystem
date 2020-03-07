@@ -78,7 +78,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                             Process p = new Process();
                             p.StartInfo.FileName = "cmd.exe";
                             p.StartInfo.Verb = "runas";
-                            p.StartInfo.Arguments = "/C net stop MSSQL$SQLEXPRESS2014 && net start MSSQL$SQLEXPRESS2014";
+                            p.StartInfo.Arguments = "/C net stop MSSQL$SQLEXPRESS && net start MSSQL$SQLEXPRESS";
                             p.Start();
                             p.WaitForExit();
                         }

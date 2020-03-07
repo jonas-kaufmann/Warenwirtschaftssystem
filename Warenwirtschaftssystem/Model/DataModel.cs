@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 using System;
 using System.IO;
-using System.Security;
 using Warenwirtschaftssystem.Model.LocalAppData;
 
 namespace Warenwirtschaftssystem.Model
@@ -20,12 +19,13 @@ namespace Warenwirtschaftssystem.Model
         public DataModel()
         {
             #region Connection Info aus JSON laden
-
             if (File.Exists(ConnInfoJSONPath))
             {
-                using (JsonReader json = new JsonTextReader(new StreamReader(ConnInfoJSONPath)))
+                using (var jsonFile = File.OpenRead(ConnInfoJSONPath))
                 {
-                    ConnectionInfo = new JsonSerializer().Deserialize<ConnectionInfo>(json);
+                    var task = JsonSerializer.DeserializeAsync<ConnectionInfo>(jsonFile).AsTask();
+                    task.Wait();
+                    ConnectionInfo = task.Result;
                 }
             }
 
@@ -35,9 +35,11 @@ namespace Warenwirtschaftssystem.Model
 
             if (File.Exists(StandardPrintersJSONPath))
             {
-                using (JsonReader json = new JsonTextReader(new StreamReader(StandardPrintersJSONPath)))
+                using (var jsonFile = File.OpenRead(StandardPrintersJSONPath))
                 {
-                    StandardPrinters = new JsonSerializer().Deserialize<StandardPrinters>(json);
+                    var task = JsonSerializer.DeserializeAsync<StandardPrinters>(jsonFile).AsTask();
+                    task.Wait();
+                    StandardPrinters = task.Result;
                 }
             }
 
@@ -57,13 +59,14 @@ namespace Warenwirtschaftssystem.Model
 
         public void SaveToJSON()
         {
+            JsonSerializerOptions jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+
             #region ConnectionInfo
 
             Directory.CreateDirectory(Path.GetDirectoryName(ConnInfoJSONPath));
-            using (StreamWriter json = new StreamWriter(ConnInfoJSONPath))
+            using (var json = File.OpenWrite(ConnInfoJSONPath))
             {
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(json, ConnectionInfo);
+                JsonSerializer.SerializeAsync(json, ConnectionInfo, typeof(ConnectionInfo), jsonOptions).Wait();
             }
 
             #endregion
@@ -71,10 +74,9 @@ namespace Warenwirtschaftssystem.Model
             #region StandardPrinters
 
             Directory.CreateDirectory(Path.GetDirectoryName(StandardPrintersJSONPath));
-            using (StreamWriter json = new StreamWriter(StandardPrintersJSONPath))
+            using (var json = File.OpenWrite(StandardPrintersJSONPath))
             {
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(json, StandardPrinters);
+                JsonSerializer.SerializeAsync(json, StandardPrinters, typeof(StandardPrinters), jsonOptions).Wait();
             }
 
             #endregion

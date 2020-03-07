@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using System.IO;
 using CsvHelper;
 using System.Text;
-using CsvHelper.Configuration.Attributes;
 using CsvHelper.Configuration;
+using System.Globalization;
 
 namespace Warenwirtschaftssystem.Model.Db
 {
@@ -243,9 +243,8 @@ namespace Warenwirtschaftssystem.Model.Db
                 Genders.Clear();
 
                 #region Gender
-
                 using (var reader = File.OpenText(ConversionFolder + "\\Geschlecht.csv"))
-                using (var csv = new CsvReader(reader, new Configuration() { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
                 {
                     csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
@@ -275,7 +274,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Category and Type
 
                 using (var reader = File.OpenText(ConversionFolder + "\\KategorienUndArten.csv"))
-                using (var csv = new CsvReader(reader, new Configuration() { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
                 {
                     csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<CategoryType>().ToArray();
@@ -317,7 +316,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Brand
 
                 using (var reader = File.OpenText(ConversionFolder + "\\Marken.csv"))
-                using (var csv = new CsvReader(reader, new Configuration() { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
                 {
                     csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
@@ -346,7 +345,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Size
 
                 using (var reader = new StreamReader(ConversionFolder + "\\Größen.csv"))
-                using (var csv = new CsvReader(reader, new Configuration() { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
                 {
                     csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
@@ -375,7 +374,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Color
 
                 using (var reader = new StreamReader(ConversionFolder + "\\Farben.csv"))
-                using (var csv = new CsvReader(reader, new Configuration() { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
                 {
                     csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
@@ -404,7 +403,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Material
 
                 using (var reader = new StreamReader(ConversionFolder + "\\Materialien.csv"))
-                using (var csv = new CsvReader(reader, new Configuration() { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
                 {
                     csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
@@ -433,7 +432,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Part
 
                 using (var reader = new StreamReader(ConversionFolder + "\\Teile.csv"))
-                using (var csv = new CsvReader(reader, new Configuration() { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
                 {
                     csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
@@ -1935,7 +1934,7 @@ namespace Warenwirtschaftssystem.Model.Db
             }
 
             using (var writer = new StreamWriter(ConversionFolder + "\\Geschlecht.csv", false, Encoding.UTF8))
-            using (var csvWriter = new CsvWriter(writer, new Configuration { Encoding = Encoding.UTF8 }))
+            using (var csvWriter = new CsvWriter(writer, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
             {
                 csvWriter.WriteRecords(gendersToConvert);
 
@@ -1975,7 +1974,7 @@ namespace Warenwirtschaftssystem.Model.Db
             }
 
             using (var writer = new StreamWriter(ConversionFolder + "\\KategorienUndArten.csv", false, Encoding.UTF8))
-            using (var csvWriter = new CsvWriter(writer, new Configuration { Encoding = Encoding.UTF8 }))
+            using (var csvWriter = new CsvWriter(writer, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
             {
                 csvWriter.WriteRecords(categoriesAndTypesToConvert);
 
@@ -2001,7 +2000,7 @@ namespace Warenwirtschaftssystem.Model.Db
             }
 
             using (var writer = new StreamWriter(ConversionFolder + "\\Marken.csv", false, Encoding.UTF8))
-            using (var csvWriter = new CsvWriter(writer, new Configuration { Encoding = Encoding.UTF8 }))
+            using (var csvWriter = new CsvWriter(writer, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
             {
                 csvWriter.WriteRecords(brandsToConvert);
 
@@ -2027,7 +2026,7 @@ namespace Warenwirtschaftssystem.Model.Db
             }
 
             using (var writer = new StreamWriter(ConversionFolder + "\\Größen.csv", false, Encoding.UTF8))
-            using (var csvWriter = new CsvWriter(writer, new Configuration { Encoding = Encoding.UTF8 }))
+            using (var csvWriter = new CsvWriter(writer, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
             {
                 csvWriter.WriteRecords(sizesToConvert);
 
@@ -2053,7 +2052,7 @@ namespace Warenwirtschaftssystem.Model.Db
             }
 
             using (var writer = new StreamWriter(ConversionFolder + "\\Farben.csv", false, Encoding.UTF8))
-            using (var csvWriter = new CsvWriter(writer, new Configuration { Encoding = Encoding.UTF8 }))
+            using (var csvWriter = new CsvWriter(writer, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
             {
                 csvWriter.WriteRecords(colorsToConvert);
 
@@ -2079,7 +2078,7 @@ namespace Warenwirtschaftssystem.Model.Db
             }
 
             using (var writer = new StreamWriter(ConversionFolder + "\\Materialien.csv", false, Encoding.UTF8))
-            using (var csvWriter = new CsvWriter(writer, new Configuration { Encoding = Encoding.UTF8 }))
+            using (var csvWriter = new CsvWriter(writer, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
             {
                 csvWriter.WriteRecords(materialsToConvert);
 
@@ -2105,7 +2104,7 @@ namespace Warenwirtschaftssystem.Model.Db
             }
 
             using (var writer = new StreamWriter(ConversionFolder + "\\Teile.csv", false, Encoding.UTF8))
-            using (var csvWriter = new CsvWriter(writer, new Configuration { Encoding = Encoding.UTF8 }))
+            using (var csvWriter = new CsvWriter(writer, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
             {
                 csvWriter.WriteRecords(partsToConvert);
 

@@ -37,7 +37,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             OwnerWindow.Content = new ConfigureDbPage(OwnerWindow, Data);
         }
 
-        private void OnKeyDown_Connect(object sender, KeyEventArgs e)
+        private void OnKeyUp_Connect(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
@@ -89,7 +89,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                     if (MainDb != null)
                         MainDb.Dispose();
 
-                    MessageBox.Show(e.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(e.ToString(), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 

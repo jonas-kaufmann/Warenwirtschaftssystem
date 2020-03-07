@@ -22,7 +22,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         #region Initialisierung
 
-        // Konstruktors
+        // Konstruktor
         public PickSupplierPage(Window ownerWindow, DataModel data, DbModel mainDb) 
         {
             OwnerWindow = ownerWindow;
@@ -31,6 +31,8 @@ namespace Warenwirtschaftssystem.UI.Pages
             MainDb = mainDb;
 
             InitializeComponent();
+
+            FilterNameTb.Focus();
 
             #region Daten aus Db laden
 

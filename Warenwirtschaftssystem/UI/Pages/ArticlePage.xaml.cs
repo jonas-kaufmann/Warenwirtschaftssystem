@@ -264,7 +264,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         }
 
         private void NewArticlesBtn_Click(object sender, RoutedEventArgs e)
-        {
+         {
             bool isSelectionClosedOutOrReturned = true;
 
             if (ArticlesDG.SelectedItems.Count == 0)

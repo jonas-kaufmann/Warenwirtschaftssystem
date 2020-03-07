@@ -4,14 +4,13 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
-      xmlns:Db="clr-namespace:Warenwirtschaftssystem.Model.Db" x:Class="Warenwirtschaftssystem.UI.Pages.PickSupplierPage"
+      x:Class="Warenwirtschaftssystem.UI.Pages.PickSupplierPage"
       mc:Ignorable="d" 
       Width="450" Height="350"
-      FocusManager.FocusedElement="{Binding ElementName=FilterNameTb}"
       PreviewKeyDown="Page_PreviewKeyDown" Margin="8">
 
     <Page.Resources>
-        <CollectionViewSource x:Key="SuppliersCVS" d:DesignSource="{d:DesignInstance {x:Type Db:Supplier}, CreateList=True}"/>
+        <CollectionViewSource x:Key="SuppliersCVS" />
     </Page.Resources>
 
     <DockPanel DataContext="{StaticResource SuppliersCVS}">

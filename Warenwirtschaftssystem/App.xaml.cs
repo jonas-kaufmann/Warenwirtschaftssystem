@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,7 +32,7 @@ namespace Warenwirtschaftssystem
                 new RoutedEventHandler(SelectAllText));
             EventManager.RegisterClassHandler(typeof(TextBox), TextBox.MouseDoubleClickEvent,
                 new RoutedEventHandler(SelectAllText));
-            base.OnStartup(e);
+             base.OnStartup(e);
         }
 
         void SelectivelyIgnoreMouseButton(object sender, MouseButtonEventArgs e)
