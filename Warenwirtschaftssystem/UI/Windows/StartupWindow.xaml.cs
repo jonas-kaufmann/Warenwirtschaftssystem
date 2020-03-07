@@ -30,6 +30,7 @@ namespace Warenwirtschaftssystem.UI.Windows
         // Check for App Updates
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            AutoUpdater.RunUpdateAsAdmin = true;
             AutoUpdater.Start("http://wp10597435.server-he.de/WWS/AutoUpdater.xml");
         }
     }
