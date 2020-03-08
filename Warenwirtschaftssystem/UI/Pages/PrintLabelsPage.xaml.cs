@@ -107,6 +107,9 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             if (labels2Print.Count != 0)
                 new Label(Data, labels2Print).CreateAndPrint();
+
+            if (CloseAfterPrintCb.IsChecked.GetValueOrDefault(false))
+                OwnerWindow.Close();
         }
 
         private void PrintLandscapeLabelsBtn_Click(object sender, RoutedEventArgs e)
@@ -124,6 +127,9 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             if (labels2Print.Count != 0)
                 new LabelLandscape(Data, labels2Print).CreateAndPrint();
+
+            if (CloseAfterPrintCb.IsChecked.GetValueOrDefault(false))
+                OwnerWindow.Close();
         }
     }
 

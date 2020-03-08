@@ -183,10 +183,10 @@
 
 
                         <TextBlock Grid.Row="4" Text="Preis" />
-                        <TextBox Name="PriceTB" Grid.Row="4" Grid.Column="2" Text="{Binding Path=Price,ConverterCulture=de-DE, StringFormat=C, Mode=TwoWay}" />
+                        <TextBox Name="PriceTB" Grid.Row="4" Grid.Column="2" Text="{Binding Path=Price,ConverterCulture=de-DE, StringFormat=C, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                         <TextBlock Grid.Row="6" Text="Auszahlungsbetrag" />
-                        <TextBox Name="SupplierProportionTB" Text="{Binding SupplierProportion, ConverterCulture=de-DE, StringFormat=C, Mode=TwoWay}" Grid.Row="6" Grid.Column="2" />
+                        <TextBox Name="SupplierProportionTB" Text="{Binding SupplierProportion, ConverterCulture=de-DE, StringFormat=C, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="6" Grid.Column="2" />
 
                         <TextBlock Grid.Row="8" Text="Verhältnis" />
                         <TextBox Text="{Binding Percentage, ConverterCulture=de-DE, StringFormat=P, Mode=OneWay}" Grid.Row="8" Grid.Column="2" IsEnabled="False" />
