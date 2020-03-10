@@ -25,6 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="UI\Pages\PriceProvider.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\article.png" />
     <None Remove="Resources\calculator.png" />
     <None Remove="Resources\document.png" />
@@ -45,6 +49,7 @@
       <NoWarn>NU1701</NoWarn>
     </PackageReference>
     <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="150.18208.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
     <PackageReference Include="System.Text.Json" Version="4.7.1" />
   </ItemGroup>

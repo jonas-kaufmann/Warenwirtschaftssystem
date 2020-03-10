@@ -4,8 +4,9 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
-      xmlns:system="clr-namespace:System;assembly=mscorlib"
-      xmlns:db="clr-namespace:Warenwirtschaftssystem.Model.Db"
+      xmlns:system="clr-namespace:System;assembly=System.Runtime"
+      xmlns:b="clr-namespace:Warenwirtschaftssystem.UI.Behaviors"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       mc:Ignorable="d" 
       Loaded="Page_Loaded"
       Unloaded="Page_Unloaded"
@@ -17,15 +18,15 @@
         <system:Decimal x:Key="PriceTB_MinValue">0</system:Decimal>
 
         <!-- Binding -->
-        <CollectionViewSource x:Key="GenderCVS" d:DesignSource="{d:DesignInstance {x:Type db:Gender}, CreateList=True}"/>
-        <CollectionViewSource x:Key="CategoriesCVS" d:DesignSource="{d:DesignInstance {x:Type db:Category}, CreateList=True}"/>
-        <CollectionViewSource x:Key="TypesCVS" d:DesignSource="{d:DesignInstance {x:Type db:Type}, CreateList=True}" Source="{Binding Types, Source={StaticResource CategoriesCVS}}"/>
-        <CollectionViewSource x:Key="BrandsCVS" d:DesignSource="{d:DesignInstance {x:Type db:Brand}, CreateList=True}"/>
-        <CollectionViewSource x:Key="SizesCVS" d:DesignSource="{d:DesignInstance {x:Type db:Size}, CreateList=True}"/>
-        <CollectionViewSource x:Key="ColorsCVS" d:DesignSource="{d:DesignInstance {x:Type db:Color}, CreateList=True}"/>
-        <CollectionViewSource x:Key="MaterialsCVS" d:DesignSource="{d:DesignInstance {x:Type db:Material}, CreateList=True}"/>
-        <CollectionViewSource x:Key="PartsCVS" d:DesignSource="{d:DesignInstance {x:Type db:Part}, CreateList=True}"/>
-        <CollectionViewSource x:Key="DefectsCVS" d:DesignSource="{d:DesignInstance {x:Type db:Defect}, CreateList=True}"/>
+        <CollectionViewSource x:Key="GenderCVS" />
+        <CollectionViewSource x:Key="CategoriesCVS" />
+        <CollectionViewSource x:Key="TypesCVS" Source="{Binding Types, Source={StaticResource CategoriesCVS}}"/>
+        <CollectionViewSource x:Key="BrandsCVS" />
+        <CollectionViewSource x:Key="SizesCVS" />
+        <CollectionViewSource x:Key="ColorsCVS" />
+        <CollectionViewSource x:Key="MaterialsCVS" />
+        <CollectionViewSource x:Key="PartsCVS" />
+        <CollectionViewSource x:Key="DefectsCVS" />
 
         <Style x:Key="ColorDGCell" TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
             <Setter Property="BorderThickness" Value="0"/>
@@ -183,10 +184,15 @@
 
 
                         <TextBlock Grid.Row="4" Text="Preis" />
-                        <TextBox Name="PriceTB" Grid.Row="4" Grid.Column="2" Text="{Binding Path=Price,ConverterCulture=de-DE, StringFormat=C, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Name="PriceTB" Grid.Row="4" Grid.Column="2" Text="{Binding Path=Price,ConverterCulture=de-DE, StringFormat=C, Mode=TwoWay}">
+                            <i:Interaction.Behaviors>
+                                <b:AutoCompleteBehavior MaxHeight="256" StringFormat="C" />
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+
 
                         <TextBlock Grid.Row="6" Text="Auszahlungsbetrag" />
-                        <TextBox Name="SupplierProportionTB" Text="{Binding SupplierProportion, ConverterCulture=de-DE, StringFormat=C, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="6" Grid.Column="2" />
+                        <TextBox Name="SupplierProportionTB" Text="{Binding SupplierProportion, ConverterCulture=de-DE, StringFormat=C, Mode=TwoWay}" Grid.Row="6" Grid.Column="2" />
 
                         <TextBlock Grid.Row="8" Text="Verhältnis" />
                         <TextBox Text="{Binding Percentage, ConverterCulture=de-DE, StringFormat=P, Mode=OneWay}" Grid.Row="8" Grid.Column="2" IsEnabled="False" />

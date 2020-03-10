@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Xaml.Behaviors;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.Entity;
@@ -13,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Warenwirtschaftssystem.Model;
 using Warenwirtschaftssystem.Model.Db;
+using Warenwirtschaftssystem.UI.Behaviors;
 using Warenwirtschaftssystem.UI.Windows;
 using Color = Warenwirtschaftssystem.Model.Db.Color;
 using MessageBox = System.Windows.MessageBox;
@@ -43,8 +46,8 @@ namespace Warenwirtschaftssystem.UI.Pages
         private string FilterInput = "";
         private Timer FilterTimer = new Timer(500);
         private Key[] FilterLetterKeys = { Key.A, Key.B, Key.C, Key.D, Key.E, Key.F, Key.G, Key.H, Key.I, Key.J, Key.K, Key.L, Key.M, Key.N, Key.O, Key.P, Key.Q, Key.R, Key.S, Key.T, Key.U, Key.V, Key.W, Key.X, Key.Y, Key.Z };
-        private Key[] FilterNumberKeys = { Key.D0, Key.D1, Key.D2, Key.D3, Key.D4, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9 };
-        private Key[] FilterNumPadKeys = { Key.NumPad0, Key.NumPad1, Key.NumPad2, Key.NumPad3, Key.NumPad4, Key.NumPad5, Key.NumPad6, Key.NumPad7, Key.NumPad8, Key.NumPad9 };
+        //private readonly Key[] FilterNumberKeys = { Key.D0, Key.D1, Key.D2, Key.D3, Key.D4, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9 };
+        private readonly Key[] FilterNumPadKeys = { Key.NumPad0, Key.NumPad1, Key.NumPad2, Key.NumPad3, Key.NumPad4, Key.NumPad5, Key.NumPad6, Key.NumPad7, Key.NumPad8, Key.NumPad9 };
         private DataGrid[] DataGrids;
         private bool DGInEditingMode = false;
         private bool DisableEnteringEditingMode = true;
@@ -400,6 +403,9 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            // PriceTB
+            ((AutoCompleteBehavior)Interaction.GetBehaviors(PriceTB)[0]).SuggestionsProvider = SuggestionsProvider;
+
             GenderDG.Focus();
             FilterTimer.Elapsed += FilterTimerOver;
             SaveBtn.IsEnabled = false;
@@ -408,7 +414,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             CategoriesDG.AddingNewItem += CategoriesDG_AddingNewItem;
             CategoriesDG.SelectionChanged += CategoriesDG_SelectionChanged;
-            PriceTB.TextChanged += CurrencyTBs_TextChanged;
+            //PriceTB.TextChanged += CurrencyTBs_TextChanged;
             SupplierProportionTB.TextChanged += CurrencyTBs_TextChanged;
 
             foreach (DataGrid dg in DataGrids)
@@ -813,6 +819,8 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             Article.RegenerateDescription();
             Article.OnPropertyChanged("Description");
+
+            PopulateAutoCompleteEntries();
         }
 
         private void DGs_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
@@ -998,7 +1006,41 @@ namespace Warenwirtschaftssystem.UI.Pages
 
                     i++;
                 }
+
             }
         }
+
+        #region PriceTB auto completion
+        private PricesProvider SuggestionsProvider = new PricesProvider();
+
+        private async void PopulateAutoCompleteEntries()
+        {
+            SuggestionsProvider.Suggestions.Clear();
+
+            if (Article.Category == null || Article.Type == null || Article.Brand == null)
+                return;
+
+            List<decimal> results;
+            if (Article.Gender == null)
+                results = await MainDb.Articles.Where(a => a.Category != null && a.Category.Id == Article.Category.Id && a.Type != null && a.Type.Id == Article.Type.Id && a.Brand != null && a.Brand.Id == Article.Brand.Id)
+                    .Select(a => a.Price)
+                    .Distinct()
+                    .OrderByDescending(p => p)
+                    .Take(20)
+                    .ToListAsync();
+            else
+                results = await MainDb.Articles.Where(a => a.Gender != null && a.Gender.Id == Article.Gender.Id && a.Category != null && a.Category.Id == Article.Category.Id && a.Type != null && a.Type.Id == Article.Type.Id && a.Brand != null && a.Brand.Id == Article.Brand.Id)
+                    .Select(a => a.Price)
+                    .Distinct()
+                    .OrderByDescending(p => p)
+                    .Take(20)
+                    .ToListAsync();
+
+            foreach (var result in results)
+            {
+                SuggestionsProvider.Suggestions.Add(result);
+            }
+        }
+        #endregion
     }
 }
