@@ -2,6 +2,7 @@
 using Warenwirtschaftssystem.UI.Pages;
 using Warenwirtschaftssystem.Model;
 using AutoUpdaterDotNET;
+using System;
 
 namespace Warenwirtschaftssystem.UI.Windows
 {
@@ -30,8 +31,12 @@ namespace Warenwirtschaftssystem.UI.Windows
         // Check for App Updates
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // AutoUpdater
             AutoUpdater.RunUpdateAsAdmin = true;
+            if (Environment.Is64BitOperatingSystem)
             AutoUpdater.Start("http://wp10597435.server-he.de/WWS/AutoUpdater.xml");
+            else
+                AutoUpdater.Start("http://wp10597435.server-he.de/WWS/AutoUpdater_x86.xml");
         }
     }
 }
