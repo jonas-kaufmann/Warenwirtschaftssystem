@@ -21,8 +21,8 @@ namespace Warenwirtschaftssystem
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\WWS - Crashreport.txt",
-                e.ToString());
-            MessageBox.Show(e.ToString(), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                e.ExceptionObject.ToString());
+            MessageBox.Show(e.ExceptionObject.ToString(), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             Current.Shutdown();
         }
 
