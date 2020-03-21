@@ -416,12 +416,12 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         private void OwnerWindow_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.F12 || e.SystemKey == Key.F12)
+            if (e.Key == Key.D1 || e.Key == Key.NumPad1)
             {
                 e.Handled = true;
                 SellBtn_Click(null, null);
             }
-            else if (e.Key == Key.F10 || e.SystemKey == Key.F10)
+            else if (e.Key == Key.D2 || e.Key == Key.NumPad2)
             {
                 e.Handled = true;
                 ReserveBtn_Click(null, null);
