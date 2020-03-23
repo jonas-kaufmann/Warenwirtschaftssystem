@@ -45,7 +45,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             Articles.CollectionChanged += Articles_CollectionChanged;
 
             ArticleIdTB.Focus();
-            OwnerWindow.PreviewKeyDown += OwnerWindow_PreviewKeyDown;
+            OwnerWindow.KeyDown += OwnerWindow_KeyDown;
         }
 
         #endregion
@@ -414,16 +414,14 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         }
 
-        private void OwnerWindow_PreviewKeyDown(object sender, KeyEventArgs e)
+        private void OwnerWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.D1 || e.Key == Key.NumPad1)
+            if (e.Key == Key.F12 || e.SystemKey == Key.F12)
             {
-                e.Handled = true;
                 SellBtn_Click(null, null);
             }
-            else if (e.Key == Key.D2 || e.Key == Key.NumPad2)
+            else if (e.Key == Key.F10 || e.SystemKey == Key.F10)
             {
-                e.Handled = true;
                 ReserveBtn_Click(null, null);
             }
         }
