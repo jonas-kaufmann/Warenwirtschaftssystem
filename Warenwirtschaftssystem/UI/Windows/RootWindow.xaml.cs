@@ -203,9 +203,9 @@ namespace Warenwirtschaftssystem.UI.Windows
 
                         #endregion
                     }
-                    catch
+                    catch (Exception exception)
                     {
-                        MessageBox.Show("Fehler beim Laden des Backups.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(exception.ToString(), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 

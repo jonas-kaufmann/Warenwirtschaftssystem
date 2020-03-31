@@ -86,9 +86,9 @@ namespace Warenwirtschaftssystem.UI.Pages
                         #endregion
 
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        MessageBox.Show("Datenbankserver über die angegebene Adresse nicht erreichbar", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(e.ToString(), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
@@ -125,9 +125,9 @@ namespace Warenwirtschaftssystem.UI.Pages
                         db.Create();
 
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        MessageBox.Show("Datenbank konnte nicht angelegt werden", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(e.ToString(), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
@@ -173,9 +173,9 @@ namespace Warenwirtschaftssystem.UI.Pages
                         db.Grant(permissionSet, "WWSRole");
                         role.AddMember(username);
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        MessageBox.Show("User und/oder Login konnten nicht angelegt werden", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(e.ToString(), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
@@ -237,7 +237,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                 {
                     if (mainDb != null)
                         mainDb.Dispose();
-                    MessageBox.Show(e.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(e.ToString(), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
 
                     return;
                 }
