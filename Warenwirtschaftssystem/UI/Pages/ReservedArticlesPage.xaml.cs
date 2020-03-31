@@ -91,7 +91,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         public void OwnerWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            MainDb.SaveChangesAsync();
+            MainDb.SaveChanges();
         }
 
         private void ShowReservationExpired_Click(object sender, RoutedEventArgs e)

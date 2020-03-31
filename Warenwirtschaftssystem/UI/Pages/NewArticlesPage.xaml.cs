@@ -48,7 +48,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             if (!DisableClosedEvent)
             {
                 MainDb.Articles.RemoveRange(Articles);
-                MainDb.SaveChangesAsync();
+                MainDb.SaveChanges();
             }
         }
 
