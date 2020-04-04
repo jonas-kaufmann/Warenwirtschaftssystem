@@ -19,7 +19,7 @@ namespace Warenwirtschaftssystem.Model.Documents
         private const double PtToPx = 96d / 72d;
         private const double FontSize = 8 * PtToPx;
         private FontFamily FontFamily = new FontFamily("Arial");
-        private Thickness PageMargin = new Thickness(20, 0, 12, 12);
+        private Thickness PageMargin = new Thickness(20, 1, 12, 12);
         private double PageWidth;
 
         private DataModel Data;
@@ -103,15 +103,9 @@ namespace Warenwirtschaftssystem.Model.Documents
 
             PageWidth = pD.PrintableAreaWidth;
 
-            FixedPage fP = new FixedPage
-            {
-                Width = PageWidth,
-                Margin = PageMargin
-            };
-            PageContent pC = new PageContent { Child = fP };
-            Bon.Pages.Add(pC);
+            FixedPage fP = new FixedPage();
 
-            StackPanel pageContent = new StackPanel { Width = PageWidth - PageMargin.Left - PageMargin.Right };
+            StackPanel pageContent = new StackPanel { Width = PageWidth - PageMargin.Left - PageMargin.Right, Margin = PageMargin };
             fP.Children.Add(pageContent);
 
             #region Kopf
@@ -388,6 +382,9 @@ namespace Warenwirtschaftssystem.Model.Documents
             #endregion
 
             #region Drucken
+
+                        PageContent pC = new PageContent { Child = fP };
+            Bon.Pages.Add(pC);
 
             pD.PrintDocument(Bon.DocumentPaginator, "Warenwirtschaftssystem - Rechnungsbon");
             return true;
