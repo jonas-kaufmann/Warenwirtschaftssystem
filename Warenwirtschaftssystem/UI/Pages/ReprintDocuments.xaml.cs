@@ -4,11 +4,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Forms;
 using System.Windows.Input;
 using Warenwirtschaftssystem.Model;
 using Warenwirtschaftssystem.Model.Db;
 using Warenwirtschaftssystem.Model.Documents;
+using Warenwirtschaftssystem.UI.Windows;
 
 namespace Warenwirtschaftssystem.UI.Pages
 {
@@ -161,19 +161,13 @@ namespace Warenwirtschaftssystem.UI.Pages
                         }
                         else
                         {
-                            MessageBoxManager.Yes = "Bon";
-                            MessageBoxManager.No = "Rechnung";
-                            MessageBoxManager.Cancel = "Abbrechen";
-                            MessageBoxManager.Register();
+                            CustomMessageBox cMB = new CustomMessageBox(OwnerWindow, "Format?", "Welches Format soll gedruckt werden?", "Bon", "Kaufbeleg (A4)", "Abbrechen");
+                            cMB.ShowDialog();
 
-                            MessageBoxResult result = MessageBox.Show("Soll ein Bon oder eine Rechnung gedruckt werden?", "Drucken", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-
-                            if (result == MessageBoxResult.Yes)
+                            if (cMB.Result == PressedButton.One)
                                 new InvoiceBon(Data, document).CreateAndPrint();
-                            else if (result == MessageBoxResult.No)
+                            else if (cMB.Result == PressedButton.Two)
                                 new InvoiceDoc(Data, document).CreateAndPrintDocument();
-
-                            MessageBoxManager.Unregister();
                         }
                         break;
                     case DocumentType.Payout:

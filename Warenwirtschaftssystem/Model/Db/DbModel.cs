@@ -309,7 +309,7 @@
             {
                 if (_price == 0)
                     return null;
-                else return Math.Round(_supplierProportion / _price, 1);
+                else return Math.Round(_supplierProportion / _price, 4);
             }
         }
 
