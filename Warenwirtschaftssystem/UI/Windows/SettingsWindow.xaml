@@ -5,7 +5,10 @@
         xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         ResizeMode="CanMinimize"
-        Title="Einstellungen" Height="600" Width="400">
+        Title="Einstellungen"
+        Height="600"
+        Width="400"
+        WindowStartupLocation="Manual">
     
     <Window.Resources>
         <!-- Constants -->
