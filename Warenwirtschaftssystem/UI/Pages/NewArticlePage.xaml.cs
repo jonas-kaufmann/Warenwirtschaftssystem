@@ -405,8 +405,8 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             // PriceTB
             ((AutoCompleteBehavior)Interaction.GetBehaviors(PriceTB)[0]).SuggestionsProvider = SuggestionsProvider;
+            PriceTB.Focus();
 
-            GenderDG.Focus();
             FilterTimer.Elapsed += FilterTimerOver;
             SaveBtn.IsEnabled = false;
 
