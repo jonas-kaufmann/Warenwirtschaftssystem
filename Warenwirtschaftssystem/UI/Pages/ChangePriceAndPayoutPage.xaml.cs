@@ -29,6 +29,15 @@ namespace Warenwirtschaftssystem.UI.Pages
             oldPrice = Article.Price;
 
             InitializeComponent();
+
+            // register events
+            OwnerWindow.Closed += OwnerWindow_Closed;
+        }
+
+        private void OwnerWindow_Closed(object sender, System.EventArgs e)
+        {
+            // handle close as CancelBtn click
+            CancelBtn_Click(null, null);
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -57,7 +66,11 @@ namespace Warenwirtschaftssystem.UI.Pages
             Article.Price = oldPrice;
             Article.SupplierProportion = oldPayout;
 
-            OwnerWindow.Close();
+            try
+            {
+                OwnerWindow.Close();
+            }
+            catch { }
         }
 
         //Tracken von Attributsänderungen, damit Auszahlungsbetrag angepasst werden kann

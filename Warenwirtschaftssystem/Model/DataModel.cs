@@ -87,13 +87,12 @@ namespace Warenwirtschaftssystem.Model
 
         #endregion
     }
-}
 
-public class StandardPrinters
-{
-    public string TagPrinter { get; set; }
-    public string TagLandscapePrinter { get; set; }
-    public string BonPrinter { get; set; }
-    public string DocumentPrinter { get; set; }
-}
+    public class StandardPrinters
+    {
+        public string TagPrinter { get; set; }
+        public string TagLandscapePrinter { get; set; }
+        public string BonPrinter { get; set; }
+        public string DocumentPrinter { get; set; }
+    }
 }

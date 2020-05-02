@@ -25,10 +25,11 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Text="Preis" />
-        <TextBox x:Name="PriceTB" Text="{Binding Price, ConverterCulture=de-DE, Mode=TwoWay, StringFormat=C}" Grid.Column="2" HorizontalContentAlignment="Right" />
+        <TextBox x:Name="PriceTB"
+                 Text="{Binding Price, ConverterCulture=de-DE, Mode=TwoWay, StringFormat=C, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" HorizontalContentAlignment="Right" />
 
         <TextBlock Text="Auszahlungsbetrag" Grid.Row="2" />
-        <TextBox x:Name="SupplierProportionTB" Text="{Binding SupplierProportion, ConverterCulture=de-DE, Mode=TwoWay, StringFormat=C}" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Right" />
+        <TextBox x:Name="SupplierProportionTB" Text="{Binding SupplierProportion, ConverterCulture=de-DE, Mode=TwoWay, StringFormat=C, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Right" />
 
         <TextBlock Text="Verhältnis" Grid.Row="4" />
         <TextBox Text="{Binding Percentage, ConverterCulture=de-DE, Mode=OneWay, StringFormat=P}" IsEnabled="False" Grid.Row="4" Grid.Column="2" HorizontalContentAlignment="Right" />
