@@ -154,54 +154,56 @@ namespace Warenwirtschaftssystem.UI.Windows
                 {
                     try
                     {
-                        Server server = new Server(new ServerConnection(Data.ConnectionInfo.Address));
-                        server.KillAllProcesses(Data.ConnectionInfo.DbName);
+                        ServerConnection conn = new ServerConnection(Data.ConnectionInfo.Address);
+                        Server server = new Server(conn);
 
-                        Restore restore = new Restore()
-                        {
-                            Database = Data.ConnectionInfo.DbName,
-                            Partial = false,
-                            ReplaceDatabase = true
-                        };
+                        Restore restore = new Restore();
                         restore.Devices.AddDevice(oFD.FileName, DeviceType.File);
 
+                        RelocateFile DataFile = new RelocateFile();
+                        string MDF = restore.ReadFileList(server).Rows[0][1].ToString();
+                        DataFile.LogicalFileName = restore.ReadFileList(server).Rows[0][0].ToString();
+                        DataFile.PhysicalFileName = server.Databases[Data.ConnectionInfo.DbName].FileGroups[0].Files[0].FileName;
+
+                        RelocateFile LogFile = new RelocateFile();
+                        string LDF = restore.ReadFileList(server).Rows[1][1].ToString();
+                        LogFile.LogicalFileName = restore.ReadFileList(server).Rows[1][0].ToString();
+                        LogFile.PhysicalFileName = server.Databases[Data.ConnectionInfo.DbName].LogFiles[0].FileName;
+
+                        restore.RelocateFiles.Add(DataFile);
+                        restore.RelocateFiles.Add(LogFile);
+
+                        restore.Database = Data.ConnectionInfo.DbName;
+                        restore.NoRecovery = false;
+                        restore.ReplaceDatabase = true;
+
+                        server.KillAllProcesses(Data.ConnectionInfo.DbName);
                         restore.SqlRestore(server);
 
-                        #region Login mit User verknüpfen
 
+                        #region Login mit User verknüpfen
                         Database database = server.Databases[Data.ConnectionInfo.DbName];
 
-                        User user = null;
-
+                        // delete old users
                         foreach (User u in database.Users)
                         {
                             StringCollection roles = u.EnumRoles();
                             if (roles != null && roles.Count > 0 && roles.Contains("WWSRole"))
                             {
-                                user = u;
+                                u.Drop();
                                 break;
                             }
                         }
 
-                        if (user == null)
+                        User user = new User(database, Data.ConnectionInfo.Username)
                         {
-                            MessageBox.Show("Aktuell verwendeter Login konnte keinem User zugewiesen werden. Das Backup wurde wiederhergestellt, jedoch kann auf die Datenbank nicht mehr zugegriffen werden. Bitte den Login manuell zuweisen.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
-                        }
-                        else
-                        {
-                            user.Drop();
-
-                            user = new User(database, Data.ConnectionInfo.Username)
-                            {
-                                Login = Data.ConnectionInfo.Username
-                            };
-                            user.Create();
-
-                            database.Roles["WWSRole"].AddMember(Data.ConnectionInfo.Username);
-                        }
-
+                            Login = Data.ConnectionInfo.Username
+                        };
+                        user.Create();
+                        database.Roles["WWSRole"].AddMember(Data.ConnectionInfo.Username);
                         #endregion
+
+                        conn.Disconnect();
                     }
                     catch (Exception exception)
                     {
