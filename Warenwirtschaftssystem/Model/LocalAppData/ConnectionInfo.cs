@@ -2,8 +2,8 @@
 {
     public class ConnectionInfo
     {
-        public string Address { get; set; }
-        public string DbName { get; set; }
-        public string Username { get; set; }
+        public string Address { get; set; } = string.Empty;
+        public string DbName { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
     }
 }

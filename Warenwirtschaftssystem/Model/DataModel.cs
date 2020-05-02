@@ -21,11 +21,18 @@ namespace Warenwirtschaftssystem.Model
             #region Connection Info aus JSON laden
             if (File.Exists(ConnInfoJSONPath))
             {
-                using (var jsonFile = File.OpenRead(ConnInfoJSONPath))
+                try
                 {
-                    var task = JsonSerializer.DeserializeAsync<ConnectionInfo>(jsonFile).AsTask();
-                    task.Wait();
-                    ConnectionInfo = task.Result;
+                    using (var jsonFile = File.OpenRead(ConnInfoJSONPath))
+                    {
+                        var task = JsonSerializer.DeserializeAsync<ConnectionInfo>(jsonFile).AsTask();
+                        task.Wait();
+                        ConnectionInfo = task.Result;
+                    }
+                }
+                catch
+                {
+                    ConnectionInfo = new ConnectionInfo();
                 }
             }
 
@@ -35,12 +42,16 @@ namespace Warenwirtschaftssystem.Model
 
             if (File.Exists(StandardPrintersJSONPath))
             {
-                using (var jsonFile = File.OpenRead(StandardPrintersJSONPath))
+                try
                 {
-                    var task = JsonSerializer.DeserializeAsync<StandardPrinters>(jsonFile).AsTask();
-                    task.Wait();
-                    StandardPrinters = task.Result;
+                    using (var jsonFile = File.OpenRead(StandardPrintersJSONPath))
+                    {
+                        var task = JsonSerializer.DeserializeAsync<StandardPrinters>(jsonFile).AsTask();
+                        task.Wait();
+                        StandardPrinters = task.Result;
+                    }
                 }
+                catch { }
             }
 
             if (StandardPrinters == null)
@@ -64,30 +75,25 @@ namespace Warenwirtschaftssystem.Model
             #region ConnectionInfo
 
             Directory.CreateDirectory(Path.GetDirectoryName(ConnInfoJSONPath));
-            using (var json = File.OpenWrite(ConnInfoJSONPath))
-            {
-                JsonSerializer.SerializeAsync(json, ConnectionInfo, typeof(ConnectionInfo), jsonOptions).Wait();
-            }
+            File.WriteAllText(ConnInfoJSONPath, JsonSerializer.Serialize(ConnectionInfo, typeof(ConnectionInfo), jsonOptions));
 
             #endregion
 
             #region StandardPrinters
 
             Directory.CreateDirectory(Path.GetDirectoryName(StandardPrintersJSONPath));
-            using (var json = File.OpenWrite(StandardPrintersJSONPath))
-            {
-                JsonSerializer.SerializeAsync(json, StandardPrinters, typeof(StandardPrinters), jsonOptions).Wait();
-            }
-
-            #endregion
+            File.WriteAllText(StandardPrintersJSONPath, JsonSerializer.Serialize(StandardPrinters, typeof(StandardPrinters), jsonOptions));
         }
-    }
 
-    public class StandardPrinters
-    {
-        public string TagPrinter { get; set; }
-        public string TagLandscapePrinter { get; set; }
-        public string BonPrinter { get; set; }
-        public string DocumentPrinter { get; set; }
+        #endregion
     }
+}
+
+public class StandardPrinters
+{
+    public string TagPrinter { get; set; }
+    public string TagLandscapePrinter { get; set; }
+    public string BonPrinter { get; set; }
+    public string DocumentPrinter { get; set; }
+}
 }
