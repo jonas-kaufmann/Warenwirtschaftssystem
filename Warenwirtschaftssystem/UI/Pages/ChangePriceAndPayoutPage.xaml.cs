@@ -55,6 +55,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
+            OwnerWindow.Closed -= OwnerWindow_Closed;
             OwnerWindow.Close();
 
             if (Article.Price != oldPrice || Article.SupplierProportion != oldPayout)
@@ -66,11 +67,8 @@ namespace Warenwirtschaftssystem.UI.Pages
             Article.Price = oldPrice;
             Article.SupplierProportion = oldPayout;
 
-            try
-            {
-                OwnerWindow.Close();
-            }
-            catch { }
+            OwnerWindow.Closed -= OwnerWindow_Closed;
+            OwnerWindow.Close();
         }
 
         //Tracken von Attributsänderungen, damit Auszahlungsbetrag angepasst werden kann
