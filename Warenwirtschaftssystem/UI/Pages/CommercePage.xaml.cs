@@ -146,7 +146,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                 documents.NotifyArticlePropertiesChanged(article.Id);
             }
 
-            MainDb.SaveChangesAsync();
+            MainDb.SaveChanges();
         }
 
         private void SellBtn_Click(object sender, RoutedEventArgs e)

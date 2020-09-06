@@ -23,12 +23,8 @@ namespace Warenwirtschaftssystem.Model
             {
                 try
                 {
-                    using (var jsonFile = File.OpenRead(ConnInfoJSONPath))
-                    {
-                        var task = JsonSerializer.DeserializeAsync<ConnectionInfo>(jsonFile).AsTask();
-                        task.Wait();
-                        ConnectionInfo = task.Result;
-                    }
+
+                    ConnectionInfo = JsonSerializer.Deserialize<ConnectionInfo>(File.ReadAllText(ConnInfoJSONPath));
                 }
                 catch
                 {
@@ -46,9 +42,7 @@ namespace Warenwirtschaftssystem.Model
                 {
                     using (var jsonFile = File.OpenRead(StandardPrintersJSONPath))
                     {
-                        var task = JsonSerializer.DeserializeAsync<StandardPrinters>(jsonFile).AsTask();
-                        task.Wait();
-                        StandardPrinters = task.Result;
+                        StandardPrinters = JsonSerializer.Deserialize<StandardPrinters>(File.ReadAllText(StandardPrintersJSONPath));
                     }
                 }
                 catch { }
