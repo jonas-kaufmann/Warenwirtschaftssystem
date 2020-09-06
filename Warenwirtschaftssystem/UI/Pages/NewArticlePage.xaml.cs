@@ -600,7 +600,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             Category c = new Category
             {
-                Types = new ObservableCollection<Model.Db.Type>()
+                Types = new ObservableCollection<Type>()
             };
             e.NewItem = c;
         }

@@ -8,6 +8,7 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity;
     using System.Globalization;
+    using System.Threading;
 
     public class DbModel : DbContext
     {
@@ -31,7 +32,10 @@
         public DbModel() { }
 
         public DbModel(string connectionString)
-            : base(connectionString) { }
+            : base(connectionString)
+        {
+
+        }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -43,6 +47,30 @@
             modelBuilder.Entity<GraduationSupplierProportion>()
                 .Property(p => p.SupplierProportion)
                 .HasPrecision(5, 2);
+        }
+
+        public override int SaveChanges()
+        {
+            int waitMills = 100;
+            int triesCount = 0;
+            int maxTries = 5;
+
+            do
+            {
+                try
+                {
+                    triesCount++;
+                    base.SaveChanges();
+                }
+                catch (TimeoutException)
+                {
+                    if (triesCount >= maxTries)
+                        throw new TimeoutException($"After {triesCount} tries, the operation to save changes to the database still timed out.");
+
+                    Thread.Sleep(waitMills);
+                    waitMills *= 2;
+                }
+            } while (true);
         }
     }
 
