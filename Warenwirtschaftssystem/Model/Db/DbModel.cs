@@ -60,12 +60,12 @@
                 try
                 {
                     triesCount++;
-                    base.SaveChanges();
+                    return base.SaveChanges();
                 }
                 catch (TimeoutException)
                 {
                     if (triesCount >= maxTries)
-                        throw new TimeoutException($"After {triesCount} tries, the operation to save changes to the database still timed out.");
+                        throw new Exception($"After {triesCount} tries, the operation to save changes to the database still timed out.");
 
                     Thread.Sleep(waitMills);
                     waitMills *= 2;
