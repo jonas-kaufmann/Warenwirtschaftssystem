@@ -7,6 +7,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity;
+    using System.Data.SqlClient;
     using System.Globalization;
     using System.Threading;
 
@@ -53,7 +54,7 @@
         {
             int waitMills = 100;
             int triesCount = 0;
-            int maxTries = 5;
+            int maxTries = 4;
 
             do
             {
@@ -62,15 +63,14 @@
                     triesCount++;
                     return base.SaveChanges();
                 }
-                catch (TimeoutException)
+                catch (SqlException e)
                 {
-                    if (triesCount >= maxTries)
-                        throw new Exception($"After {triesCount} tries, the operation to save changes to the database still timed out.");
-
                     Thread.Sleep(waitMills);
                     waitMills *= 2;
                 }
-            } while (true);
+            } while (triesCount <= maxTries - 1);
+
+            return base.SaveChanges();
         }
     }
 
