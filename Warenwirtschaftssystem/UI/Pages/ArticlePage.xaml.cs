@@ -241,6 +241,10 @@ namespace Warenwirtschaftssystem.UI.Pages
                 Documents.DiscardChanges();
 
             OwnerWindow.Close();
+
+            if (Documents != null)
+                Documents.DiscardChanges();
+
             MainDb.Dispose();
         }
 
@@ -250,12 +254,15 @@ namespace Warenwirtschaftssystem.UI.Pages
             OwnerWindow.RootWindow.RemoveToolWindow(OwnerWindow);
             OwnerWindow.Close();
 
+            if (Documents != null)
+                Documents.PrepareDocumentsToBeSaved();
+
             MainDb.SaveChanges();
             MainDb.Dispose();
         }
 
         private void NewArticlesBtn_Click(object sender, RoutedEventArgs e)
-         {
+        {
             bool isSelectionClosedOutOrReturned = true;
 
             if (ArticlesDG.SelectedItems.Count == 0)
@@ -305,7 +312,8 @@ namespace Warenwirtschaftssystem.UI.Pages
 
                     FilterStatusCB.SelectedItem = Status.Sortiment;
 
-                    if (pickSupplierPage.SelectedSupplier == null) return;
+                    if (pickSupplierPage.SelectedSupplier == null)
+                        return;
                     supplier = pickSupplierPage.SelectedSupplier;
                 }
 
@@ -376,6 +384,50 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
         }
 
+        private void PrintSubmissionDocBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var articles = new List<Article>();
+            Supplier supplier = null;
+
+            foreach (var item in ArticlesDG.SelectedItems)
+            {
+                if (item is Article article)
+                {
+                    if (supplier == null)
+                    {
+                        supplier = article.Supplier;
+                    }
+
+                    if (article.Supplier != supplier)
+                    {
+                        MessageBox.Show("Kann keinen Annahmebeleg erstellen, da die Lieferanten der ausgewählten Artikel unterschiedlich sind.", "Kann keinen Annahmebeleg erstellen", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    switch (article.Status)
+                    {
+                        case Status.Sortiment:
+                        case Status.InStock:
+                            break;
+
+                        default:
+                            MessageBox.Show("Kann keinen Annahmebeleg erstellen, da mindestens einer der ausgewählten Artikel einen ungültigen Status besitzt.", "Kann keinen Annahmebeleg erstellen", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                    }
+
+                    articles.Add(article);
+                }
+            }
+
+            if (Documents == null)
+            {
+                Documents = new Documents(Data, MainDb);
+            }
+
+            Document document = Documents.AddDocument(DocumentType.Submission, articles, null, supplier, true);
+            new SubmissionDoc(Data, document).CreateAndPrintDocument();
+        }
+
         #endregion
 
         private void PayoutBtn_Click(object sender, RoutedEventArgs e)
@@ -393,7 +445,8 @@ namespace Warenwirtschaftssystem.UI.Pages
                         return;
                     articles.Add(article);
                 }
-                else return;
+                else
+                    return;
             }
 
             MessageBoxResult result = MessageBox.Show("Soll ein Auszahlungsbeleg gedruckt werden?", "Auszahlungsbeleg drucken?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
@@ -416,8 +469,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                     Documents.AddDocument(DocumentType.Payout, articles, null, supplier, false);
                 else
                 {
-                    Document document = Documents.AddDocument(DocumentType.Payout, articles, null, supplier, false);
-                    MainDb.SaveChanges();
+                    Document document = Documents.AddDocument(DocumentType.Payout, articles, null, supplier, true);
                     new PayoutDoc(Data, document).CreateAndPrintDocument();
                 }
             }
@@ -463,8 +515,10 @@ namespace Warenwirtschaftssystem.UI.Pages
                 {
                     MessageBoxResult mBR = MessageBox.Show("Die Artikel in der Auswahl haben nicht den gleichen Status. Fortfahren?", "Unterschiedliche Status", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
 
-                    if (mBR == MessageBoxResult.No) return;
-                    else break;
+                    if (mBR == MessageBoxResult.No)
+                        return;
+                    else
+                        break;
                 }
             }
 
@@ -487,8 +541,10 @@ namespace Warenwirtschaftssystem.UI.Pages
                 {
                     MessageBoxResult mBR = MessageBox.Show("Die Artikel in der Auswahl haben nicht den gleichen Status. Fortfahren?", "Unterschiedliche Status", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
 
-                    if (mBR == MessageBoxResult.No) return;
-                    else break;
+                    if (mBR == MessageBoxResult.No)
+                        return;
+                    else
+                        break;
                 }
             }
 

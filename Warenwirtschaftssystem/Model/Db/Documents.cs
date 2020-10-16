@@ -1,7 +1,9 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
+using System.Data.SqlTypes;
 using System.Linq;
 
 namespace Warenwirtschaftssystem.Model.Db
@@ -10,7 +12,7 @@ namespace Warenwirtschaftssystem.Model.Db
     {
         private DataModel Data;
         private DbModel MainDb;
-        private List<Document> DocumentsWithId;
+        private List<Document> DocumentsWithId = new List<Document>();
         private DbModel ContextForGeneratingIds;
 
         public Documents(DataModel data, DbModel mainDb)
@@ -27,12 +29,10 @@ namespace Warenwirtschaftssystem.Model.Db
             {
                 if (ContextForGeneratingIds == null)
                     ContextForGeneratingIds = new DbModel(Data.MainConnectionString);
-                if (DocumentsWithId == null)
-                    DocumentsWithId = new List<Document>();
 
                 Document pregeneratedId = new Document()
                 {
-                    DateTime = DateTime.Now
+                    DateTime = SqlDateTime.MinValue.Value
                 };
                 ContextForGeneratingIds.Documents.Add(pregeneratedId);
                 ContextForGeneratingIds.SaveChanges();
@@ -58,12 +58,10 @@ namespace Warenwirtschaftssystem.Model.Db
             {
                 if (ContextForGeneratingIds == null)
                     ContextForGeneratingIds = new DbModel(Data.MainConnectionString);
-                if (DocumentsWithId == null)
-                    DocumentsWithId = new List<Document>();
 
                 Document pregeneratedId = new Document()
                 {
-                    DateTime = DateTime.Now
+                    DateTime = SqlDateTime.MinValue.Value
                 };
                 ContextForGeneratingIds.Documents.Add(pregeneratedId);
                 ContextForGeneratingIds.SaveChanges();
@@ -104,7 +102,8 @@ namespace Warenwirtschaftssystem.Model.Db
 
             foreach (var document in affectedDocuments)
             {
-                if (document.SavedArticleAttributes == null) document.SavedArticleAttributes = new ObservableCollection<SavedArticleAttributes>();
+                if (document.SavedArticleAttributes == null)
+                    document.SavedArticleAttributes = new ObservableCollection<SavedArticleAttributes>();
                 document.SavedArticleAttributes.Add(savedArticleAttributes);
             }
         }
@@ -132,7 +131,8 @@ namespace Warenwirtschaftssystem.Model.Db
                     {
                         document.SavedArticleAttributes.Add(changedArticleAttribute);
                     }
-                    else document.SavedArticleAttributes.Add(sameElement);
+                    else
+                        document.SavedArticleAttributes.Add(sameElement);
                 }
             }
 
@@ -152,20 +152,20 @@ namespace Warenwirtschaftssystem.Model.Db
                     existingDoc.Articles = document.Articles;
                     existingDoc.DocumentType = document.DocumentType;
                     existingDoc.SavedArticleAttributes = document.SavedArticleAttributes;
-                    existingDoc.Supplier = document.Supplier;                      
+                    existingDoc.Supplier = document.Supplier;
                 }
             }
         }
 
         public void DiscardChanges()
         {
-            if (DocumentsWithId != null)
-                foreach (Document document in DocumentsWithId)
-                {
-                    ContextForGeneratingIds.Documents.Remove(ContextForGeneratingIds.Documents.Where(d => d.Id == document.Id).First());
-                }
             if (ContextForGeneratingIds != null)
+            {
+                // clear empty Documents
+                var documentsToRemove = ContextForGeneratingIds.Documents.Where(d => d.DateTime == SqlDateTime.MinValue.Value);
+                ContextForGeneratingIds.Documents.RemoveRange(documentsToRemove);
                 ContextForGeneratingIds.SaveChanges();
+            }
         }
     }
 }

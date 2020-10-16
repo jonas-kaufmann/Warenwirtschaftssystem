@@ -1,71 +1,172 @@
 ﻿<Page x:Class="Warenwirtschaftssystem.UI.Pages.ArticlePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
       xmlns:db="clr-namespace:Warenwirtschaftssystem.Model.Db"
       xmlns:model="clr-namespace:Warenwirtschaftssystem.Model"
-      mc:Ignorable="d" 
+      mc:Ignorable="d"
       Title="ArticlePage"
       Loaded="Page_Loaded"
-      d:DesignWidth="1200" d:DesignHeight="600">
-
+      d:DesignWidth="1200"
+      d:DesignHeight="800">
 
     <Page.Resources>
-        <CollectionViewSource x:Key="ArticlesCVS" d:DesignSource="{d:DesignInstance {x:Type db:Article}, CreateList=True}"/>
+        <CollectionViewSource x:Key="ArticlesCVS"
+                              d:DesignSource="{d:DesignInstance {x:Type db:Article}, CreateList=True}" />
     </Page.Resources>
 
+    <DockPanel DataContext="{StaticResource ArticlesCVS}"
+               Margin="8">
+        <Image DockPanel.Dock="Top"
+               Source="/Resources/article.png"
+               Margin="0 0 0 8"
+               HorizontalAlignment="Left"
+               VerticalAlignment="Top"
+               Width="32" />
 
-    <DockPanel DataContext="{StaticResource ArticlesCVS}" Margin="8">
-        <Image DockPanel.Dock="Top" Source="/Resources/article.png" Margin="0 0 0 8" HorizontalAlignment="Left" VerticalAlignment="Top" Width="32" />
-
-        <StackPanel Name="InteractionOptionsSP" Width="138" DockPanel.Dock="Left">
-            <Expander Header="Filter" IsExpanded="True" Padding="2" BorderBrush="LightGray">
+        <StackPanel Name="InteractionOptionsSP"
+                    Width="143"
+                    DockPanel.Dock="Left">
+            <Expander Header="Filter"
+                      IsExpanded="True"
+                      Padding="2"
+                      BorderBrush="LightGray">
                 <StackPanel>
-                    <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp" Name="FilterSupplierTb" Watermark="LieferantenNr"/>
-                    <toolkit:WatermarkComboBox Watermark="Status" Name="FilterStatusCB" Margin="0 2 0 0" ItemsSource="{Binding Source={model:EnumBindingSource {x:Type db:Status}}}" KeyUp="FilterTb_KeyUp" />
-                    <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp" Name="FilterIdTb"  Watermark="Nr" Margin="0 2 0 0" />
-                    <Expander Expanded="AttributesEP_Expanded" IsExpanded="False" Name="AttributesEP" Margin="0 2 0 0" Header="Merkmale" Padding="2" BorderBrush="LightGray">
+                    <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp"
+                                              Name="FilterSupplierTb"
+                                              Watermark="LieferantenNr" />
+                    <toolkit:WatermarkComboBox Watermark="Status"
+                                               Name="FilterStatusCB"
+                                               Margin="0 2 0 0"
+                                               ItemsSource="{Binding Source={model:EnumBindingSource {x:Type db:Status}}}"
+                                               KeyUp="FilterTb_KeyUp" />
+                    <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp"
+                                              Name="FilterIdTb"
+                                              Watermark="Nr"
+                                              Margin="0 2 0 0" />
+                    <Expander Expanded="AttributesEP_Expanded"
+                              IsExpanded="False"
+                              Name="AttributesEP"
+                              Margin="0 2 0 0"
+                              Header="Merkmale"
+                              Padding="2"
+                              BorderBrush="LightGray">
                         <StackPanel>
-                            <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp" Name="FilterGenderTb" Watermark="Geschlecht" />
-                            <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp" Name="FilterCategoryTb" Margin="0 2 0 0" Watermark="Kategorie"/>
-                            <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp" Name="FilterTypeTb" Margin="0 2 0 0" Watermark="Art"/>
-                            <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp" Name="FilterBrandTb" Margin="0 2 0 0" Watermark="Marke"/>
-                            <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp" Name="FilterSizeTb" Margin="0 2 0 0" Watermark="Größe"/>
-                            <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp" Name="FilterMaterialTb" Margin="0 2 0 0" Watermark="Material"/>
+                            <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp"
+                                                      Name="FilterGenderTb"
+                                                      Watermark="Geschlecht" />
+                            <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp"
+                                                      Name="FilterCategoryTb"
+                                                      Margin="0 2 0 0"
+                                                      Watermark="Kategorie" />
+                            <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp"
+                                                      Name="FilterTypeTb"
+                                                      Margin="0 2 0 0"
+                                                      Watermark="Art" />
+                            <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp"
+                                                      Name="FilterBrandTb"
+                                                      Margin="0 2 0 0"
+                                                      Watermark="Marke" />
+                            <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp"
+                                                      Name="FilterSizeTb"
+                                                      Margin="0 2 0 0"
+                                                      Watermark="Größe" />
+                            <toolkit:WatermarkTextBox KeyUp="FilterTb_KeyUp"
+                                                      Name="FilterMaterialTb"
+                                                      Margin="0 2 0 0"
+                                                      Watermark="Material" />
                         </StackPanel>
                     </Expander>
-                    <Button Name="ResetFilterBtn" Click="ResetFilterBtn_Click" Margin="0 2 0 0">Zurücksetzen</Button>
+                    <Button Name="ResetFilterBtn"
+                            Click="ResetFilterBtn_Click"
+                            Margin="0 2 0 0">Zurücksetzen</Button>
                 </StackPanel>
             </Expander>
-            <Expander Expanded="ActionsEP_Expanded" IsExpanded="True" Name="ActionsEP" Header="Aktionen" Margin="0 4 0 0" Padding="2" BorderBrush="LightGray">
+            <Expander Expanded="ActionsEP_Expanded"
+                      IsExpanded="True"
+                      Name="ActionsEP"
+                      Header="Aktionen"
+                      Margin="0 4 0 0"
+                      Padding="2"
+                      BorderBrush="LightGray">
                 <StackPanel>
-                    <Button Name="NewArticlesBtn" Click="NewArticlesBtn_Click" >Anlegen</Button>
-                    <Button Name="EditBtn" Click="EditArticleBtn_Click" Margin="0 2 0 0">Bearbeiten</Button>
-                    <Button Name="ChangePickUp" Click="ChangePickUp_Click" Margin="0 2 0 0" Content="Verlängern (Auswahl)" />
-                    <Button Name="ChangeNotesBtn" Click="ChangeNotesBtn_Click" Margin="0 2 0 0" Content="Bemerkungen ändern&#xD;&#xA;(Auswahl)" TextBlock.TextAlignment="Center" />
-                    <Button Name="ChangeSupplierBtn" Click="ChangeSupplierBtn_Click" Margin="0 2 0 0" Content="Lieferant ändern&#xD;&#xA;(Auswahl)" TextBlock.TextAlignment="Center" />
+                    <Button Name="NewArticlesBtn"
+                            Click="NewArticlesBtn_Click">Anlegen</Button>
+                    <Button Name="EditBtn"
+                            Click="EditArticleBtn_Click"
+                            Margin="0 2 0 0">Bearbeiten</Button>
+                    <Button Name="ChangePickUp"
+                            Click="ChangePickUp_Click"
+                            Margin="0 2 0 0"
+                            Content="Verlängern (Auswahl)" />
+                    <Button Name="ChangeNotesBtn"
+                            Click="ChangeNotesBtn_Click"
+                            Margin="0 2 0 0"
+                            Content="Bemerkungen ändern&#xD;&#xA;(Auswahl)"
+                            TextBlock.TextAlignment="Center" />
+                    <Button Name="ChangeSupplierBtn"
+                            Click="ChangeSupplierBtn_Click"
+                            Margin="0 2 0 0"
+                            Content="Lieferant ändern&#xD;&#xA;(Auswahl)"
+                            TextBlock.TextAlignment="Center" />
                 </StackPanel>
             </Expander>
-            <Expander Name="StatusChangeEP" Expanded="StatusChangeEP_Expanded" IsExpanded="True" Header="Statusänderung" Margin="0 4 0 0" Padding="2" BorderBrush="LightGray">
+            <Expander Name="StatusChangeEP"
+                      Expanded="StatusChangeEP_Expanded"
+                      IsExpanded="True"
+                      Header="Statusänderung"
+                      Margin="0 4 0 0"
+                      Padding="2"
+                      BorderBrush="LightGray">
                 <StackPanel>
-                    <Button Name="ChangeStatusBtn" Click="ChangeStatusBtn_Click" Margin="0 2 0 0" Content="Umschalten Sortiment&#xD;&#xA;/Lager (Auswahl)" TextBlock.TextAlignment="Center" />
-                    <Button Name="PayoutBtn" Click="PayoutBtn_Click" Margin="0 2 0 0">Auszahlen (Auswahl)</Button>
-                    <Button Name="ReturnBtn" Click="ReturnBtn_Click" Margin="0 2 0 0" Content="Zurückgeben (Auswahl)" />
-                    <Button Name="CloseOutBtn" Click="CloseOutBtn_Click" Margin="0 2 0 0" Content="Ausbuchen (Auswahl)" />
+                    <Button Name="ChangeStatusBtn"
+                            Click="ChangeStatusBtn_Click"
+                            Margin="0 2 0 0"
+                            Content="Umschalten Sortiment&#xD;&#xA;/Lager (Auswahl)"
+                            TextBlock.TextAlignment="Center" />
+                    <Button Name="PayoutBtn"
+                            Click="PayoutBtn_Click"
+                            Margin="0 2 0 0">Auszahlen (Auswahl)</Button>
+                    <Button Name="ReturnBtn"
+                            Click="ReturnBtn_Click"
+                            Margin="0 2 0 0"
+                            Content="Zurückgeben (Auswahl)" />
+                    <Button Name="CloseOutBtn"
+                            Click="CloseOutBtn_Click"
+                            Margin="0 2 0 0"
+                            Content="Ausbuchen (Auswahl)" />
                 </StackPanel>
             </Expander>
-            <Expander IsExpanded="True" Header="Drucken" Margin="0 4 0 0" Padding="2" BorderBrush="LightGray">
+            <Expander IsExpanded="True"
+                      Header="Drucken"
+                      Margin="0 4 0 0"
+                      Padding="2"
+                      BorderBrush="LightGray">
                 <StackPanel>
-                    <Button Name="PrintLabels" Click="PrintLabels_Click">Etiketten (Auswahl)</Button>
+                    <Button Name="PrintLabels"
+                            Click="PrintLabels_Click">Etiketten (Auswahl)</Button>
+                    <Button Name="PrintSubmissionDocBtn"
+                            Click="PrintSubmissionDocBtn_Click"
+                            Margin="0 2 0 0"
+                            Content="Annahmebeleg erstellen&#xD;&#xA;(Auswahl)"
+                            TextBlock.TextAlignment="Center" />
                 </StackPanel>
             </Expander>
         </StackPanel>
 
-        <StackPanel Margin="0 8 0 0" HorizontalAlignment="Right" Orientation="Horizontal" DockPanel.Dock="Bottom">
-            <Button Name="SaveBtn" Content="Speichern" Click="SaveBtn_Click" />
-            <Button Name="CancelBtn" Content="Abbrechen" Click="CancelBtn_Click" Margin="2 0 0 0" />
+        <StackPanel Margin="0 8 0 0"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    DockPanel.Dock="Bottom">
+            <Button Name="SaveBtn"
+                    Content="Speichern"
+                    Click="SaveBtn_Click" />
+            <Button Name="CancelBtn"
+                    Content="Abbrechen"
+                    Click="CancelBtn_Click"
+                    Margin="2 0 0 0" />
         </StackPanel>
 
         <Grid Margin="8 0 0 0">
@@ -77,31 +178,73 @@
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
 
-            <DataGrid Name="ArticlesDG" SelectionChanged="ArticlesDG_SelectionChanged" CanUserResizeColumns="False" MouseDoubleClick="ArticlesDG_MouseDoubleClick" CanUserDeleteRows="False" CanUserAddRows="False" IsReadOnly="True" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" RowHeaderWidth="0" CanUserReorderColumns="False" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}">
+            <DataGrid Name="ArticlesDG"
+                      SelectionChanged="ArticlesDG_SelectionChanged"
+                      CanUserResizeColumns="False"
+                      MouseDoubleClick="ArticlesDG_MouseDoubleClick"
+                      CanUserDeleteRows="False"
+                      CanUserAddRows="False"
+                      IsReadOnly="True"
+                      CanUserResizeRows="False"
+                      HorizontalScrollBarVisibility="Disabled"
+                      RowHeaderWidth="0"
+                      CanUserReorderColumns="False"
+                      AutoGenerateColumns="False"
+                      EnableRowVirtualization="True"
+                      ItemsSource="{Binding}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding ConvertedId, Mode=OneTime}" Header="Nr"/>
-                    <DataGridTextColumn Binding="{Binding Description, Mode=OneWay}" Header="Artikel" Width="*" />
-                    <DataGridTextColumn Binding="{Binding Price, ConverterCulture=de-DE, StringFormat=C, Mode=OneWay}" Header="Preis" />
-                    <DataGridTextColumn Binding="{Binding SupplierProportion, ConverterCulture=de-DE, StringFormat=C, Mode=OneWay}" Header="L-Anteil" />
-                    <DataGridTextColumn Binding="{Binding Percentage, ConverterCulture=de-DE, StringFormat=P, Mode=OneWay}" Header="Verhältnis" />
-                    <DataGridTextColumn Binding="{Binding Status, Mode=OneWay}" Header="Status" CanUserResize="False" />
-                    <DataGridTextColumn Binding="{Binding Sold, ConverterCulture=de-DE, StringFormat=g, Mode=OneTime}" Header="Verkauft" />
-                    <DataGridTextColumn Binding="{Binding PickUp, ConverterCulture=de-DE, StringFormat=d, Mode=OneWay}" Header="Fällig" />
-                    <DataGridTextColumn Binding="{Binding Supplier.Id, Mode=OneTime}" Header="L-Nr" />
-                    <DataGridTextColumn Binding="{Binding Supplier.Name, Mode=OneTime}" Header="Lieferant" />
+                    <DataGridTextColumn Binding="{Binding ConvertedId, Mode=OneTime}"
+                                        Header="Nr" />
+                    <DataGridTextColumn Binding="{Binding Description, Mode=OneWay}"
+                                        Header="Artikel"
+                                        Width="*" />
+                    <DataGridTextColumn Binding="{Binding Price, ConverterCulture=de-DE, StringFormat=C, Mode=OneWay}"
+                                        Header="Preis" />
+                    <DataGridTextColumn Binding="{Binding SupplierProportion, ConverterCulture=de-DE, StringFormat=C, Mode=OneWay}"
+                                        Header="L-Anteil" />
+                    <DataGridTextColumn Binding="{Binding Percentage, ConverterCulture=de-DE, StringFormat=P, Mode=OneWay}"
+                                        Header="Verhältnis" />
+                    <DataGridTextColumn Binding="{Binding Status, Mode=OneWay}"
+                                        Header="Status"
+                                        CanUserResize="False" />
+                    <DataGridTextColumn Binding="{Binding Sold, ConverterCulture=de-DE, StringFormat=g, Mode=OneTime}"
+                                        Header="Verkauft" />
+                    <DataGridTextColumn Binding="{Binding PickUp, ConverterCulture=de-DE, StringFormat=d, Mode=OneWay}"
+                                        Header="Fällig" />
+                    <DataGridTextColumn Binding="{Binding Supplier.Id, Mode=OneTime}"
+                                        Header="L-Nr" />
+                    <DataGridTextColumn Binding="{Binding Supplier.Name, Mode=OneTime}"
+                                        Header="Lieferant" />
                 </DataGrid.Columns>
             </DataGrid>
-            
-            <Border Name="ArticlesLoadingElement" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="12" Background="White" BorderThickness="1" BorderBrush="Black" >
+
+            <Border Name="ArticlesLoadingElement"
+                    Visibility="Collapsed"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Padding="12"
+                    Background="White"
+                    BorderThickness="1"
+                    BorderBrush="Black">
                 <StackPanel>
                     <TextBlock Text="Artikel werden geladen ..." />
-                    <Button Name="CancelLoadingBtn" Click="CancelLoadingBtn_Click" Content="Abbrechen" Margin="0 8 0 0" />
+                    <Button Name="CancelLoadingBtn"
+                            Click="CancelLoadingBtn_Click"
+                            Content="Abbrechen"
+                            Margin="0 8 0 0" />
                 </StackPanel>
             </Border>
 
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                <TextBlock Name="PayoutSumTb" Text="Auszahlung: 0,00 €" FontWeight="Bold" />
-                <TextBlock Name="SumTb" Margin="16 0 0 0" Text="Summe: 0,00 €" FontWeight="Bold" />
+            <StackPanel Grid.Row="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                <TextBlock Name="PayoutSumTb"
+                           Text="Auszahlung: 0,00 €"
+                           FontWeight="Bold" />
+                <TextBlock Name="SumTb"
+                           Margin="16 0 0 0"
+                           Text="Summe: 0,00 €"
+                           FontWeight="Bold" />
             </StackPanel>
 
             <Grid Grid.Row="4">
@@ -120,14 +263,31 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <TextBlock VerticalAlignment="Top" Grid.RowSpan="3"><Run Text="Bemerkungen"/><LineBreak/><Run Text="(für Lieferant sichtbar)"/></TextBlock>
-                <TextBox Name="NotesTB" MaxHeight="100" Grid.Column="2" AcceptsReturn="True" Text="{Binding Notes, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalScrollBarVisibility="Auto" Grid.RowSpan="3" />
+                <TextBlock VerticalAlignment="Top"
+                           Grid.RowSpan="3"><Run Text="Bemerkungen" /><LineBreak /><Run Text="(für Lieferant sichtbar)" /></TextBlock>
+                <TextBox Name="NotesTB"
+                         MaxHeight="100"
+                         Grid.Column="2"
+                         AcceptsReturn="True"
+                         Text="{Binding Notes, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
+                         VerticalScrollBarVisibility="Auto"
+                         Grid.RowSpan="3" />
 
-                <TextBlock Text="Angelegt" Grid.Column="4" />
-                <TextBox Grid.Column="6" Text="{Binding AddedToSortiment, Mode=OneTime, ConverterCulture=de-DE, StringFormat=d}" MinWidth="69" IsEnabled="False" />
+                <TextBlock Text="Angelegt"
+                           Grid.Column="4" />
+                <TextBox Grid.Column="6"
+                         Text="{Binding AddedToSortiment, Mode=OneTime, ConverterCulture=de-DE, StringFormat=d}"
+                         MinWidth="69"
+                         IsEnabled="False" />
 
-                <TextBlock Text="Finaler Status" Grid.Column="4" Grid.Row="2" />
-                <TextBox Grid.Column="6" Grid.Row="2" Text="{Binding EnteredFinalState, Mode=OneWay, ConverterCulture=de-DE, StringFormat=d}" MinWidth="69" IsEnabled="False" />
+                <TextBlock Text="Finaler Status"
+                           Grid.Column="4"
+                           Grid.Row="2" />
+                <TextBox Grid.Column="6"
+                         Grid.Row="2"
+                         Text="{Binding EnteredFinalState, Mode=OneWay, ConverterCulture=de-DE, StringFormat=d}"
+                         MinWidth="69"
+                         IsEnabled="False" />
             </Grid>
         </Grid>
     </DockPanel>
