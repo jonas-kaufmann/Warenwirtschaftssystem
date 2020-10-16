@@ -13,7 +13,6 @@
 
 
     <Page.Resources>
-        <!-- Binding -->
         <CollectionViewSource x:Key="ArticlesCVS" d:DesignSource="{d:DesignInstance {x:Type db:Article}, CreateList=True}"/>
     </Page.Resources>
 

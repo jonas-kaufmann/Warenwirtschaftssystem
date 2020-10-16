@@ -172,15 +172,6 @@ namespace Warenwirtschaftssystem.UI.Pages
                     && (!brandSet || a.Brand.Title.ToLower().Contains(brand))
                     && (!sizeSet || a.Size.Value.ToLower().Contains(size))
                     && (!materialSet || a.Materials.Where(m => m.Title.ToLower().Contains(material)).FirstOrDefault() != null))
-                    .Include(a => a.Supplier)
-                    .Include(a => a.Gender)
-                    .Include(a => a.Category)
-                    .Include(a => a.Type)
-                    .Include(a => a.Size)
-                    .Include(a => a.Brand)
-                    .Include(a => a.Materials)
-                    .Include(a => a.Parts)
-                    .Include(a => a.Colors)
                     .OrderByDescending(a => a.Id)
                     .ToListAsync(cancellationToken);
 

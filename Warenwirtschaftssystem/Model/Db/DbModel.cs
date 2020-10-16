@@ -30,7 +30,16 @@
         public virtual DbSet<SavedArticleAttributes> SalesSavedArticleAttributes { get; set; }
         public virtual DbSet<ArticleReservation> ArticleReservations { get; set; }
 
-        public DbModel() { }
+        public DbModel()
+            : base(new SqlConnectionStringBuilder()
+            {
+                DataSource = ".\\SQLEXPRESS",
+                IntegratedSecurity = true,
+                InitialCatalog = "WWS-Dev"
+            }.ConnectionString)
+        {
+
+        }
 
         public DbModel(string connectionString)
             : base(connectionString)
@@ -63,7 +72,7 @@
                     triesCount++;
                     return base.SaveChanges();
                 }
-                catch (SqlException e)
+                catch (SqlException)
                 {
                     Thread.Sleep(waitMills);
                     waitMills *= 2;
@@ -178,8 +187,10 @@
         {
             get
             {
-                if (_id != 0) return _id + 100000;
-                else return 0;
+                if (_id != 0)
+                    return _id + 100000;
+                else
+                    return 0;
             }
         }
 
@@ -199,21 +210,25 @@
         }
 
         private string _description;
-        [NotMapped]
         public string Description
         {
             get
             {
                 if (string.IsNullOrEmpty(_description))
                 {
-                    RegenerateDescription();
+                    GenerateDescription();
                 }
 
                 return _description;
             }
+            set
+            {
+                _description = value;
+                OnPropertyChanged(nameof(Description));
+            }
         }
 
-        public void RegenerateDescription()
+        public void GenerateDescription()
         {
             _description = "";
             bool firstElement = true;
@@ -337,7 +352,8 @@
             {
                 if (_price == 0)
                     return null;
-                else return Math.Round(_supplierProportion / _price, 4);
+                else
+                    return Math.Round(_supplierProportion / _price, 4);
             }
         }
 
@@ -382,8 +398,6 @@
 
         public virtual ObservableCollection<Document> Documents { get; set; }
 
-        public void SetDescriptionExplicitly(string description) => _description = description;
-
         public void notifyAllPropertiesChanged()
         {
             OnPropertyChanged("PickUp");
@@ -402,6 +416,63 @@
             OnPropertyChanged("Defects");
             OnPropertyChanged("AsNew");
             OnPropertyChanged("Notes");
+        }
+
+        public void takePropertiesFrom(Article article)
+        {
+            AddedToSortiment = article.AddedToSortiment;
+            Description = article.Description;
+            AsNew = article.AsNew;
+            Brand = article.Brand;
+            Category = article.Category;
+            Colors = article.Colors;
+            Defects = article.Defects;
+            Documents = article.Documents;
+            EnteredFinalState = article.EnteredFinalState;
+            Gender = article.Gender;
+            Id = article.Id;
+            Materials = article.Materials;
+            Notes = article.Notes;
+            Parts = article.Parts;
+            PickUp = article.PickUp;
+            Price = article.Price;
+            Reservation = article.Reservation;
+            Size = article.Size;
+            Sold = article.Sold;
+            Status = article.Status;
+            Supplier = article.Supplier;
+            SupplierProportion = article.SupplierProportion;
+            Type = article.Type;
+        }
+
+        public Article clone()
+        {
+            return new Article()
+            {
+                AddedToSortiment = AddedToSortiment,
+                Description = Description,
+                AsNew = AsNew,
+                Brand = Brand,
+                Category = Category,
+                Colors = Colors,
+                Defects = Defects,
+                Documents = Documents,
+                EnteredFinalState = EnteredFinalState,
+                Gender = Gender,
+                Id = Id,
+                Materials = Materials,
+                Notes = Notes,
+                Parts = Parts,
+                PickUp = PickUp,
+                Price = Price,
+                Reservation = Reservation,
+                Size = Size,
+                Sold = Sold,
+                Status = Status,
+                Supplier = Supplier,
+                SupplierProportion = SupplierProportion,
+                Type = Type
+            };
         }
     }
 

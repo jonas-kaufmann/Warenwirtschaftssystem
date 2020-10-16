@@ -93,7 +93,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                             SupplierProportion = sAA.Payout
                         };
 
-                        articleToAdd.SetDescriptionExplicitly(article.Description);
+                        articleToAdd.Description = article.Description;
 
                         int index = document.Articles.IndexOf(article);
 

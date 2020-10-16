@@ -54,7 +54,7 @@ namespace Warenwirtschaftssystem.Model.Documents
                         Defects = a.Defects
                     };
 
-                    article.SetDescriptionExplicitly(a.Description);
+                    article.Description = a.Description;
                     Articles.Add(article);
                 }
                 else
@@ -66,7 +66,7 @@ namespace Warenwirtschaftssystem.Model.Documents
                         Defects = a.Defects
                     };
 
-                    article.SetDescriptionExplicitly(a.Description);
+                    article.Description = a.Description;
                     Articles.Add(article);
                 }
             }

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Data.Entity;
 using System.Globalization;
@@ -29,6 +30,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         private DataModel Data;
         private ToolWindow OwnerWindow;
         public Article Article;
+        private Article OriginalArticle;
         private Supplier Supplier;
         private DbModel MainDb;
         private ArticlePage ArticlePage;
@@ -43,10 +45,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         private CollectionViewSource ColorsCVS;
         private CollectionViewSource TypesCVS;
         private DataGrid FocusedDG;
-        private string FilterInput = "";
-        private Timer FilterTimer = new Timer(500);
         private Key[] FilterLetterKeys = { Key.A, Key.B, Key.C, Key.D, Key.E, Key.F, Key.G, Key.H, Key.I, Key.J, Key.K, Key.L, Key.M, Key.N, Key.O, Key.P, Key.Q, Key.R, Key.S, Key.T, Key.U, Key.V, Key.W, Key.X, Key.Y, Key.Z };
-        //private readonly Key[] FilterNumberKeys = { Key.D0, Key.D1, Key.D2, Key.D3, Key.D4, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9 };
         private readonly Key[] FilterNumPadKeys = { Key.NumPad0, Key.NumPad1, Key.NumPad2, Key.NumPad3, Key.NumPad4, Key.NumPad5, Key.NumPad6, Key.NumPad7, Key.NumPad8, Key.NumPad9 };
         private DataGrid[] DataGrids;
         private bool DGInEditingMode = false;
@@ -103,7 +102,8 @@ namespace Warenwirtschaftssystem.UI.Pages
                 DefectsDG
             };
 
-            if (supplier.PickUp > -1) Article.PickUp = DateTime.Now.Date.AddDays(Supplier.PickUp * 7);
+            if (supplier.PickUp > -1)
+                Article.PickUp = DateTime.Now.Date.AddDays(Supplier.PickUp * 7);
 
             ThirdColumnGrid.DataContext = Article;
             LoadDataFromDbIntoView();
@@ -151,7 +151,8 @@ namespace Warenwirtschaftssystem.UI.Pages
                 DefectsDG
             };
 
-            if (supplier.PickUp > -1) Article.PickUp = DateTime.Now.Date.AddDays(Supplier.PickUp * 7);
+            if (supplier.PickUp > -1)
+                Article.PickUp = DateTime.Now.Date.AddDays(Supplier.PickUp * 7);
 
             ThirdColumnGrid.DataContext = Article;
             LoadDataFromDbIntoView();
@@ -209,7 +210,8 @@ namespace Warenwirtschaftssystem.UI.Pages
                 DefectsDG
             };
 
-            if (supplier.PickUp > -1) Article.PickUp = DateTime.Now.Date.AddDays(Supplier.PickUp * 7);
+            if (supplier.PickUp > -1)
+                Article.PickUp = DateTime.Now.Date.AddDays(Supplier.PickUp * 7);
 
             ThirdColumnGrid.DataContext = Article;
             LoadDataFromDbIntoView();
@@ -224,6 +226,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             Data = data;
             OwnerWindow = ownerWindow;
             Article = articleToEdit;
+            OriginalArticle = Article.clone();
             Supplier = Article.Supplier;
             NewArticlesPage = newArticlesPage;
             MainDb = mainDb;
@@ -262,6 +265,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             Data = data;
             OwnerWindow = ownerWindow;
             Article = articleToEdit;
+            OriginalArticle = Article.clone();
             Editable = editable;
 
             OldPrice = Article.Price;
@@ -292,15 +296,19 @@ namespace Warenwirtschaftssystem.UI.Pages
                 PriceTB.IsEnabled = false;
                 SupplierProportionTB.IsEnabled = false;
 
+                foreach (var dg in DataGrids)
+                {
+                    dg.IsEnabled = false;
+                }
+
+
                 SaveBtn.IsEnabled = false;
             }
 
             MainDb = mainDb;
 
-            Article referencedArticle = articleToEdit;
-
-            Supplier = MainDb.Suppliers.Where(s => s.Id == referencedArticle.Supplier.Id).Single();
-            Article = MainDb.Articles.Where(a => a.Id == referencedArticle.Id).Single();
+            Supplier = Article.Supplier;
+            Article = articleToEdit;
             ArticlePage = articlePage;
 
             ThirdColumnGrid.DataContext = Article;
@@ -315,50 +323,66 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             // Gender
             GenderCVS = (CollectionViewSource)FindResource("GenderCVS");
-            MainDb.ArticleGender.OrderBy(g => g.Description).Load();
+            MainDb.ArticleGender.Load();
+            GenderCVS.SortDescriptions.Clear();
+            GenderCVS.SortDescriptions.Add(new SortDescription(nameof(Gender.Description), ListSortDirection.Ascending));
             GenderCVS.Source = MainDb.ArticleGender.Local;
             // Brands
             BrandsCVS = (CollectionViewSource)FindResource("BrandsCVS");
-            MainDb.ArticleBrands.OrderBy(b => b.Title).Load();
+            MainDb.ArticleBrands.Load();
+            BrandsCVS.SortDescriptions.Clear();
+            BrandsCVS.SortDescriptions.Add(new SortDescription(nameof(Brand.Title), ListSortDirection.Ascending));
             BrandsCVS.Source = MainDb.ArticleBrands.Local;
             BrandsDG.SelectedItem = null;
             // Sizes
             SizesCVS = (CollectionViewSource)FindResource("SizesCVS");
-            MainDb.ArticleSizes.OrderBy(s => s.Value).Load();
+            MainDb.ArticleSizes.Load();
+            SizesCVS.SortDescriptions.Clear();
+            SizesCVS.SortDescriptions.Add(new SortDescription(nameof(Model.Db.Size.Value), ListSortDirection.Ascending));
             SizesCVS.Source = MainDb.ArticleSizes.Local;
             SizesDG.SelectedItem = null;
             // Materials
             MaterialsCVS = (CollectionViewSource)FindResource("MaterialsCVS");
-            MainDb.ArticleMaterials.OrderBy(m => m.Title).Load();
+            MainDb.ArticleMaterials.Load();
+            MaterialsCVS.SortDescriptions.Clear();
+            MaterialsCVS.SortDescriptions.Add(new SortDescription(nameof(Material.Title), ListSortDirection.Ascending));
             MaterialsCVS.Source = MainDb.ArticleMaterials.Local;
             MaterialsDG.SelectedItem = null;
             // Parts
             PartsCVS = (CollectionViewSource)FindResource("PartsCVS");
-            MainDb.ArticleParts.OrderBy(p => p.Title).Load();
+            MainDb.ArticleParts.Load();
+            PartsCVS.SortDescriptions.Clear();
+            PartsCVS.SortDescriptions.Add(new SortDescription(nameof(Part.Title), ListSortDirection.Ascending));
             PartsCVS.Source = MainDb.ArticleParts.Local;
             PartsDG.SelectedItem = null;
             // Defects
             DefectsCVS = (CollectionViewSource)FindResource("DefectsCVS");
-            MainDb.ArticleDefects.OrderBy(d => d.Title).Load();
+            MainDb.ArticleDefects.Load();
+            DefectsCVS.SortDescriptions.Clear();
+            DefectsCVS.SortDescriptions.Add(new SortDescription(nameof(Defect.Title), ListSortDirection.Ascending));
             DefectsCVS.Source = MainDb.ArticleDefects.Local;
             DefectsDG.SelectedItem = null;
             // Categories
             CategoriesCVS = (CollectionViewSource)FindResource("CategoriesCVS");
-            MainDb.ArticleCategories.OrderBy(c => c.Title).Include(c => c.Types).Load();
+            MainDb.ArticleCategories.Load();
+            CategoriesCVS.SortDescriptions.Clear();
+            CategoriesCVS.SortDescriptions.Add(new SortDescription(nameof(Category.Title), ListSortDirection.Ascending));
             CategoriesCVS.Source = MainDb.ArticleCategories.Local;
-
-            //Types sortieren
-            foreach (Category category in MainDb.ArticleCategories.Local)
-                category.Types = new ObservableCollection<Type>(category.Types.OrderBy(t => t.Title));
-
             CategoriesDG.SelectedItem = null;
+
             // Colors
             ColorsCVS = (CollectionViewSource)FindResource("ColorsCVS");
-            MainDb.ArticleColors.OrderBy(c => c.Description).Load();
+            MainDb.ArticleColors.Load();
+            ColorsCVS.SortDescriptions.Clear();
+            ColorsCVS.SortDescriptions.Add(new SortDescription(nameof(Color.Description), ListSortDirection.Ascending));
             ColorsCVS.Source = MainDb.ArticleColors.Local;
             ColorsDG.SelectedItem = null;
+            ColorsDG.Columns[1].SortDirection = ListSortDirection.Ascending;
+
             // Types
             TypesCVS = (CollectionViewSource)FindResource("TypesCVS");
+            DefectsCVS.SortDescriptions.Clear();
+            DefectsCVS.SortDescriptions.Add(new SortDescription(nameof(Type.Title), ListSortDirection.Ascending));
         }
 
         private void SelectArticleAttributes()
@@ -407,30 +431,19 @@ namespace Warenwirtschaftssystem.UI.Pages
             ((AutoCompleteBehavior)Interaction.GetBehaviors(PriceTB)[0]).SuggestionsProvider = SuggestionsProvider;
             PriceTB.Focus();
 
-            FilterTimer.Elapsed += FilterTimerOver;
-            SaveBtn.IsEnabled = false;
+            if (Editable)
+                SaveBtn.IsEnabled = false;
 
             #region UI-Events registrieren
 
             CategoriesDG.AddingNewItem += CategoriesDG_AddingNewItem;
             CategoriesDG.SelectionChanged += CategoriesDG_SelectionChanged;
-            //PriceTB.TextChanged += CurrencyTBs_TextChanged;
             SupplierProportionTB.TextChanged += CurrencyTBs_TextChanged;
 
             foreach (DataGrid dg in DataGrids)
             {
                 dg.PreviewKeyDown += DataGrids_PreviewKeyDown;
                 dg.SelectionChanged += DGs_SelectionChanged;
-            }
-
-            if (!Editable)
-            {
-                foreach (DataGrid dg in DataGrids)
-                {
-                    ScrollContentPresenter sCP = VisualTreeHelper.GetChild(VisualTreeHelper.GetChild(VisualTreeHelper.GetChild(VisualTreeHelper.GetChild(dg, 0), 0), 0), 2) as ScrollContentPresenter;
-                    sCP.PreviewMouseLeftButtonDown += DataGridsDisableUserSelection_PreviewMouseButton;
-                    sCP.PreviewMouseRightButtonUp += DataGridsDisableUserSelection_PreviewMouseButton;
-                }
             }
 
             #endregion
@@ -498,7 +511,8 @@ namespace Warenwirtschaftssystem.UI.Pages
                             Article.SupplierProportion = Article.Price * supplierGraduationProportion.SupplierProportion / 100;
                         }
 
-                        SaveBtn.IsEnabled = true;
+                        if (Editable)
+                            SaveBtn.IsEnabled = true;
                     }
 
                     break;
@@ -509,6 +523,10 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
+            // restore original article
+            if (Editable && OriginalArticle != null)
+                Article.takePropertiesFrom(OriginalArticle);
+
             DeleteEmptyItemsInDGs();
 
             if (NewArticlesPage == null)
@@ -588,11 +606,13 @@ namespace Warenwirtschaftssystem.UI.Pages
                 && supplierProportion >= 0
                 && price >= supplierProportion)
             {
-                SaveBtn.IsEnabled = true;
+                if (Editable)
+                    SaveBtn.IsEnabled = true;
             }
             else
             {
-                SaveBtn.IsEnabled = false;
+                if (Editable)
+                    SaveBtn.IsEnabled = false;
             }
         }
 
@@ -631,13 +651,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             string key;
             if (FocusedDG != null && !(key = ParseKey(e.Key)).Equals(""))
             {
-                if (FilterTimer.Enabled)
-                {
-                    FilterTimer.Stop();
-                    FilterTimer.Start();
-                }
-                else FilterTimer.Start();
-                FilterInput += key;
+                FilterCurrentDG(key);
                 e.Handled = true;
             }
         }
@@ -654,19 +668,17 @@ namespace Warenwirtschaftssystem.UI.Pages
             {
                 return "" + key.ToString().Last();
             }
-            else if (key == Key.Oem1) return "ü";
-            else if (key == Key.Oem7) return "ä";
-            else if (key == Key.Oem3) return "ö";
-            else return "";
+            else if (key == Key.Oem1)
+                return "ü";
+            else if (key == Key.Oem7)
+                return "ä";
+            else if (key == Key.Oem3)
+                return "ö";
+            else
+                return "";
         }
 
-        private void FilterTimerOver(object source, ElapsedEventArgs e)
-        {
-            FilterTimer.Stop();
-            FilterDG();
-        }
-
-        private void FilterDG()
+        private void FilterCurrentDG(string filter)
         {
             Dispatcher.Invoke(new Action(() =>
             {
@@ -677,7 +689,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                         switch (FocusedDG.Name)
                         {
                             case "GenderDG":
-                                var gender = (GenderCVS.Source as ObservableCollection<Gender>).Where(i => i.Description.IndexOf(FilterInput, 0, StringComparison.CurrentCultureIgnoreCase) == 0).FirstOrDefault();
+                                var gender = (GenderCVS.Source as ObservableCollection<Gender>).Where(i => i.Description.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
                                 if (gender != null)
                                 {
                                     GenderDG.SelectedItem = gender;
@@ -685,7 +697,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "CategoriesDG":
-                                var category = (CategoriesCVS.Source as ObservableCollection<Category>).Where(i => i.Title.IndexOf(FilterInput, 0, StringComparison.CurrentCultureIgnoreCase) == 0).FirstOrDefault();
+                                var category = (CategoriesCVS.Source as ObservableCollection<Category>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
                                 if (category != null)
                                 {
                                     CategoriesDG.SelectedItem = category;
@@ -693,7 +705,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "BrandsDG":
-                                var brand = (BrandsCVS.Source as ObservableCollection<Brand>).Where(i => i.Title.IndexOf(FilterInput, 0, StringComparison.CurrentCultureIgnoreCase) == 0).FirstOrDefault();
+                                var brand = (BrandsCVS.Source as ObservableCollection<Brand>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
                                 if (brand != null)
                                 {
                                     BrandsDG.SelectedItem = brand;
@@ -701,7 +713,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "SizesDG":
-                                var size = (SizesCVS.Source as ObservableCollection<Model.Db.Size>).Where(i => i.Value.IndexOf(FilterInput, 0, StringComparison.CurrentCultureIgnoreCase) == 0).FirstOrDefault();
+                                var size = (SizesCVS.Source as ObservableCollection<Model.Db.Size>).Where(i => i.Value.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
                                 if (size != null)
                                 {
                                     SizesDG.SelectedItem = size;
@@ -709,7 +721,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "ColorsDG":
-                                var color = (ColorsCVS.Source as ObservableCollection<Model.Db.Color>).Where(i => i.Description.IndexOf(FilterInput, 0, StringComparison.CurrentCultureIgnoreCase) == 0).FirstOrDefault();
+                                var color = (ColorsCVS.Source as ObservableCollection<Model.Db.Color>).Where(i => i.Description.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
                                 if (color != null)
                                 {
                                     ColorsDG.SelectedItem = color;
@@ -717,7 +729,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "MaterialsDG":
-                                var material = (MaterialsCVS.Source as ObservableCollection<Material>).Where(i => i.Title.IndexOf(FilterInput, 0, StringComparison.CurrentCultureIgnoreCase) == 0).FirstOrDefault();
+                                var material = (MaterialsCVS.Source as ObservableCollection<Material>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
                                 if (material != null)
                                 {
                                     MaterialsDG.SelectedItem = material;
@@ -725,7 +737,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "PartsDG":
-                                var parts = (PartsCVS.Source as ObservableCollection<Part>).Where(i => i.Title.IndexOf(FilterInput, 0, StringComparison.CurrentCultureIgnoreCase) == 0).FirstOrDefault();
+                                var parts = (PartsCVS.Source as ObservableCollection<Part>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
                                 if (parts != null)
                                 {
                                     PartsDG.SelectedItem = parts;
@@ -733,7 +745,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "DefectsDG":
-                                var defect = (DefectsCVS.Source as ObservableCollection<Defect>).Where(i => i.Title.IndexOf(FilterInput, 0, StringComparison.CurrentCultureIgnoreCase) == 0).FirstOrDefault();
+                                var defect = (DefectsCVS.Source as ObservableCollection<Defect>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
                                 if (defect != null)
                                 {
                                     DefectsDG.SelectedItem = defect;
@@ -741,7 +753,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "TypesDG":
-                                var type = (TypesCVS.Source as ObservableCollection<Model.Db.Type>).Where(i => i.Title.IndexOf(FilterInput, 0, StringComparison.CurrentCultureIgnoreCase) == 0).FirstOrDefault();
+                                var type = (TypesCVS.Source as ObservableCollection<Model.Db.Type>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
                                 if (type != null)
                                 {
                                     TypesDG.SelectedItem = type;
@@ -751,7 +763,6 @@ namespace Warenwirtschaftssystem.UI.Pages
                         }
                     }
                     catch { }
-                    FilterInput = "";
                 }
             }));
         }
@@ -786,38 +797,50 @@ namespace Warenwirtschaftssystem.UI.Pages
             // Gender
             if (GenderDG.SelectedItem is Gender gender)
                 Article.Gender = gender;
-            else Article.Gender = null;
+            else
+                Article.Gender = null;
             // Categories
             if (CategoriesDG.SelectedItem is Category category)
                 Article.Category = category;
-            else Article.Category = null;
+            else
+                Article.Category = null;
             // Type
             if (TypesDG.SelectedItem is Model.Db.Type type)
                 Article.Type = type;
-            else Article.Type = null;
+            else
+                Article.Type = null;
             // Brand
             if (BrandsDG.SelectedItem is Brand brand)
                 Article.Brand = brand;
-            else Article.Brand = null;
+            else
+                Article.Brand = null;
             // Size
             if (SizesDG.SelectedItem is Model.Db.Size size)
                 Article.Size = size;
-            else Article.Size = null;
+            else
+                Article.Size = null;
             // Colors
-            if (ColorsDG.SelectedItems.Count > 0) Article.Colors = RemoveNamedObject<Color>(ColorsDG.SelectedItems);
-            else Article.Colors = null;
+            if (ColorsDG.SelectedItems.Count > 0)
+                Article.Colors = RemoveNamedObject<Color>(ColorsDG.SelectedItems);
+            else
+                Article.Colors = null;
             // Materials
-            if (MaterialsDG.SelectedItems.Count > 0) Article.Materials = RemoveNamedObject<Material>(MaterialsDG.SelectedItems);
-            else Article.Materials = null;
+            if (MaterialsDG.SelectedItems.Count > 0)
+                Article.Materials = RemoveNamedObject<Material>(MaterialsDG.SelectedItems);
+            else
+                Article.Materials = null;
             // Parts
             if (PartsDG.SelectedItem is Part part && !string.IsNullOrWhiteSpace(part.Title))
                 Article.Parts = part;
-            else Article.Parts = null;
+            else
+                Article.Parts = null;
             // Defects
-            if (DefectsDG.SelectedItems.Count > 0) Article.Defects = RemoveNamedObject<Defect>(DefectsDG.SelectedItems);
-            else Article.Defects = null;
+            if (DefectsDG.SelectedItems.Count > 0)
+                Article.Defects = RemoveNamedObject<Defect>(DefectsDG.SelectedItems);
+            else
+                Article.Defects = null;
 
-            Article.RegenerateDescription();
+            Article.GenerateDescription();
             Article.OnPropertyChanged("Description");
 
             PopulateAutoCompleteEntries();
@@ -839,7 +862,8 @@ namespace Warenwirtschaftssystem.UI.Pages
             DisableEnteringEditingMode = false;
 
             Timer t = new Timer(100);
-            t.Elapsed += Timer_Elapsed; ;
+            t.Elapsed += Timer_Elapsed;
+            ;
             t.Start();
         }
 

@@ -54,7 +54,7 @@ namespace Warenwirtschaftssystem.Model.Documents
                         PickUp = article.PickUp
                     };
 
-                    articleToAdd.SetDescriptionExplicitly(article.Description);
+                    articleToAdd.Description = article.Description;
 
                     Articles.Add(articleToAdd);
                 }
