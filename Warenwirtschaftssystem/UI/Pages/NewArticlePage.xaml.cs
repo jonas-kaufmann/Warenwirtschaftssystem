@@ -381,8 +381,10 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             // Types
             TypesCVS = (CollectionViewSource)FindResource("TypesCVS");
-            DefectsCVS.SortDescriptions.Clear();
-            DefectsCVS.SortDescriptions.Add(new SortDescription(nameof(Type.Title), ListSortDirection.Ascending));
+            TypesCVS.SortDescriptions.Clear();
+            TypesCVS.SortDescriptions.Add(new SortDescription(nameof(Type.Title), ListSortDirection.Ascending));
+            TypesCVS.Source = Article == null || Article.Category == null ? null : Article.Category.Types;
+            TypesDG.IsEnabled = true;
         }
 
         private void SelectArticleAttributes()
@@ -486,11 +488,6 @@ namespace Warenwirtschaftssystem.UI.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             Article.PropertyChanged -= Article_PropertyChanged;
-        }
-
-        private void DataGridsDisableUserSelection_PreviewMouseButton(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
         }
 
         //Tracken von Attributsänderungen, damit Auszahlungsbetrag angepasst werden kann
@@ -627,15 +624,16 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         private void CategoriesDG_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (CategoriesDG.SelectedItem as Category == null)
+            if (CategoriesDG.SelectedItem is Category category)
             {
-                TypesDG.DataContext = null;
-                TypesDG.IsEnabled = false;
+                TypesCVS.Source = category.Types;
+                TypesCVS.SortDescriptions.Clear();
+                TypesCVS.SortDescriptions.Add(new SortDescription(nameof(Type.Title), ListSortDirection.Ascending));
+                TypesDG.IsEnabled = true;
             }
             else
             {
-                TypesDG.DataContext = TypesCVS;
-                TypesDG.IsEnabled = true;
+                TypesDG.IsEnabled = false;
             }
 
             TypesDG.SelectedItem = null;

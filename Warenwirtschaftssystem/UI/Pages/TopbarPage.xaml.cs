@@ -40,8 +40,8 @@ namespace Warenwirtschaftssystem.UI.Pages
 
                         toolWindow.MinWidth = 1200;
                         toolWindow.Width = 1200;
-                        toolWindow.MinHeight = 800;
-                        toolWindow.Height = 800;
+                        toolWindow.MinHeight = 700;
+                        toolWindow.Height = 700;
 
                         (toolWindow as ToolWindow).Content = new ArticlePage(Data, toolWindow as ToolWindow);
                         toolWindow.Title = "Artikel";

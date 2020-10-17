@@ -10,7 +10,7 @@
       Title="ArticlePage"
       Loaded="Page_Loaded"
       d:DesignWidth="1200"
-      d:DesignHeight="800">
+      d:DesignHeight="700">
 
     <Page.Resources>
         <CollectionViewSource x:Key="ArticlesCVS"
@@ -94,9 +94,6 @@
                 <StackPanel>
                     <Button Name="NewArticlesBtn"
                             Click="NewArticlesBtn_Click">Anlegen</Button>
-                    <Button Name="EditBtn"
-                            Click="EditArticleBtn_Click"
-                            Margin="0 2 0 0">Bearbeiten</Button>
                     <Button Name="ChangePickUp"
                             Click="ChangePickUp_Click"
                             Margin="0 2 0 0"

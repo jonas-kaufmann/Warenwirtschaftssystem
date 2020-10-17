@@ -20,7 +20,7 @@
         <!-- Binding -->
         <CollectionViewSource x:Key="GenderCVS" />
         <CollectionViewSource x:Key="CategoriesCVS" />
-        <CollectionViewSource x:Key="TypesCVS" Source="{Binding Types, Source={StaticResource CategoriesCVS}}"/>
+        <CollectionViewSource x:Key="TypesCVS" />
         <CollectionViewSource x:Key="BrandsCVS" />
         <CollectionViewSource x:Key="SizesCVS" />
         <CollectionViewSource x:Key="ColorsCVS" />
@@ -62,26 +62,26 @@
 
                 <DataGrid Name="GenderDG" PreviewMouseDoubleClick="DGs_MouseDoubleClick" CellEditEnding="DGs_CellEditEnding" BeginningEdit="DGs_BeginningEdit" DataContext="{StaticResource GenderCVS}" SelectionMode="Single" RowHeaderWidth="0" RowHeaderTemplate="{x:Null}" AutoGenerateColumns="False" EnableRowVirtualization="True" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Description}" Header="Geschlecht" Width="*" SortDirection="Ascending" />
+                        <DataGridTextColumn Binding="{Binding Description}" Header="Geschlecht" Width="*" />
                         <DataGridTextColumn Binding="{Binding Short}" Header="Abkürzung" Width="Auto" />
                     </DataGrid.Columns>
                 </DataGrid>
 
                 <DataGrid Name="CategoriesDG" PreviewMouseDoubleClick="DGs_MouseDoubleClick" CellEditEnding="DGs_CellEditEnding" BeginningEdit="DGs_BeginningEdit" DataContext="{StaticResource CategoriesCVS}" Grid.Row="2" SelectionMode="Single" RowHeaderWidth="0" RowHeaderTemplate="{x:Null}" AutoGenerateColumns="False" EnableRowVirtualization="True" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Title}" Header="Kategorie" Width="*" SortDirection="Ascending" />
+                        <DataGridTextColumn Binding="{Binding Title}" Header="Kategorie" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
 
                 <DataGrid Name="TypesDG" PreviewMouseDoubleClick="DGs_MouseDoubleClick" CellEditEnding="DGs_CellEditEnding" BeginningEdit="DGs_BeginningEdit" DataContext="{StaticResource TypesCVS}" Grid.Row="4" SelectionMode="Single" RowHeaderWidth="0" RowHeaderTemplate="{x:Null}" AutoGenerateColumns="False" EnableRowVirtualization="True" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding}" >
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Title}" Header="Art (abhängig von Kategorie)" Width="*" SortDirection="Ascending" />
+                        <DataGridTextColumn Binding="{Binding Title}" Header="Art (abhängig von Kategorie)" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
 
                 <DataGrid Name="BrandsDG" PreviewMouseDoubleClick="DGs_MouseDoubleClick" CellEditEnding="DGs_CellEditEnding" BeginningEdit="DGs_BeginningEdit" DataContext="{StaticResource BrandsCVS}" Grid.Row="6" SelectionMode="Single" RowHeaderWidth="0" RowHeaderTemplate="{x:Null}" AutoGenerateColumns="False" EnableRowVirtualization="True" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Title}" Header="Marke" Width="*" SortDirection="Ascending" />
+                        <DataGridTextColumn Binding="{Binding Title}" Header="Marke" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -99,7 +99,7 @@
 
                 <DataGrid Name="SizesDG" PreviewMouseDoubleClick="DGs_MouseDoubleClick" CellEditEnding="DGs_CellEditEnding" BeginningEdit="DGs_BeginningEdit" DataContext="{StaticResource SizesCVS}" SelectionMode="Single" RowHeaderWidth="0" RowHeaderTemplate="{x:Null}" AutoGenerateColumns="False" EnableRowVirtualization="True" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Value}" Header="Größe" Width="*" SortDirection="Ascending" />
+                        <DataGridTextColumn Binding="{Binding Value}" Header="Größe" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
 
@@ -117,19 +117,19 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellEditingTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Binding="{Binding Description}" Header="Bezeichnung" Width="2*" SortDirection="Ascending" />
+                        <DataGridTextColumn Binding="{Binding Description}" Header="Bezeichnung" Width="2*" />
                     </DataGrid.Columns>
                 </DataGrid>
 
                 <DataGrid Name="MaterialsDG" PreviewMouseDoubleClick="DGs_MouseDoubleClick" CellEditEnding="DGs_CellEditEnding" BeginningEdit="DGs_BeginningEdit" DataContext="{StaticResource MaterialsCVS}" Grid.Row="4" SelectionMode="Extended" RowHeaderWidth="0" RowHeaderTemplate="{x:Null}" AutoGenerateColumns="False" EnableRowVirtualization="True" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Title}" Header="Material" Width="*" SortDirection="Ascending" />
+                        <DataGridTextColumn Binding="{Binding Title}" Header="Material" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
 
                 <DataGrid Name="PartsDG" PreviewMouseDoubleClick="DGs_MouseDoubleClick" CellEditEnding="DGs_CellEditEnding" BeginningEdit="DGs_BeginningEdit" DataContext="{StaticResource PartsCVS}" Grid.Row="6" SelectionMode="Single" RowHeaderWidth="0" RowHeaderTemplate="{x:Null}" AutoGenerateColumns="False" EnableRowVirtualization="True" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Title}" Header="Teile" Width="*" SortDirection="Ascending" />
+                        <DataGridTextColumn Binding="{Binding Title}" Header="Teile" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -149,7 +149,7 @@
 
                 <DataGrid Name="DefectsDG" PreviewMouseDoubleClick="DGs_MouseDoubleClick" CellEditEnding="DGs_CellEditEnding" BeginningEdit="DGs_BeginningEdit" DataContext="{StaticResource DefectsCVS}" SelectionMode="Extended" RowHeaderWidth="0" RowHeaderTemplate="{x:Null}" AutoGenerateColumns="False" EnableRowVirtualization="True" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Title}" Header="Mängel" Width="*" SortDirection="Ascending" />
+                        <DataGridTextColumn Binding="{Binding Title}" Header="Mängel" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
 
