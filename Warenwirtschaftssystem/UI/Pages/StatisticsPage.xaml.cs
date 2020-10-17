@@ -46,18 +46,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         private void Articles_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            #region Summe & Einträge aktualisieren
-
-            decimal sumSupplierProportion = 0;
-            decimal sum = 0;
-            foreach (SaleArticle a in Articles)
-            {
-                sumSupplierProportion += a.Payout;
-                sum += a.Price;
-            }
-            SumTB.Text = "Eigenanteil " + (sum - sumSupplierProportion).ToString("C") + " - Lieferantenanteil " + sumSupplierProportion.ToString("C") + " - Summe " + sum.ToString("C") + " - Einträge " + Articles.Count;
-
-            #endregion
+            recalculateSums();
 
             #region Spaltenbreite aktualisieren
 
@@ -68,10 +57,50 @@ namespace Warenwirtschaftssystem.UI.Pages
             #endregion
         }
 
+        private void recalculateSums()
+        {
+            #region Summe & Einträge aktualisieren
+
+            decimal sumSupplierProportion = 0;
+            decimal sum = 0;
+            int count = 0;
+
+            if (ArticlesDG.SelectedItems.Count == 0)
+            {
+                foreach (SaleArticle a in Articles)
+                {
+                    sumSupplierProportion += a.Payout;
+                    sum += a.Price;
+                    count++;
+                }
+            } else
+            {
+                foreach (var a in ArticlesDG.SelectedItems)
+                {
+                    if (a is SaleArticle article)
+                    {
+                        sumSupplierProportion += article.Payout;
+                        sum += article.Price;
+                        count++;
+                    }
+                }
+            }
+
+            SumTB.Text = "Eigenanteil " + (sum - sumSupplierProportion).ToString("C") + " - Lieferantenanteil " + sumSupplierProportion.ToString("C") + " - Summe " + sum.ToString("C") + " - Einträge " + count;
+
+            #endregion
+        }
+
         #endregion
 
         private void ApplyDateRangeBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (DateRangeFromDTP.Value.HasValue && DateRangeToDTP.Value.HasValue && DateRangeFromDTP.Value.Value > DateRangeToDTP.Value.Value)
+            {
+                return;
+            }
+
+
             if (DateRangeFromDTP.Value != null && DateRangeToDTP.Value != null && (FromDateTime == null || DateRangeFromDTP.Value != FromDateTime) && (ToDateTime == null || DateRangeToDTP.Value != ToDateTime))
             {
                 Articles.Clear();
@@ -161,6 +190,11 @@ namespace Warenwirtschaftssystem.UI.Pages
                     new InvoiceDoc(Data, article.Sale).CreateAndPrintDocument();
                 }
             }
+        }
+
+        private void ArticlesDG_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            recalculateSums();
         }
     }
 
