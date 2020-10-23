@@ -47,6 +47,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         private DataGrid FocusedDG;
         private Key[] FilterLetterKeys = { Key.A, Key.B, Key.C, Key.D, Key.E, Key.F, Key.G, Key.H, Key.I, Key.J, Key.K, Key.L, Key.M, Key.N, Key.O, Key.P, Key.Q, Key.R, Key.S, Key.T, Key.U, Key.V, Key.W, Key.X, Key.Y, Key.Z };
         private readonly Key[] FilterNumPadKeys = { Key.NumPad0, Key.NumPad1, Key.NumPad2, Key.NumPad3, Key.NumPad4, Key.NumPad5, Key.NumPad6, Key.NumPad7, Key.NumPad8, Key.NumPad9 };
+        private readonly Key[] FilterNumKeys = { Key.D0, Key.D1, Key.D2, Key.D3, Key.D4, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9 };
         private DataGrid[] DataGrids;
         private bool DGInEditingMode = false;
         private bool DisableEnteringEditingMode = true;
@@ -655,16 +656,16 @@ namespace Warenwirtschaftssystem.UI.Pages
         }
 
         private string ParseKey(Key key)
-        {
+        {         
             if (FilterLetterKeys.Contains(key))
                 return key.ToString();
             else if (FilterLetterKeys.Contains(key))
             {
-                return "" + key.ToString()[1];
+                return key.ToString()[1].ToString();
             }
-            else if (FilterNumPadKeys.Contains(key))
+            else if (FilterNumPadKeys.Contains(key) || FilterNumKeys.Contains(key))
             {
-                return "" + key.ToString().Last();
+                return key.ToString().Last().ToString();
             }
             else if (key == Key.Oem1)
                 return "ü";
@@ -687,7 +688,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                         switch (FocusedDG.Name)
                         {
                             case "GenderDG":
-                                var gender = (GenderCVS.Source as ObservableCollection<Gender>).Where(i => i.Description.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                                var gender = (GenderCVS.Source as ObservableCollection<Gender>).Where(i => i.Description.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).OrderBy(i => i.Description).FirstOrDefault();
                                 if (gender != null)
                                 {
                                     GenderDG.SelectedItem = gender;
@@ -695,7 +696,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "CategoriesDG":
-                                var category = (CategoriesCVS.Source as ObservableCollection<Category>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                                var category = (CategoriesCVS.Source as ObservableCollection<Category>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).OrderBy(i => i.Title).FirstOrDefault();
                                 if (category != null)
                                 {
                                     CategoriesDG.SelectedItem = category;
@@ -703,7 +704,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "BrandsDG":
-                                var brand = (BrandsCVS.Source as ObservableCollection<Brand>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                                var brand = (BrandsCVS.Source as ObservableCollection<Brand>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).OrderBy(i => i.Title).FirstOrDefault();
                                 if (brand != null)
                                 {
                                     BrandsDG.SelectedItem = brand;
@@ -711,7 +712,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "SizesDG":
-                                var size = (SizesCVS.Source as ObservableCollection<Model.Db.Size>).Where(i => i.Value.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                                var size = (SizesCVS.Source as ObservableCollection<Model.Db.Size>).Where(i => i.Value.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).OrderBy(i => i.Value).FirstOrDefault();
                                 if (size != null)
                                 {
                                     SizesDG.SelectedItem = size;
@@ -719,7 +720,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "ColorsDG":
-                                var color = (ColorsCVS.Source as ObservableCollection<Model.Db.Color>).Where(i => i.Description.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                                var color = (ColorsCVS.Source as ObservableCollection<Model.Db.Color>).Where(i => i.Description.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).OrderBy(i => i.Description).FirstOrDefault();
                                 if (color != null)
                                 {
                                     ColorsDG.SelectedItem = color;
@@ -727,7 +728,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "MaterialsDG":
-                                var material = (MaterialsCVS.Source as ObservableCollection<Material>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                                var material = (MaterialsCVS.Source as ObservableCollection<Material>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).OrderBy(i => i.Title).FirstOrDefault();
                                 if (material != null)
                                 {
                                     MaterialsDG.SelectedItem = material;
@@ -735,7 +736,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "PartsDG":
-                                var parts = (PartsCVS.Source as ObservableCollection<Part>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                                var parts = (PartsCVS.Source as ObservableCollection<Part>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).OrderBy(i => i.Title).FirstOrDefault();
                                 if (parts != null)
                                 {
                                     PartsDG.SelectedItem = parts;
@@ -743,7 +744,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "DefectsDG":
-                                var defect = (DefectsCVS.Source as ObservableCollection<Defect>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                                var defect = (DefectsCVS.Source as ObservableCollection<Defect>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).OrderBy(i => i.Title).FirstOrDefault();
                                 if (defect != null)
                                 {
                                     DefectsDG.SelectedItem = defect;
@@ -751,7 +752,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                                 }
                                 break;
                             case "TypesDG":
-                                var type = (TypesCVS.Source as ObservableCollection<Model.Db.Type>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                                var type = (TypesCVS.Source as ObservableCollection<Model.Db.Type>).Where(i => i.Title.StartsWith(filter, StringComparison.CurrentCultureIgnoreCase)).OrderBy(i => i.Title).FirstOrDefault();
                                 if (type != null)
                                 {
                                     TypesDG.SelectedItem = type;
@@ -839,7 +840,6 @@ namespace Warenwirtschaftssystem.UI.Pages
                 Article.Defects = null;
 
             Article.GenerateDescription();
-            Article.OnPropertyChanged("Description");
 
             PopulateAutoCompleteEntries();
         }
@@ -1035,7 +1035,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         #region PriceTB auto completion
         private PricesProvider SuggestionsProvider = new PricesProvider();
 
-        private async void PopulateAutoCompleteEntries()
+        private void PopulateAutoCompleteEntries()
         {
             SuggestionsProvider.Suggestions.Clear();
 
@@ -1044,19 +1044,19 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             List<decimal> results;
             if (Article.Gender == null)
-                results = await MainDb.Articles.Where(a => a.Category != null && a.Category.Id == Article.Category.Id && a.Type != null && a.Type.Id == Article.Type.Id && a.Brand != null && a.Brand.Id == Article.Brand.Id)
+                results = MainDb.Articles.Where(a => a.Category != null && a.Category.Id == Article.Category.Id && a.Type != null && a.Type.Id == Article.Type.Id && a.Brand != null && a.Brand.Id == Article.Brand.Id)
                     .Select(a => a.Price)
                     .Distinct()
                     .OrderByDescending(p => p)
                     .Take(20)
-                    .ToListAsync();
+                    .ToList();
             else
-                results = await MainDb.Articles.Where(a => a.Gender != null && a.Gender.Id == Article.Gender.Id && a.Category != null && a.Category.Id == Article.Category.Id && a.Type != null && a.Type.Id == Article.Type.Id && a.Brand != null && a.Brand.Id == Article.Brand.Id)
+                results = MainDb.Articles.Where(a => a.Gender != null && a.Gender.Id == Article.Gender.Id && a.Category != null && a.Category.Id == Article.Category.Id && a.Type != null && a.Type.Id == Article.Type.Id && a.Brand != null && a.Brand.Id == Article.Brand.Id)
                     .Select(a => a.Price)
                     .Distinct()
                     .OrderByDescending(p => p)
                     .Take(20)
-                    .ToListAsync();
+                    .ToList();
 
             foreach (var result in results)
             {

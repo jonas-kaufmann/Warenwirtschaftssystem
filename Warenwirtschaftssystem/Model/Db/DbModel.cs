@@ -314,6 +314,8 @@
                     _description += "-";
                 _description += Parts.Title;
             }
+
+            OnPropertyChanged(nameof(Description));
         }
 
         [NotMapped] public DateTime? Sold { get; set; }
