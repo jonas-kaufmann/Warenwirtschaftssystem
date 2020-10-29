@@ -112,6 +112,11 @@
 
         public virtual ObservableCollection<Article> Articles { get; set; }
         public virtual ICollection<ArticleReservation> Reservations { get; set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     [Table("Reservations")]
@@ -314,8 +319,6 @@
                     _description += "-";
                 _description += Parts.Title;
             }
-
-            OnPropertyChanged(nameof(Description));
         }
 
         [NotMapped] public DateTime? Sold { get; set; }
@@ -476,6 +479,11 @@
                 Type = Type
             };
         }
+
+        public override string ToString()
+        {
+            return Description;
+        }
     }
 
     [Table("Colors")]
@@ -488,6 +496,11 @@
         public string ColorCode { get; set; }
 
         public virtual ObservableCollection<Article> Articles { get; set; }
+
+        public override string ToString()
+        {
+            return Description;
+        }
     }
 
     [Table("Gender")]
@@ -498,6 +511,11 @@
         public int Id { get; set; }
         public string Description { get; set; }
         public string Short { get; set; }
+
+        public override string ToString()
+        {
+            return Description;
+        }
     }
 
     [Table("Categories")]
@@ -509,6 +527,11 @@
         public string Title { get; set; }
 
         public virtual ObservableCollection<Type> Types { get; set; }
+
+        public override string ToString()
+        {
+            return Title;
+        }
     }
 
     [Table("Types")]
@@ -518,6 +541,11 @@
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Title { get; set; }
+
+        public override string ToString()
+        {
+            return Title;
+        }
     }
 
     [Table("Sizes")]
@@ -527,6 +555,11 @@
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Value { get; set; }
+
+        public override string ToString()
+        {
+            return Value;
+        }
     }
 
     [Table("Materials")]
@@ -538,6 +571,11 @@
         public string Title { get; set; }
 
         public virtual ObservableCollection<Article> Articles { get; set; }
+
+        public override string ToString()
+        {
+            return Title;
+        }
     }
 
     [Table("Parts")]
@@ -547,6 +585,11 @@
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Title { get; set; }
+
+        public override string ToString()
+        {
+            return Title;
+        }
     }
 
     [Table("Brands")]
@@ -558,6 +601,11 @@
         public string Title { get; set; }
 
         public virtual ObservableCollection<Article> Articles { get; set; }
+
+        public override string ToString()
+        {
+            return Title;
+        }
     }
 
     [Table("Defects")]
@@ -569,6 +617,11 @@
         public string Title { get; set; }
 
         public virtual ObservableCollection<Article> Articles { get; set; }
+
+        public override string ToString()
+        {
+            return Title;
+        }
     }
 
     [Table("GraduationSupplierProportion")]
