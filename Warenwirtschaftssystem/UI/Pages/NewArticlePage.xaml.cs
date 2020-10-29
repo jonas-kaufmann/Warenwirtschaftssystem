@@ -316,31 +316,37 @@ namespace Warenwirtschaftssystem.UI.Pages
             // Size
             SizesDG.DataGrid.SelectedItem = Article.Size;
             // Materials
-            if (Article.Materials != null)
+            if (Article.Materials != null && Article.Materials.Count > 0)
             {
                 foreach (Material m in Article.Materials)
                 {
                     MaterialsDG.DataGrid.SelectedItems.Add(m);
                 }
             }
+            else
+                MaterialsDG.DataGrid.SelectedItem = null;
             // Parts
             PartsDG.DataGrid.SelectedItem = Article.Parts;
             // Defects
-            if (Article.Defects != null)
+            if (Article.Defects != null && Article.Defects.Count > 0)
             {
                 foreach (Defect d in Article.Defects)
                 {
                     DefectsDG.DataGrid.SelectedItems.Add(d);
                 }
             }
+            else
+                DefectsDG.DataGrid.SelectedItem = null;
             // Colors
-            if (Article.Colors != null)
+            if (Article.Colors != null && Article.Colors.Count > 0)
             {
                 foreach (Color c in Article.Colors)
                 {
                     ColorsDG.DataGrid.SelectedItems.Add(c);
                 }
             }
+            else
+                ColorsDG.DataGrid.SelectedItem = null;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
