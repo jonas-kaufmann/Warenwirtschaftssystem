@@ -29,13 +29,13 @@ namespace Warenwirtschaftssystem.UI.Controls
         #region Grid
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
-            ContentPresenter.Content = DataGrid;
-            CollectionViewSource = (CollectionViewSource)DataGrid.DataContext;
-            CollectionViewSource.Filter += CollectionViewSource_Filter;
-
             DataGrid.BeginningEdit += DataGrid_BeginningEdit;
             DataGrid.CellEditEnding += DataGrid_CellEditEnding;
             DataGrid.RowEditEnding += DataGrid_RowEditEnding;
+
+            ContentPresenter.Content = DataGrid;
+            CollectionViewSource = (CollectionViewSource)DataGrid.DataContext;
+            CollectionViewSource.Filter += CollectionViewSource_Filter;
         }
         #endregion
 

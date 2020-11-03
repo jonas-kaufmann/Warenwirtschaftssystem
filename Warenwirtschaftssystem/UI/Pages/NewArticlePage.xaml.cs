@@ -316,37 +316,53 @@ namespace Warenwirtschaftssystem.UI.Pages
             // Size
             SizesDG.DataGrid.SelectedItem = Article.Size;
             // Materials
-            if (Article.Materials != null && Article.Materials.Count > 0)
+            if (Article.Materials == null || Article.Materials.Count == 0)
+            {
+                MaterialsDG.DataGrid.SelectedItem = null;
+            } else if(Article.Materials.Count == 1)
+            {
+                MaterialsDG.DataGrid.SelectedItem = Article.Materials[0];
+            } else
             {
                 foreach (Material m in Article.Materials)
                 {
                     MaterialsDG.DataGrid.SelectedItems.Add(m);
                 }
             }
-            else
-                MaterialsDG.DataGrid.SelectedItem = null;
             // Parts
             PartsDG.DataGrid.SelectedItem = Article.Parts;
             // Defects
-            if (Article.Defects != null && Article.Defects.Count > 0)
+            if (Article.Defects == null || Article.Defects.Count == 0)
+            {
+                DefectsDG.DataGrid.SelectedItem = null;
+            }
+            else if (Article.Defects.Count == 1)
+            {
+                DefectsDG.DataGrid.SelectedItem = Article.Defects[0];
+            }
+            else
             {
                 foreach (Defect d in Article.Defects)
                 {
                     DefectsDG.DataGrid.SelectedItems.Add(d);
                 }
             }
-            else
-                DefectsDG.DataGrid.SelectedItem = null;
             // Colors
-            if (Article.Colors != null && Article.Colors.Count > 0)
+            if (Article.Colors == null || Article.Colors.Count == 0)
+            {
+                ColorsDG.DataGrid.SelectedItem = null;
+            }
+            else if (Article.Colors.Count == 1)
+            {
+                ColorsDG.DataGrid.SelectedItem = Article.Colors[0];
+            }
+            else
             {
                 foreach (Color c in Article.Colors)
                 {
                     ColorsDG.DataGrid.SelectedItems.Add(c);
                 }
             }
-            else
-                ColorsDG.DataGrid.SelectedItem = null;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)

@@ -80,7 +80,8 @@
                                   CanUserResizeColumns="False"
                                   CanUserResizeRows="False"
                                   HorizontalScrollBarVisibility="Disabled"
-                                  ItemsSource="{Binding}">
+                                  ItemsSource="{Binding}"
+                                  SelectedItem="{x:Null}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Description}"
                                                     Header="Geschlecht"
@@ -108,7 +109,8 @@
                                   CanUserResizeColumns="False"
                                   CanUserResizeRows="False"
                                   HorizontalScrollBarVisibility="Disabled"
-                                  ItemsSource="{Binding}">
+                                  ItemsSource="{Binding}"
+                                  SelectedItem="{x:Null}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Title}"
                                                     Header="Kategorie"
@@ -133,7 +135,8 @@
                                   CanUserResizeColumns="False"
                                   CanUserResizeRows="False"
                                   HorizontalScrollBarVisibility="Disabled"
-                                  ItemsSource="{Binding}">
+                                  ItemsSource="{Binding}"
+                                  SelectedItem="{x:Null}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Title}"
                                                     Header="Art (abhängig von Kategorie)"
@@ -158,7 +161,8 @@
                                   CanUserResizeColumns="False"
                                   CanUserResizeRows="False"
                                   HorizontalScrollBarVisibility="Disabled"
-                                  ItemsSource="{Binding}">
+                                  ItemsSource="{Binding}"
+                                  SelectedItem="{x:Null}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Title}"
                                                     Header="Marke"
@@ -194,7 +198,8 @@
                                   CanUserResizeColumns="False"
                                   CanUserResizeRows="False"
                                   HorizontalScrollBarVisibility="Disabled"
-                                  ItemsSource="{Binding}">
+                                  ItemsSource="{Binding}"
+                                  SelectedItem="{x:Null}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Value}"
                                                     Header="Größe"
@@ -219,7 +224,8 @@
                                   CanUserResizeColumns="False"
                                   CanUserResizeRows="False"
                                   HorizontalScrollBarVisibility="Disabled"
-                                  ItemsSource="{Binding}">
+                                  ItemsSource="{Binding}"
+                                  SelectedItem="{x:Null}">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn CellStyle="{StaticResource ColorDGCell}"
                                                         Header="Farbe"
@@ -258,7 +264,8 @@
                                   CanUserResizeColumns="False"
                                   CanUserResizeRows="False"
                                   HorizontalScrollBarVisibility="Disabled"
-                                  ItemsSource="{Binding}">
+                                  ItemsSource="{Binding}"
+                                  SelectedItem="{x:Null}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Title}"
                                                     Header="Material"
@@ -283,7 +290,8 @@
                                   CanUserResizeColumns="False"
                                   CanUserResizeRows="False"
                                   HorizontalScrollBarVisibility="Disabled"
-                                  ItemsSource="{Binding}">
+                                  ItemsSource="{Binding}"
+                                  SelectedItem="{x:Null}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Title}"
                                                     Header="Teile"
@@ -322,7 +330,8 @@
                                   CanUserResizeColumns="False"
                                   CanUserResizeRows="False"
                                   HorizontalScrollBarVisibility="Disabled"
-                                  ItemsSource="{Binding}">
+                                  ItemsSource="{Binding}"
+                                  SelectedItem="{x:Null}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Title}"
                                                     Header="Mängel"
