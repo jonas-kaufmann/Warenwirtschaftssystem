@@ -35,7 +35,10 @@ namespace Warenwirtschaftssystem.UI.Controls
 
             ContentPresenter.Content = DataGrid;
             CollectionViewSource = (CollectionViewSource)DataGrid.DataContext;
+
+            RememberSelectedItems();
             CollectionViewSource.Filter += CollectionViewSource_Filter;
+            RestoreSelectedItems();
         }
         #endregion
 
@@ -186,9 +189,13 @@ namespace Warenwirtschaftssystem.UI.Controls
             {
                 if (SelectedItems[0] == null)
                     DataGrid.SelectedItem = null;
+                else
+                    DataGrid.SelectedItem = SelectedItems[0];
             } else
             {
-                foreach (var item in SelectedItems)
+                DataGrid.SelectedItem = SelectedItems[0];
+
+                foreach (var item in SelectedItems[1..])
                 {
                     if (!DataGrid.SelectedItems.Contains(item))
                         DataGrid.SelectedItems.Add(item);

@@ -319,15 +319,13 @@ namespace Warenwirtschaftssystem.UI.Pages
             if (Article.Materials == null || Article.Materials.Count == 0)
             {
                 MaterialsDG.DataGrid.SelectedItem = null;
-            } else if(Article.Materials.Count == 1)
+            }
+            else
             {
                 MaterialsDG.DataGrid.SelectedItem = Article.Materials[0];
-            } else
-            {
-                foreach (Material m in Article.Materials)
-                {
-                    MaterialsDG.DataGrid.SelectedItems.Add(m);
-                }
+
+                for (int i = 1; i < Article.Materials.Count; i++)
+                    MaterialsDG.DataGrid.SelectedItems.Add(Article.Materials[i]);
             }
             // Parts
             PartsDG.DataGrid.SelectedItem = Article.Parts;
@@ -336,32 +334,24 @@ namespace Warenwirtschaftssystem.UI.Pages
             {
                 DefectsDG.DataGrid.SelectedItem = null;
             }
-            else if (Article.Defects.Count == 1)
-            {
-                DefectsDG.DataGrid.SelectedItem = Article.Defects[0];
-            }
             else
             {
-                foreach (Defect d in Article.Defects)
-                {
-                    DefectsDG.DataGrid.SelectedItems.Add(d);
-                }
+                DefectsDG.DataGrid.SelectedItem = Article.Defects[0];
+
+                for (int i = 1; i < Article.Defects.Count; i++)
+                    DefectsDG.DataGrid.SelectedItems.Add(Article.Defects[i]);
             }
             // Colors
             if (Article.Colors == null || Article.Colors.Count == 0)
             {
                 ColorsDG.DataGrid.SelectedItem = null;
             }
-            else if (Article.Colors.Count == 1)
-            {
-                ColorsDG.DataGrid.SelectedItem = Article.Colors[0];
-            }
             else
             {
-                foreach (Color c in Article.Colors)
-                {
-                    ColorsDG.DataGrid.SelectedItems.Add(c);
-                }
+                ColorsDG.DataGrid.SelectedItem = Article.Colors[0];
+
+                for (int i = 1; i < Article.Colors.Count; i++)
+                    ColorsDG.DataGrid.SelectedItems.Add(Article.Colors[i]);
             }
         }
 
