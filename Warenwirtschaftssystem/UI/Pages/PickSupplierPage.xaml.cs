@@ -1,5 +1,5 @@
-﻿using System;
-using System.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -39,7 +39,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             SuppliersCVS = FindResource("SuppliersCVS") as CollectionViewSource;
 
             MainDb.Suppliers.Load();
-            SuppliersCVS.Source = MainDb.Suppliers.Local;
+            SuppliersCVS.Source = MainDb.Suppliers.Local.ToObservableCollection();
 
             #endregion
         }
@@ -88,7 +88,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             if (newSupplierPage.Supplier != null)
             {
                 MainDb.Suppliers.Add(newSupplierPage.Supplier);
-                MainDb.SaveChanges();
+                MainDb.SaveChangesRetryOnUserInput();
                 SelectedSupplier = newSupplierPage.Supplier;
                 OwnerWindow.Close();
             }

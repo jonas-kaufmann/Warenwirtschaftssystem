@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WWS_Android.Views.SettingsPage"
+             xmlns:vm="clr-namespace:WWS_Android.ViewModels"
+             Title="{Binding Title}">
+
+    <ContentPage.BindingContext>
+        <vm:SettingsViewModel />
+    </ContentPage.BindingContext>
+
+    <StackLayout>
+        <Button Text="Click Me!" />
+    </StackLayout>
+
+</ContentPage>

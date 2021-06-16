@@ -36,7 +36,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             DateRangeFromDTP.Value = DateTime.Now.Date;
             DateRangeToDTP.Value = DateTime.Now.Date.AddMilliseconds(86400000 - 1);
 
-            MainDb = new DbModel(data.MainConnectionString);
+            MainDb = Data.CreateDbConnection();
             ArticlesCVS = (CollectionViewSource)FindResource("ArticlesCVS");
             ArticlesCVS.Source = Articles;
             Articles.CollectionChanged += Articles_CollectionChanged;
@@ -136,7 +136,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                     SavedArticleAttributes savedArticleAttributes = null;
                     if (s.SavedArticleAttributes != null && s.SavedArticleAttributes.Count != 0)
                     {
-                        savedArticleAttributes = s.SavedArticleAttributes.Where(sa => sa.ArticleId == a.Id).FirstOrDefault();
+                        savedArticleAttributes = s.SavedArticleAttributes.Where(sa => sa.Article.Id == a.Id).FirstOrDefault();
                     }
 
                     if (savedArticleAttributes == null)

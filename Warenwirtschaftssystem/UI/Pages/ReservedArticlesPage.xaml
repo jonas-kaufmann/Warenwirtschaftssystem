@@ -4,7 +4,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
-      xmlns:db="clr-namespace:Warenwirtschaftssystem.Model.Db"
       mc:Ignorable="d" 
       Title="ReservedArticlesPage"
       Height="400"
@@ -12,7 +11,7 @@
       FocusManager.FocusedElement="{Binding ElementName=SupplierIdTb}">
 
     <Page.Resources>
-        <CollectionViewSource x:Key="ArticlesCVS" d:DesignSource="{d:DesignInstance {x:Type db:Article}, CreateList=True}"/>
+        <CollectionViewSource x:Key="ArticlesCVS" />
     </Page.Resources>
 
     <DockPanel DataContext="{StaticResource ArticlesCVS}" Margin="8">

@@ -26,7 +26,7 @@
         </StackPanel>
 
         <Grid>
-            <DataGrid Name="LabelsDG" MouseDoubleClick="LabelsDG_MouseDoubleClick" CanUserDeleteRows="True" CanUserSortColumns="False" CanUserAddRows="False" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" RowHeaderWidth="0" CanUserReorderColumns="False" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}">
+            <DataGrid Name="LabelsDG" MouseDoubleClick="LabelsDG_MouseDoubleClick" CanUserDeleteRows="True" CanUserSortColumns="False" CanUserAddRows="False" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" RowHeaderWidth="0" CanUserReorderColumns="False" AutoGenerateColumns="False" EnableRowVirtualization="True">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Nr">
                         <DataGridTemplateColumn.CellTemplate>

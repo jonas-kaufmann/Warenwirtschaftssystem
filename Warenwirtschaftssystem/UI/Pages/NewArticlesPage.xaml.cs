@@ -48,7 +48,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             if (!DisableClosedEvent)
             {
                 MainDb.Articles.RemoveRange(Articles);
-                MainDb.SaveChanges();
+                MainDb.SaveChangesRetryOnUserInput();
             }
         }
 
@@ -71,7 +71,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
             MainDb.Articles.RemoveRange(Articles);
-            MainDb.SaveChanges();
+            MainDb.SaveChangesRetryOnUserInput();
 
             OwnerWindow.Title = "Artikel";
             OwnerWindow.Content = ArticlePage;
@@ -89,7 +89,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                 return;
 
             Document document = new Documents(Data, MainDb).AddDocument(DocumentType.Submission, Articles.ToList(), null, Supplier, false);
-            MainDb.SaveChanges();
+            MainDb.SaveChangesRetryOnUserInput();
 
             if (result == MessageBoxResult.Yes)
             {
@@ -133,7 +133,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             if (ArticlesDG.Items.Count > 0)
             {
-                MainDb.SaveChanges();
+                MainDb.SaveChangesRetryOnUserInput();
 
                 List<Article> articles = Articles.ToList();
 

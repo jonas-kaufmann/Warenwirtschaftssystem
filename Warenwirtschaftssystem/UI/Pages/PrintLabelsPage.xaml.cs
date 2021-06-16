@@ -44,7 +44,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                 ShownArticles.Add(labelArticle);
             }
 
-			LabelsDG.DataContext = ShownArticles;
+            LabelsDG.ItemsSource = ShownArticles;
         }
 
         private void LabelArticle_PropertyChanged(object sender, PropertyChangedEventArgs e)

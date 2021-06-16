@@ -85,8 +85,8 @@ namespace Warenwirtschaftssystem.UI.Pages
                         }
                         else
                         {
-                            GraduationSupplierProportion supplierGraduationProportion = MainDb.GraduationSupplierProportion.Where(sGP => sGP.FromPrice <= Article.Price).OrderByDescending(sGP => sGP.FromPrice).First();
-                            Article.SupplierProportion = Article.Price * supplierGraduationProportion.SupplierProportion / 100;
+                            SupplierProportion supplierGraduationProportion = MainDb.SupplierProportions.Where(sGP => sGP.FromPrice <= Article.Price).OrderByDescending(sGP => sGP.FromPrice).First();
+                            Article.SupplierProportion = Article.Price * supplierGraduationProportion.Proportion / 100;
                         }
 
                         SaveBtn.IsEnabled = true;

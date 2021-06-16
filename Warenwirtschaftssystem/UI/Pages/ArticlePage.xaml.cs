@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,7 +36,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             Data = data;
             OwnerWindow = ownerWindow;
-            MainDb = new DbModel(data.MainConnectionString);
+            MainDb = Data.CreateDbConnection();
 
             InitializeComponent();
 
@@ -53,7 +53,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             Data = data;
             OwnerWindow = ownerWindow;
-            MainDb = new DbModel(data.MainConnectionString);
+            MainDb = Data.CreateDbConnection();
 
             InitializeComponent();
 
@@ -78,7 +78,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             Data = data;
             OwnerWindow = ownerWindow;
-            MainDb = new DbModel(data.MainConnectionString);
+            MainDb = Data.CreateDbConnection();
 
             InitializeComponent();
 
@@ -166,13 +166,14 @@ namespace Warenwirtschaftssystem.UI.Pages
                 articles = await MainDb.Articles.Where(a => (!artIdSet || a.Id == artId)
                     && (!statusSet || a.Status == status.Value)
                     && (!suppIdSet || a.Supplier.Id == suppId)
-                    && (!genderSet || a.Gender.Description.ToLower().Contains(gender))
-                    && (!categorySet || a.Category.Title.ToLower().Contains(category))
-                    && (!typeSet || a.Type.Title.ToLower().Contains(type))
-                    && (!brandSet || a.Brand.Title.ToLower().Contains(brand))
-                    && (!sizeSet || a.Size.Value.ToLower().Contains(size))
-                    && (!materialSet || a.Materials.Where(m => m.Title.ToLower().Contains(material)).FirstOrDefault() != null))
+                    && (!genderSet || a.Gender.Name.ToLower().Contains(gender))
+                    && (!categorySet || a.Category.Name.ToLower().Contains(category))
+                    && (!typeSet || a.SubCategory.Name.ToLower().Contains(type))
+                    && (!brandSet || a.Brand.Name.ToLower().Contains(brand))
+                    && (!sizeSet || a.Size.Name.ToLower().Contains(size))
+                    && (!materialSet || a.Materials.Where(m => m.Name.ToLower().Contains(material)).FirstOrDefault() != null))
                     .OrderByDescending(a => a.Id)
+                    .Include(a => a.Documents)
                     .ToListAsync(cancellationToken);
 
                 if (cancellationToken.IsCancellationRequested)
@@ -182,12 +183,15 @@ namespace Warenwirtschaftssystem.UI.Pages
                 {
                     if (article.Status == Status.Sold || article.Status == Status.PayedOut)
                     {
-                        Document document = await MainDb.Documents.Where(d => d.Articles.Where(a => a.Id == article.Id).FirstOrDefault() != null).OrderByDescending(d => d.Id).FirstOrDefaultAsync(cancellationToken);
+                        var document = article.Documents.OrderByDescending(d => d.Id).FirstOrDefault();
                         if (document != null)
                         {
                             article.Sold = document.DateTime;
                         }
                     }
+
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
                 }
             }
             catch (Exception e)
@@ -257,7 +261,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             if (Documents != null)
                 Documents.PrepareDocumentsToBeSaved();
 
-            MainDb.SaveChanges();
+            MainDb.SaveChangesRetryOnUserInput();
             MainDb.Dispose();
         }
 
@@ -293,7 +297,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
             else
             {
-                DbModel mainDb = new DbModel(Data.MainConnectionString);
+                DbModel mainDb = Data.CreateDbConnection();
                 Supplier supplier = null;
                 if (!(int.TryParse(FilterSupplierTb.Text, out int id) && (supplier = MainDb.Suppliers.Where(s => s.Id == id).SingleOrDefault()) != null))
                 {
@@ -611,7 +615,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                 else
                 {
                     Document document = Documents.AddDocument(DocumentType.Return, articlesToReturn, null, supplier, false);
-                    MainDb.SaveChanges();
+                    MainDb.SaveChangesRetryOnUserInput();
                     new ReturnDoc(Data, document).CreateAndPrintDocument();
                 }
             }

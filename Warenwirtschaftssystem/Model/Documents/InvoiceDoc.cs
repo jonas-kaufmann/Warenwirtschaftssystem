@@ -33,7 +33,7 @@ namespace Warenwirtschaftssystem.Model.Documents
         public InvoiceDoc(DataModel data, Document sale)
         {
             Data = data;
-            MainDb = new DbModel(data.MainConnectionString);
+            MainDb = Data.CreateDbConnection();
             Customer = sale.Supplier;
             DocumentId = sale.Id;
 
@@ -42,7 +42,7 @@ namespace Warenwirtschaftssystem.Model.Documents
                 SavedArticleAttributes savedArticleAttributes = null;
                 if (sale.SavedArticleAttributes != null && sale.SavedArticleAttributes.Count != 0)
                 {
-                    savedArticleAttributes = sale.SavedArticleAttributes.Where(s => s.ArticleId == a.Id).FirstOrDefault();
+                    savedArticleAttributes = sale.SavedArticleAttributes.Where(s => s.Article.Id == a.Id).FirstOrDefault();
                 }
 
                 if (savedArticleAttributes == null)
@@ -391,10 +391,7 @@ namespace Warenwirtschaftssystem.Model.Documents
             {
                 grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-                string defects = "*" + article.Defects[0].Title;
-
-                for (int i = 1; i < article.Defects.Count; i++)
-                    defects += ", " + article.Defects[i].Title;
+                string defects = "*" + ArticleAttributes.ToRepresentation(article.Defects);
 
                 tb = new TextBlock
                 {

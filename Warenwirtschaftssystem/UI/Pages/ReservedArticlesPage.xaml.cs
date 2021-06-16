@@ -4,10 +4,10 @@ using System.Windows.Input;
 using Warenwirtschaftssystem.Model.Db;
 using System.Linq;
 using System.Windows;
-using System.Data.Entity;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace Warenwirtschaftssystem.UI.Pages
 {
@@ -91,7 +91,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         public void OwnerWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            MainDb.SaveChanges();
+            MainDb.SaveChangesRetryOnUserInput();
         }
 
         private void ShowReservationExpired_Click(object sender, RoutedEventArgs e)

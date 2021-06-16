@@ -1,74 +1,138 @@
 ﻿<Page x:Class="Warenwirtschaftssystem.UI.Pages.CommercePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:system="clr-namespace:System;assembly=mscorlib"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
-      xmlns:db="clr-namespace:Warenwirtschaftssystem.Model.Db"
-      mc:Ignorable="d" 
+      mc:Ignorable="d"
       Title="CommercePage"
-      d:DesignWidth="800" d:DesignHeight="600">
+      d:DesignWidth="800"
+      d:DesignHeight="600">
 
     <Page.Resources>
-        <!-- Constants -->
-        <system:Int32 x:Key="ArticleIdTB_MinValue">1</system:Int32>
-        <system:Decimal x:Key="PriceTb_MinValue">0</system:Decimal>
         <!-- Binding -->
-        <CollectionViewSource x:Key="ArticlesCVS" d:DesignSource="{d:DesignInstance {x:Type db:Article}, CreateList=True}"/>
+        <CollectionViewSource x:Key="ArticlesCVS" />
     </Page.Resources>
 
+    <DockPanel DataContext="{StaticResource ArticlesCVS}"
+               Margin="8">
 
-    <DockPanel DataContext="{StaticResource ArticlesCVS}" Margin="8">
+        <Image DockPanel.Dock="Top"
+               Source="/Resources/selling.png"
+               Margin="0 0 0 8"
+               HorizontalAlignment="Left"
+               VerticalAlignment="Top"
+               Width="32" />
 
-        <Image DockPanel.Dock="Top" Source="/Resources/selling.png" Margin="0 0 0 8" HorizontalAlignment="Left" VerticalAlignment="Top" Width="32" />
-
-        <StackPanel Width="132" DockPanel.Dock="Left">
-            <Expander Header="Liste" IsExpanded="True" Padding="2" BorderBrush="LightGray">
+        <StackPanel Width="132"
+                    DockPanel.Dock="Left">
+            <Expander Header="Liste"
+                      IsExpanded="True"
+                      Padding="2"
+                      BorderBrush="LightGray">
                 <StackPanel>
-                    <toolkit:WatermarkTextBox Name="ArticleIdTB" KeyDown="ArticleIdTB_KeyDown" Watermark="Artikel-Nr"/>
-                    <Button Name="ClearArticlesBtn" Click="ClearArticlesBtn_Click" Margin="0 2 0 0" Content="Leeren &amp; Speichern" />
+                    <toolkit:WatermarkTextBox Name="ArticleIdTB"
+                                              KeyDown="ArticleIdTB_KeyDown"
+                                              Watermark="Artikel-Nr" />
+                    <Button Name="ClearArticlesBtn"
+                            Click="ClearArticlesBtn_Click"
+                            Margin="0 2 0 0"
+                            Content="Leeren &amp; Speichern" />
                 </StackPanel>
             </Expander>
-            <Expander Header="Reservierungen" Margin="0 4 0 0" IsExpanded="True" Padding="2" BorderBrush="LightGray">
+            <Expander Header="Reservierungen"
+                      Margin="0 4 0 0"
+                      IsExpanded="True"
+                      Padding="2"
+                      BorderBrush="LightGray">
                 <StackPanel>
-                    <Button Name="ReservedArticlesBtn" Content="Übersicht" Click="ReservedArticlesBtn_Click" />
+                    <Button Name="ReservedArticlesBtn"
+                            Content="Übersicht"
+                            Click="ReservedArticlesBtn_Click" />
                 </StackPanel>
             </Expander>
-            <Expander Header="Aktionen" Margin="0 4 0 0" IsExpanded="True" Padding="2" BorderBrush="LightGray">
+            <Expander Header="Aktionen"
+                      Margin="0 4 0 0"
+                      IsExpanded="True"
+                      Padding="2"
+                      BorderBrush="LightGray">
                 <StackPanel>
-                    <Button Name="ChangePriceBtn" Content="Preis/Lieferantenanteil&#xD;&#xA;ändern" Click="ChangePriceBtn_Click" TextBlock.TextAlignment="Center" />
+                    <Button Name="ChangePriceBtn"
+                            Content="Preis/Lieferantenanteil&#xD;&#xA;ändern"
+                            Click="ChangePriceBtn_Click"
+                            TextBlock.TextAlignment="Center" />
                 </StackPanel>
             </Expander>
         </StackPanel>
 
-        <StackPanel Margin="0 8 0 0" HorizontalAlignment="Right" Orientation="Horizontal" DockPanel.Dock="Bottom">
-            <Button Content="Verkaufen/Retoure [F12]" Name="SellBtn" Click="SellBtn_Click"/>
-            <Button Content="Reservieren [F10]" Name="ReserveBtn" Click="ReserveBtn_Click" Margin="2 0 0 0" />
+        <StackPanel Margin="0 8 0 0"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    DockPanel.Dock="Bottom">
+            <Button Content="Verkaufen/Retoure [F12]"
+                    Name="SellBtn"
+                    Click="SellBtn_Click" />
+            <Button Content="Reservieren [F10]"
+                    Name="ReserveBtn"
+                    Click="ReserveBtn_Click"
+                    Margin="2 0 0 0" />
         </StackPanel>
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="8"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="8"/>
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="8" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="8" />
+                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
-            <DataGrid Name="ArticlesDG" BeginningEdit="ArticlesDG_BeginningEdit" SelectionChanged="ArticlesDG_SelectionChanged" CellEditEnding="ArticlesDG_CellEditEnding" Grid.Row="0" Margin="8 0 0 0" CanUserAddRows="False" CanUserDeleteRows="True"  CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" RowHeaderWidth="0" CanUserReorderColumns="False" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}">
+            <DataGrid Name="ArticlesDG"
+                      SelectionChanged="ArticlesDG_SelectionChanged"
+                      Grid.Row="0"
+                      Margin="8 0 0 0"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="True"
+                      CanUserResizeRows="False"
+                      HorizontalScrollBarVisibility="Disabled"
+                      RowHeaderWidth="0"
+                      CanUserReorderColumns="False"
+                      AutoGenerateColumns="False"
+                      EnableRowVirtualization="True"
+                      ItemsSource="{Binding}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Nr" Binding="{Binding ConvertedId, Mode=OneTime}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Beschreibung" Binding="{Binding Description, Mode=OneTime}" Width="*" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Status" Binding="{Binding Status, Mode=OneWay}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Preis" Binding="{Binding Price, ConverterCulture=de-DE, StringFormat=C, Mode=TwoWay}" />
-                    <DataGridTextColumn Header="L-Anteil" Binding="{Binding SupplierProportion, ConverterCulture=de-DE, StringFormat=C, Mode=OneWay}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Verhältnis" Binding="{Binding Percentage, ConverterCulture=de-DE, StringFormat=P, Mode=OneWay}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Verkauft" Binding="{Binding Sold, ConverterCulture=de-DE, StringFormat=d, Mode=OneTime}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Abholung" Binding="{Binding PickUp, ConverterCulture=de-DE, StringFormat=d, Mode=OneTime}" IsReadOnly="True" />
-                    
+                    <DataGridTextColumn Header="Nr"
+                                        Binding="{Binding ConvertedId, Mode=OneTime}"
+                                        IsReadOnly="True" />
+                    <DataGridTextColumn Header="Beschreibung"
+                                        Binding="{Binding Description, Mode=OneTime}"
+                                        Width="*"
+                                        IsReadOnly="True" />
+                    <DataGridTextColumn Header="Status"
+                                        Binding="{Binding Status, Mode=OneWay}"
+                                        IsReadOnly="True" />
+                    <DataGridTextColumn Header="Preis"
+                                        Binding="{Binding Price, ConverterCulture=de-DE, StringFormat=C, Mode=OneWay}"
+                                        IsReadOnly="True"/>
+                    <DataGridTextColumn Header="L-Anteil"
+                                        Binding="{Binding SupplierProportion, ConverterCulture=de-DE, StringFormat=C, Mode=OneWay}"
+                                        IsReadOnly="True" />
+                    <DataGridTextColumn Header="Verhältnis"
+                                        Binding="{Binding Percentage, ConverterCulture=de-DE, StringFormat=P, Mode=OneWay}"
+                                        IsReadOnly="True" />
+                    <DataGridTextColumn Header="Verkauft"
+                                        Binding="{Binding Sold, ConverterCulture=de-DE, StringFormat=d, Mode=OneTime}"
+                                        IsReadOnly="True" />
+                    <DataGridTextColumn Header="Abholung"
+                                        Binding="{Binding PickUp, ConverterCulture=de-DE, StringFormat=d, Mode=OneTime}"
+                                        IsReadOnly="True" />
+
                 </DataGrid.Columns>
             </DataGrid>
-            <TextBlock Name="SumTB" HorizontalAlignment="Right" Grid.Row="2" FontWeight="Bold" Text="Anzahl 0 - Summe 0,00 €"/>
+            <TextBlock Name="SumTB"
+                       HorizontalAlignment="Right"
+                       Grid.Row="2"
+                       FontWeight="Bold"
+                       Text="Anzahl 0 - Summe 0,00 €" />
 
             <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>
@@ -82,14 +146,25 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Mängel" />
-                <DataGrid Name="DefectsDG" Grid.Column="2" IsEnabled="False" ItemsSource="{Binding Defects, Mode=OneTime}" HeadersVisibility="None" VerticalAlignment="Top" HorizontalAlignment="Left" AutoGenerateColumns="False" >
+                <DataGrid Name="DefectsDG"
+                          Grid.Column="2"
+                          IsEnabled="False"
+                          ItemsSource="{Binding Defects, Mode=OneTime}"
+                          HeadersVisibility="None"
+                          VerticalAlignment="Top"
+                          HorizontalAlignment="Left"
+                          AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Title, Mode=OneTime}" Width="*" />
+                        <DataGridTextColumn Binding="{Binding Name, Mode=OneTime}"
+                                            Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <TextBlock Grid.Column="4" Text="Bemerkungen" />
-                <TextBox Grid.Column="6" AcceptsReturn="True" Text="{Binding Notes, Mode=OneWayToSource}" />
+                <TextBlock Grid.Column="4"
+                           Text="Bemerkungen" />
+                <TextBox Grid.Column="6"
+                         AcceptsReturn="True"
+                         Text="{Binding Notes, Mode=OneWayToSource}" />
             </Grid>
         </Grid>
     </DockPanel>

@@ -11,8 +11,7 @@
       d:DesignHeight="600">
 
     <Page.Resources>
-        <CollectionViewSource x:Key="ArticlesCVS"
-                              d:DesignSource="{d:DesignInstance {x:Type local:SaleArticle}, CreateList=True}" />
+        <CollectionViewSource x:Key="ArticlesCVS" />
     </Page.Resources>
 
     <DockPanel Margin="8"

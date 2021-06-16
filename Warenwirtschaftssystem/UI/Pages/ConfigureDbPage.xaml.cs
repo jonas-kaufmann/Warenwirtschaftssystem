@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.Migrations;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 using Warenwirtschaftssystem.Model;
@@ -214,15 +213,9 @@ namespace Warenwirtschaftssystem.UI.Pages
                     mainDb = new Model.Db.DbModel(Data.MainConnectionString);
 
                     //Datenbank auf den neusten Stand bringen
-                    var configuration = new Migrations.Configuration
-                    {
-                        TargetDatabase = new DbConnectionInfo(Data.MainConnectionString, "System.Data.SqlClient")
-                    };
-                    var migrator = new DbMigrator(configuration);
-                    migrator.Update();
+                    mainDb.Database.Migrate();
 
                     //Verbindung testen
-
                     mainDb.Settings.Add(new Setting
                     {
                         Key = "ConnectionTest",

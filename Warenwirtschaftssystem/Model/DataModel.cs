@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using Warenwirtschaftssystem.Model.LocalAppData;
+using Warenwirtschaftssystem.Model.Db;
 
 namespace Warenwirtschaftssystem.Model
 {
@@ -14,6 +15,8 @@ namespace Warenwirtschaftssystem.Model
 
         public string MainConnectionString { get; set; }
         public StandardPrinters StandardPrinters { get; set; }
+
+        public DbModel CreateDbConnection() => new DbModel(MainConnectionString);
 
         // Konstruktor
         public DataModel()

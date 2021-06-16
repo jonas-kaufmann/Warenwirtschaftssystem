@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
@@ -10,6 +9,7 @@ using CsvHelper;
 using System.Text;
 using CsvHelper.Configuration;
 using System.Globalization;
+using Microsoft.Data.SqlClient;
 
 namespace Warenwirtschaftssystem.Model.Db
 {
@@ -27,9 +27,9 @@ namespace Warenwirtschaftssystem.Model.Db
         private List<Size> Sizes;
         private List<Color> Colors;
         private List<Material> Materials;
-        private List<Part> Parts;
+        private List<Parts> Parts;
         private List<Defect> Defects;
-        private List<GraduationSupplierProportion> GraduationSupplierProportions;
+        private List<SupplierProportion> GraduationSupplierProportions;
 
         private List<int> ParentGroupsGender;
         private List<int> ParentGroupsBrand;
@@ -152,14 +152,14 @@ namespace Warenwirtschaftssystem.Model.Db
                     supplierId++;
 
                     supplier.Company = reader["parFirma"] as string;
-                    supplier.Name = (reader["parVorname"] as string + " " + reader["parNachname"] as string).Trim();
+                    supplier.Name = ((reader["parVorname"] as string) + " " + reader["parNachname"] as string).Trim();
                     supplier.Street = reader["parStrasse"] as string;
                     supplier.Postcode = reader["parPLZ"] as string;
                     supplier.Place = reader["parOrt"] as string;
                     supplier.Phone = "";
                     supplier.EMail = reader["parEMail"] as string;
                     supplier.PickUp = (short)reader["parAbholungWo"];
-                    supplier.Notes = reader["parBesonderes"] as string + "\n\n" + reader["parAufgabe"] as string;
+                    supplier.Notes = (reader["parBesonderes"] as string) + "\n\n" + reader["parAufgabe"] as string;
                     supplier.CreationDate = (DateTime)reader["parDatumNeuanlage"];
 
                     if (reader["parAnrede"] as string == "Frau")
@@ -244,9 +244,8 @@ namespace Warenwirtschaftssystem.Model.Db
 
                 #region Gender
                 using (var reader = File.OpenText(ConversionFolder + "\\Geschlecht.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)
@@ -257,11 +256,11 @@ namespace Warenwirtschaftssystem.Model.Db
                         {
                             GenderConversion.Add(records[i].AltesAttribut, newAttribute);
 
-                            if (Genders.Where(g => g.Description == newAttribute).FirstOrDefault() == null)
+                            if (Genders.Where(g => g.Name == newAttribute).FirstOrDefault() == null)
                             {
                                 Genders.Add(new Gender
                                 {
-                                    Description = newAttribute,
+                                    Name = newAttribute,
                                     Short = "" + newAttribute[0]
                                 });
                             }
@@ -274,9 +273,8 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Category and Type
 
                 using (var reader = File.OpenText(ConversionFolder + "\\KategorienUndArten.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<CategoryType>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)
@@ -288,24 +286,24 @@ namespace Warenwirtschaftssystem.Model.Db
 
                         if (!string.IsNullOrWhiteSpace(record.AlteKategorie) && !string.IsNullOrWhiteSpace(record.NeueKategorie))
                         {
-                            Category category = Categories.Where(c => c.Title == record.NeueKategorie).FirstOrDefault();
+                            Category category = Categories.Where(c => c.Name == record.NeueKategorie).FirstOrDefault();
                             if (category == null)
                             {
                                 category = new Category
                                 {
-                                    Title = record.NeueKategorie
+                                    Name = record.NeueKategorie
                                 };
 
                                 Categories.Add(category);
                             }
 
-                            if (category.Types == null)
-                                category.Types = new ObservableCollection<Type>();
+                            if (category.SubCategories == null)
+                                category.SubCategories = new ObservableCollection<SubCategory>();
 
-                            if (record.NeueArt != "" && !category.Types.Any(t => t.Title == record.NeueArt))
-                                category.Types.Add(new Type
+                            if (record.NeueArt != "" && !category.SubCategories.Any(t => t.Name == record.NeueArt))
+                                category.SubCategories.Add(new SubCategory
                                 {
-                                    Title = record.NeueArt
+                                    Name = record.NeueArt
                                 });
                         }
                     }
@@ -316,9 +314,8 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Brand
 
                 using (var reader = File.OpenText(ConversionFolder + "\\Marken.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)
@@ -329,11 +326,11 @@ namespace Warenwirtschaftssystem.Model.Db
                         {
                             BrandConversion.Add(records[i].AltesAttribut, newAttribute);
 
-                            if (Brands.Where(b => b.Title == newAttribute).FirstOrDefault() == null)
+                            if (Brands.Where(b => b.Name == newAttribute).FirstOrDefault() == null)
                             {
                                 Brands.Add(new Brand
                                 {
-                                    Title = newAttribute
+                                    Name = newAttribute
                                 });
                             }
                         }
@@ -345,9 +342,8 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Size
 
                 using (var reader = new StreamReader(ConversionFolder + "\\Größen.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)
@@ -358,11 +354,11 @@ namespace Warenwirtschaftssystem.Model.Db
                         {
                             SizeConversion.Add(records[i].AltesAttribut, newAttribute);
 
-                            if (Sizes.Where(s => s.Value == newAttribute).FirstOrDefault() == null)
+                            if (Sizes.Where(s => s.Name == newAttribute).FirstOrDefault() == null)
                             {
                                 Sizes.Add(new Size
                                 {
-                                    Value = newAttribute
+                                    Name = newAttribute
                                 });
                             }
                         }
@@ -374,9 +370,8 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Color
 
                 using (var reader = new StreamReader(ConversionFolder + "\\Farben.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)
@@ -387,11 +382,11 @@ namespace Warenwirtschaftssystem.Model.Db
                         {
                             ColorConversion.Add(records[i].AltesAttribut, newAttribute);
 
-                            if (Colors.Where(c => c.Description == newAttribute).FirstOrDefault() == null)
+                            if (Colors.Where(c => c.Name == newAttribute).FirstOrDefault() == null)
                             {
                                 Colors.Add(new Color
                                 {
-                                    Description = newAttribute
+                                    Name = newAttribute
                                 });
                             }
                         }
@@ -403,9 +398,8 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Material
 
                 using (var reader = new StreamReader(ConversionFolder + "\\Materialien.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)
@@ -416,11 +410,11 @@ namespace Warenwirtschaftssystem.Model.Db
                         {
                             MaterialConversion.Add(records[i].AltesAttribut, newAttribute);
 
-                            if (Materials.Where(m => m.Title == newAttribute).FirstOrDefault() == null)
+                            if (Materials.Where(m => m.Name == newAttribute).FirstOrDefault() == null)
                             {
                                 Materials.Add(new Material
                                 {
-                                    Title = newAttribute
+                                    Name = newAttribute
                                 });
                             }
                         }
@@ -432,9 +426,8 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Part
 
                 using (var reader = new StreamReader(ConversionFolder + "\\Teile.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)
@@ -445,11 +438,11 @@ namespace Warenwirtschaftssystem.Model.Db
                         {
                             PartsConversion.Add(records[i].AltesAttribut, newAttribute);
 
-                            if (Parts.Where(p => p.Title == newAttribute).FirstOrDefault() == null)
+                            if (Parts.Where(p => p.Name == newAttribute).FirstOrDefault() == null)
                             {
-                                Parts.Add(new Part
+                                Parts.Add(new Parts
                                 {
-                                    Title = newAttribute
+                                    Name = newAttribute
                                 });
                             }
                         }
@@ -478,7 +471,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 {
                     foreach (Gender gender in genderFromSonstige)
                     {
-                        if (Genders.Where(g => g.Description == gender.Description).FirstOrDefault() == null)
+                        if (Genders.Where(g => g.Name == gender.Name).FirstOrDefault() == null)
                             Genders.Add(gender);
                     }
 
@@ -525,7 +518,7 @@ namespace Warenwirtschaftssystem.Model.Db
 
                     Genders.Add(new Gender
                     {
-                        Description = gender,
+                        Name = gender,
                         Short = "" + gender[0]
                     });
                 }
@@ -556,9 +549,9 @@ namespace Warenwirtschaftssystem.Model.Db
                 {
                     string readCategory = (string)reader["Category"];
 
-                    Type type = new Type
+                    var subCategory = new SubCategory
                     {
-                        Title = (string)reader["Type"]
+                        Name = (string)reader["Type"]
                     };
 
                     if (readCategory == "Sonstige")
@@ -569,7 +562,7 @@ namespace Warenwirtschaftssystem.Model.Db
 
                             Categories.Add(new Category
                             {
-                                Title = readCategory
+                                Name = readCategory
                             });
 
                             categoryName = readCategory;
@@ -581,12 +574,12 @@ namespace Warenwirtschaftssystem.Model.Db
 
                         string typeTitle = (string)reader["Type"];
 
-                        if (Categories.Where(c => c.Title == typeTitle).FirstOrDefault() == null)
+                        if (Categories.Where(c => c.Name == typeTitle).FirstOrDefault() == null)
                         {
                             Category category = new Category
                             {
                                 Id = (int)reader[3],
-                                Title = typeTitle
+                                Name = typeTitle
                             };
 
                             Categories.Add(category);
@@ -599,15 +592,15 @@ namespace Warenwirtschaftssystem.Model.Db
                         {
                             Categories.Add(new Category
                             {
-                                Title = readCategory,
-                                Types = new ObservableCollection<Type> { type }
+                                Name = readCategory,
+                                SubCategories = new ObservableCollection<SubCategory> { subCategory }
                             });
 
                             categoryName = readCategory;
                         }
                         else
                         {
-                            Categories[Categories.Count - 1].Types.Add(type);
+                            Categories[Categories.Count - 1].SubCategories.Add(subCategory);
                         }
                     }
                 }
@@ -638,8 +631,8 @@ namespace Warenwirtschaftssystem.Model.Db
 
                         while (reader.Read())
                         {
-                            if (category.Types == null)
-                                category.Types = new ObservableCollection<Type>();
+                            if (category.SubCategories == null)
+                                category.SubCategories = new ObservableCollection<SubCategory>();
 
                             string typeName = (string)reader[0];
                             if (typeName == "Art")
@@ -648,9 +641,9 @@ namespace Warenwirtschaftssystem.Model.Db
                             }
                             else
                             {
-                                category.Types.Add(new Type
+                                category.SubCategories.Add(new SubCategory
                                 {
-                                    Title = typeName
+                                    Name = typeName
                                 });
                             }
                         }
@@ -669,13 +662,13 @@ namespace Warenwirtschaftssystem.Model.Db
 
                             while (reader.Read())
                             {
-                                if (category.Types == null)
-                                    category.Types = new ObservableCollection<Type>();
+                                if (category.SubCategories == null)
+                                    category.SubCategories = new ObservableCollection<SubCategory>();
 
                                 string typeName = (string)reader[0];
-                                category.Types.Add(new Type
+                                category.SubCategories.Add(new SubCategory
                                 {
-                                    Title = typeName
+                                    Name = typeName
                                 });
                             }
 
@@ -705,10 +698,10 @@ namespace Warenwirtschaftssystem.Model.Db
                     {
                         string grpDesc = (string)reader["grpDesc"];
 
-                        if (Genders.Where(g => g.Description == grpDesc).FirstOrDefault() == null)
+                        if (Genders.Where(g => g.Name == grpDesc).FirstOrDefault() == null)
                             genderFromSonstige.Add(new Gender
                             {
-                                Description = grpDesc,
+                                Name = grpDesc,
                                 Short = "" + grpDesc[0]
                             });
                     }
@@ -724,18 +717,18 @@ namespace Warenwirtschaftssystem.Model.Db
 
                     reader = command.ExecuteReader();
 
-                    Category categorySonstige = Categories.Where(c => c.Title == "Sonstige").First();
+                    Category categorySonstige = Categories.Where(c => c.Name == "Sonstige").First();
 
                     while (reader.Read())
                     {
-                        if (categorySonstige.Types == null)
-                            categorySonstige.Types = new ObservableCollection<Type>();
+                        if (categorySonstige.SubCategories == null)
+                            categorySonstige.SubCategories = new ObservableCollection<SubCategory>();
 
                         string type = (string)reader["grpDesc"];
 
-                        categorySonstige.Types.Add(new Type
+                        categorySonstige.SubCategories.Add(new SubCategory
                         {
-                            Title = type
+                            Name = type
                         });
                     }
                 }
@@ -781,7 +774,7 @@ namespace Warenwirtschaftssystem.Model.Db
 
                     Brands.Add(new Brand
                     {
-                        Title = (string)reader[0]
+                        Name = (string)reader[0]
 
                     });
                 }
@@ -824,7 +817,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 {
                     Sizes.Add(new Size
                     {
-                        Value = (string)reader[0]
+                        Name = (string)reader[0]
                     });
                 }
             }
@@ -866,7 +859,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 {
                     Colors.Add(new Color
                     {
-                        Description = (string)reader[0]
+                        Name = (string)reader[0]
                     });
                 }
             }
@@ -908,7 +901,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 {
                     Materials.Add(new Material
                     {
-                        Title = (string)reader[0]
+                        Name = (string)reader[0]
                     });
                 }
             }
@@ -916,7 +909,7 @@ namespace Warenwirtschaftssystem.Model.Db
 
         private void ImportPartsAttributes()
         {
-            Parts = new List<Part>();
+            Parts = new List<Parts>();
             ParentGroupsParts = new List<int>();
 
             using (SqlConnection connection = new SqlConnection(ConnectionString))
@@ -948,9 +941,9 @@ namespace Warenwirtschaftssystem.Model.Db
 
                 while (reader.Read())
                 {
-                    Parts.Add(new Part
+                    Parts.Add(new Parts
                     {
-                        Title = (string)reader[0]
+                        Name = (string)reader[0]
                     });
                 }
             }
@@ -966,7 +959,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 {
                     Defects.Add(new Defect
                     {
-                        Title = item
+                        Name = item
                     });
                 }
             }
@@ -996,7 +989,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         string grpDesc = (string)reader["grpDesc"];
                         if (!string.IsNullOrWhiteSpace(grpDesc))
                         {
-                            Gender gender = Genders.Where(g => g.Description == grpDesc).Single();
+                            var gender = Genders.Where(g => g.Name == grpDesc).Single();
                             article.Gender = gender;
                         }
                     }
@@ -1005,7 +998,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         string grpDesc = (string)reader["grpDesc"];
                         if (!string.IsNullOrWhiteSpace(grpDesc))
                         {
-                            Brand brand = Brands.Where(b => b.Title == grpDesc).Single();
+                            var brand = Brands.Where(b => b.Name == grpDesc).Single();
                             article.Brand = brand;
                         }
                     }
@@ -1014,7 +1007,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         string grpDesc = (string)reader["grpDesc"];
                         if (!string.IsNullOrWhiteSpace(grpDesc))
                         {
-                            Size size = Sizes.Where(s => s.Value == grpDesc).Single();
+                            var size = Sizes.Where(s => s.Name == grpDesc).Single();
                             article.Size = size;
                         }
                     }
@@ -1023,7 +1016,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         string grpDesc = (string)reader["grpDesc"];
                         if (!string.IsNullOrWhiteSpace(grpDesc))
                         {
-                            Color color = Colors.Where(c => c.Description == grpDesc).Single();
+                            var color = Colors.Where(c => c.Name == grpDesc).Single();
 
                             if (article.Colors == null)
                                 article.Colors = new ObservableCollection<Color>();
@@ -1036,7 +1029,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         string grpDesc = (string)reader["grpDesc"];
                         if (!string.IsNullOrWhiteSpace(grpDesc))
                         {
-                            Material material = Materials.Where(m => m.Title == grpDesc).Single();
+                            var material = Materials.Where(m => m.Name == grpDesc).Single();
 
                             if (article.Materials == null)
                                 article.Materials = new ObservableCollection<Material>();
@@ -1049,7 +1042,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         string grpDesc = (string)reader["grpDesc"];
                         if (!string.IsNullOrWhiteSpace(grpDesc))
                         {
-                            Part parts = Parts.Where(p => p.Title == grpDesc).Single();
+                            var parts = Parts.Where(p => p.Name == grpDesc).Single();
                             article.Parts = parts;
                         }
                     }
@@ -1109,7 +1102,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         }
                         catch { }
 
-                    article.Defects = new ObservableCollection<Defect>(Defects.Where(d => articleDefectNames.Contains(d.Title)));
+                    article.Defects = new ObservableCollection<Defect>(Defects.Where(d => articleDefectNames.Contains(d.Name)));
                 }
 
                 reader.Close();
@@ -1157,7 +1150,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 if (reader.Read())
                 {
                     string categoryName = (string)reader[0];
-                    var category = Categories.Where(c => c.Title == categoryName).FirstOrDefault();
+                    var category = Categories.Where(c => c.Name == categoryName).FirstOrDefault();
 
                     if (category != null)
                     {
@@ -1182,7 +1175,7 @@ namespace Warenwirtschaftssystem.Model.Db
                                 string genderName = (string)reader[0];
                                 int genderGrpId = (int)reader["grpID"];
 
-                                Gender gender = Genders.Where(g => g.Description == genderName).First();
+                                Gender gender = Genders.Where(g => g.Name == genderName).First();
                                 article.Gender = gender;
 
                                 reader.Close();
@@ -1201,7 +1194,7 @@ namespace Warenwirtschaftssystem.Model.Db
                                 if (reader.Read())
                                 {
                                     string typeName = (string)reader[0];
-                                    article.Type = category.Types.Where(t => t.Title == typeName).First();
+                                    article.SubCategory = category.SubCategories.Where(t => t.Name == typeName).First();
                                 }
                             }
                             else if (categoryName == "Accessoires")
@@ -1209,7 +1202,7 @@ namespace Warenwirtschaftssystem.Model.Db
                                 categoryName = (string)reader[0];
                                 int categoryId = (int)reader[1];
 
-                                category = Categories.Where(c => c.Title == categoryName).FirstOrDefault();
+                                category = Categories.Where(c => c.Name == categoryName).FirstOrDefault();
                                 if (category != null)
                                 {
                                     article.Category = category;
@@ -1253,8 +1246,8 @@ namespace Warenwirtschaftssystem.Model.Db
                                             typeName = (string)reader[0];
                                         }
 
-                                        if (article.Category.Types.Where(t => t.Title == typeName).FirstOrDefault() is Type type)
-                                            article.Type = type;
+                                        if (article.Category.SubCategories.Where(t => t.Name == typeName).FirstOrDefault() is SubCategory type)
+                                            article.SubCategory = type;
                                     } else
                                     {
                                         reader.Close();
@@ -1273,8 +1266,8 @@ namespace Warenwirtschaftssystem.Model.Db
                                         {
                                             string typeName = (string)reader[0];
 
-                                            if (article.Category.Types.Where(t => t.Title == typeName).FirstOrDefault() is Type type)
-                                                article.Type = type;
+                                            if (article.Category.SubCategories.Where(t => t.Name == typeName).FirstOrDefault() is SubCategory type)
+                                                article.SubCategory = type;
                                         }
                                     }
                                 }
@@ -1296,13 +1289,13 @@ namespace Warenwirtschaftssystem.Model.Db
                                 }
 
                                 if (genderName != null && article.Gender == null)
-                                    article.Gender = Genders.Where(g => g.Description == genderName).FirstOrDefault();
+                                    article.Gender = Genders.Where(g => g.Name == genderName).FirstOrDefault();
 
                                 string typeName = (string)reader[0];
-                                var type = category.Types.Where(t => t.Title == typeName).FirstOrDefault();
+                                var type = category.SubCategories.Where(t => t.Name == typeName).FirstOrDefault();
 
                                 if (type != null)
-                                    article.Type = type;
+                                    article.SubCategory = type;
                             }
                         }
                     }
@@ -1341,7 +1334,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         {
                             if (GenderConversion.TryGetValue(grpDesc, out string newGenderDesc))
                             {
-                                Gender gender = Genders.Where(g => g.Description == newGenderDesc).First();
+                                var gender = Genders.Where(g => g.Name == newGenderDesc).First();
                                 article.Gender = gender;
                             }
                         }
@@ -1354,7 +1347,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         {
                             if (BrandConversion.TryGetValue(grpDesc, out string newBrandDesc))
                             {
-                                Brand brand = Brands.Where(b => b.Title == newBrandDesc).First();
+                                var brand = Brands.Where(b => b.Name == newBrandDesc).First();
                                 article.Brand = brand;
                             }
                         }
@@ -1367,7 +1360,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         {
                             if (SizeConversion.TryGetValue(grpDesc, out string newSizeDesc))
                             {
-                                Size size = Sizes.Where(s => s.Value == newSizeDesc).First();
+                                var size = Sizes.Where(s => s.Name == newSizeDesc).First();
                                 article.Size = size;
                             }
                         }
@@ -1380,7 +1373,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         {
                             if (ColorConversion.TryGetValue(grpDesc, out string newColorDesc))
                             {
-                                Color color = Colors.Where(c => c.Description == newColorDesc).First();
+                                var color = Colors.Where(c => c.Name == newColorDesc).First();
 
                                 if (article.Colors == null)
                                     article.Colors = new ObservableCollection<Color>();
@@ -1397,7 +1390,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         {
                             if (MaterialConversion.TryGetValue(grpDesc, out string newMaterialDesc))
                             {
-                                Material material = Materials.Where(m => m.Title == newMaterialDesc).Single();
+                                var material = Materials.Where(m => m.Name == newMaterialDesc).Single();
 
                                 if (article.Materials == null)
                                     article.Materials = new ObservableCollection<Material>();
@@ -1414,7 +1407,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         {
                             if (PartsConversion.TryGetValue(grpDesc, out string newPartsDesc))
                             {
-                                Part parts = Parts.Where(p => p.Title == newPartsDesc).Single();
+                                var parts = Parts.Where(p => p.Name == newPartsDesc).Single();
                                 article.Parts = parts;
                             }
                         }
@@ -1475,7 +1468,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         }
                         catch { }
 
-                    article.Defects = new ObservableCollection<Defect>(Defects.Where(d => articleDefectNames.Contains(d.Title)));
+                    article.Defects = new ObservableCollection<Defect>(Defects.Where(d => articleDefectNames.Contains(d.Name)));
                 }
 
                 reader.Close();
@@ -1543,7 +1536,7 @@ namespace Warenwirtschaftssystem.Model.Db
                             int parentGrpId = (int)reader[1];
                             string genderName = (string)reader[0];
 
-                            if (GenderConversion.TryGetValue(genderName, out string newGenderName) && Genders.Where(g => g.Description == newGenderName).FirstOrDefault() is Gender gender)
+                            if (GenderConversion.TryGetValue(genderName, out string newGenderName) && Genders.Where(g => g.Name == newGenderName).FirstOrDefault() is Gender gender)
                                 article.Gender = gender;
 
                             reader.Close();
@@ -1567,13 +1560,13 @@ namespace Warenwirtschaftssystem.Model.Db
 
                             if (CategoryTypeConversion.TryGetValue((categoryName, typeName), out (string, string) categoryType))
                             {
-                                if (categoryType.Item1 != "" && Categories.Where(c => c.Title == categoryType.Item1).FirstOrDefault() is Category category)
+                                if (categoryType.Item1 != "" && Categories.Where(c => c.Name == categoryType.Item1).FirstOrDefault() is Category category)
                                 {
                                     article.Category = category;
 
-                                    if (categoryType.Item2 != "" && category.Types != null && category.Types.Where(t => t.Title == categoryType.Item2).FirstOrDefault() is Type type)
+                                    if (categoryType.Item2 != "" && category.SubCategories != null && category.SubCategories.Where(t => t.Name == categoryType.Item2).FirstOrDefault() is SubCategory type)
                                     {
-                                        article.Type = type;
+                                        article.SubCategory = type;
                                     }
                                 }
                             }
@@ -1661,13 +1654,13 @@ namespace Warenwirtschaftssystem.Model.Db
                             //Neue Kategorie und Art zuordnen
                             if (CategoryTypeConversion.TryGetValue((categoryName, typeName), out (string, string) categoryType))
                             {
-                                if (categoryType.Item1 != "" && Categories.Where(c => c.Title == categoryType.Item1).FirstOrDefault() is Category category)
+                                if (categoryType.Item1 != "" && Categories.Where(c => c.Name == categoryType.Item1).FirstOrDefault() is Category category)
                                 {
                                     article.Category = category;
 
-                                    if (categoryType.Item2 != "" && category.Types != null && category.Types.Where(t => t.Title == categoryType.Item2).FirstOrDefault() is Type type)
+                                    if (categoryType.Item2 != "" && category.SubCategories != null && category.SubCategories.Where(t => t.Name == categoryType.Item2).FirstOrDefault() is SubCategory type)
                                     {
-                                        article.Type = type;
+                                        article.SubCategory = type;
                                     }
                                 }
                             }
@@ -1690,7 +1683,7 @@ namespace Warenwirtschaftssystem.Model.Db
                         }
 
                         if (genderName != null && article.Gender == null && GenderConversion.TryGetValue(genderName, out string newGenderName))
-                            article.Gender = Genders.Where(g => g.Description == newGenderName).First();
+                            article.Gender = Genders.Where(g => g.Name == newGenderName).First();
 
                         reader.Close();
 
@@ -1714,13 +1707,13 @@ namespace Warenwirtschaftssystem.Model.Db
                         //Neue Kategorie und Art zuordnen
                         if (CategoryTypeConversion.TryGetValue((categoryName, typeName), out (string, string) categoryType))
                         {
-                            if (categoryType.Item1 != "" && Categories.Where(c => c.Title == categoryType.Item1).FirstOrDefault() is Category category)
+                            if (categoryType.Item1 != "" && Categories.Where(c => c.Name == categoryType.Item1).FirstOrDefault() is Category category)
                             {
                                 article.Category = category;
 
-                                if (categoryType.Item2 != "" && category.Types != null && category.Types.Where(t => t.Title == categoryType.Item2).FirstOrDefault() is Type type)
+                                if (categoryType.Item2 != "" && category.SubCategories != null && category.SubCategories.Where(t => t.Name == categoryType.Item2).FirstOrDefault() is SubCategory type)
                                 {
-                                    article.Type = type;
+                                    article.SubCategory = type;
                                 }
                             }
                         }
@@ -1836,9 +1829,9 @@ namespace Warenwirtschaftssystem.Model.Db
         private void ImportSupplierProportionTable()
         {
             if (MainDb == null)
-                MainDb = new DbModel(Data.MainConnectionString);
+                MainDb = Data.CreateDbConnection();
 
-            GraduationSupplierProportions = new List<GraduationSupplierProportion>();
+            GraduationSupplierProportions = new List<SupplierProportion>();
 
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
@@ -1853,10 +1846,10 @@ namespace Warenwirtschaftssystem.Model.Db
 
                 while (graduationSupplierProportionReader.Read())
                 {
-                    GraduationSupplierProportions.Add(new GraduationSupplierProportion
+                    GraduationSupplierProportions.Add(new SupplierProportion
                     {
                         FromPrice = (decimal)graduationSupplierProportionReader["prvMin"],
-                        SupplierProportion = (1 - (decimal)(double)graduationSupplierProportionReader["prvEigenanteil"]) * 100
+                        Proportion = (1 - (decimal)(double)graduationSupplierProportionReader["prvEigenanteil"]) * 100
                     });
                 }
             }
@@ -1875,16 +1868,16 @@ namespace Warenwirtschaftssystem.Model.Db
 
             Task.WaitAll(tasks);
 
-            MainDb.ArticleGender.AddRange(Genders);
-            MainDb.ArticleCategories.AddRange(Categories);
-            MainDb.ArticleBrands.AddRange(Brands);
-            MainDb.ArticleSizes.AddRange(Sizes);
-            MainDb.ArticleColors.AddRange(Colors);
-            MainDb.ArticleMaterials.AddRange(Materials);
-            MainDb.ArticleParts.AddRange(Parts);
-            MainDb.ArticleDefects.AddRange(Defects);
+            MainDb.Genders.AddRange(Genders);
+            MainDb.Categories.AddRange(Categories);
+            MainDb.Brands.AddRange(Brands);
+            MainDb.Sizes.AddRange(Sizes);
+            MainDb.Colors.AddRange(Colors);
+            MainDb.Materials.AddRange(Materials);
+            MainDb.Parts.AddRange(Parts);
+            MainDb.Defects.AddRange(Defects);
 
-            MainDb.GraduationSupplierProportion.AddRange(GraduationSupplierProportions);
+            MainDb.SupplierProportions.AddRange(GraduationSupplierProportions);
 
             MainDb.Suppliers.AddRange(Suppliers);
 
@@ -1928,8 +1921,8 @@ namespace Warenwirtschaftssystem.Model.Db
             {
                 gendersToConvert.Add(new Attribute
                 {
-                    NeuesAttribut = gender.Description,
-                    AltesAttribut = gender.Description
+                    NeuesAttribut = gender.Name,
+                    AltesAttribut = gender.Name
                 });
             }
 
@@ -1954,20 +1947,20 @@ namespace Warenwirtschaftssystem.Model.Db
             {
                 categoriesAndTypesToConvert.Add(new CategoryType
                 {
-                    AlteKategorie = category.Title,
-                    NeueKategorie = category.Title
+                    AlteKategorie = category.Name,
+                    NeueKategorie = category.Name
                 });
 
-                if (category.Types != null)
+                if (category.SubCategories != null)
                 {
-                    foreach (var type in category.Types)
+                    foreach (var type in category.SubCategories)
                     {
                         categoriesAndTypesToConvert.Add(new CategoryType
                         {
-                            AlteArt = type.Title,
-                            AlteKategorie = category.Title,
-                            NeueArt = type.Title,
-                            NeueKategorie = category.Title
+                            AlteArt = type.Name,
+                            AlteKategorie = category.Name,
+                            NeueArt = type.Name,
+                            NeueKategorie = category.Name
                         });
                     }
                 }
@@ -1994,8 +1987,8 @@ namespace Warenwirtschaftssystem.Model.Db
             {
                 brandsToConvert.Add(new Attribute
                 {
-                    NeuesAttribut = brand.Title,
-                    AltesAttribut = brand.Title
+                    NeuesAttribut = brand.Name,
+                    AltesAttribut = brand.Name
                 });
             }
 
@@ -2020,8 +2013,8 @@ namespace Warenwirtschaftssystem.Model.Db
             {
                 sizesToConvert.Add(new Attribute
                 {
-                    NeuesAttribut = size.Value,
-                    AltesAttribut = size.Value
+                    NeuesAttribut = size.Name,
+                    AltesAttribut = size.Name
                 });
             }
 
@@ -2046,8 +2039,8 @@ namespace Warenwirtschaftssystem.Model.Db
             {
                 colorsToConvert.Add(new Attribute
                 {
-                    NeuesAttribut = color.Description,
-                    AltesAttribut = color.Description
+                    NeuesAttribut = color.Name,
+                    AltesAttribut = color.Name
                 });
             }
 
@@ -2072,8 +2065,8 @@ namespace Warenwirtschaftssystem.Model.Db
             {
                 materialsToConvert.Add(new Attribute
                 {
-                    NeuesAttribut = material.Title,
-                    AltesAttribut = material.Title
+                    NeuesAttribut = material.Name,
+                    AltesAttribut = material.Name
                 });
             }
 
@@ -2098,8 +2091,8 @@ namespace Warenwirtschaftssystem.Model.Db
             {
                 partsToConvert.Add(new Attribute
                 {
-                    NeuesAttribut = part.Title,
-                    AltesAttribut = part.Title
+                    NeuesAttribut = part.Name,
+                    AltesAttribut = part.Name
                 });
             }
 

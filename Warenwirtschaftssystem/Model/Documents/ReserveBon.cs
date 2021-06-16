@@ -31,7 +31,7 @@ namespace Warenwirtschaftssystem.Model.Documents
         public ReserveBon(DataModel data, Document document)
         {
             Data = data;
-            MainDb = new DbModel(data.MainConnectionString);
+            MainDb = Data.CreateDbConnection();
             Customer = document.Supplier;
             Document = document;
 
@@ -40,7 +40,7 @@ namespace Warenwirtschaftssystem.Model.Documents
 
                 SavedArticleAttributes sAA = null;
                 if (Document.SavedArticleAttributes != null)
-                    sAA = Document.SavedArticleAttributes.Where(s => s.ArticleId == article.Id).FirstOrDefault();
+                    sAA = Document.SavedArticleAttributes.Where(s => s.Article.Id == article.Id).FirstOrDefault();
 
                 if (sAA == null)
                     Articles.Add(article);

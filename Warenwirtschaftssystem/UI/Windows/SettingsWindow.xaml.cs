@@ -1,8 +1,7 @@
-﻿using System.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Printing;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Media;
 using Warenwirtschaftssystem.Model;
 using Warenwirtschaftssystem.Model.Db;
@@ -21,7 +20,7 @@ namespace Warenwirtschaftssystem.UI.Windows
         public SettingsWindow(DataModel data)
         {
             Data = data;
-            MainDb = new DbModel(data.MainConnectionString);
+            MainDb = Data.CreateDbConnection();
 
             InitializeComponent();
 
@@ -31,9 +30,8 @@ namespace Warenwirtschaftssystem.UI.Windows
                 DefaultPickUpTb.Value = short.Parse(defaultPickUp.Value);
             }
 
-            CollectionViewSource graduationSupplierProportionViewSource = ((CollectionViewSource)(FindResource("graduationSupplierProportionViewSource")));
-            MainDb.GraduationSupplierProportion.Load();
-            graduationSupplierProportionViewSource.Source = MainDb.GraduationSupplierProportion.Local;
+            MainDb.SupplierProportions.Load();
+            SupplierProportionsDG.ItemsSource = MainDb.SupplierProportions.Local.ToObservableCollection();
 
 
             #region Drucker 
@@ -184,7 +182,7 @@ namespace Warenwirtschaftssystem.UI.Windows
             #endregion
 
             Close();
-            MainDb.SaveChanges();
+            MainDb.SaveChangesRetryOnUserInput();
             MainDb.Dispose();
         }
 

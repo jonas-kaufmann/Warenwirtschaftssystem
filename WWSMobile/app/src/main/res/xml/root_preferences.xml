@@ -1,0 +1,27 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Datenbank">
+
+        <EditTextPreference
+            app:key="db_host"
+            app:title="Host"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:key="db_dbname"
+            app:title="Datenbank"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:key="db_user"
+            app:title="Benutzer"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:key="db_password"
+            app:title="Passwort" />
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -17,7 +17,6 @@ namespace Warenwirtschaftssystem.UI.Controls
 
         private CollectionViewSource CollectionViewSource;
         private bool Disabled = false;
-        private string valueBeforeEdit;
 
         public FilterableDataGrid()
         {
@@ -109,11 +108,6 @@ namespace Warenwirtschaftssystem.UI.Controls
                 return;
 
             Disabled = true;
-
-            if (e.EditingEventArgs.Source is TextBlock textBlock)
-            {
-                valueBeforeEdit = textBlock.Text;
-            }
         }
 
         private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
@@ -122,19 +116,6 @@ namespace Warenwirtschaftssystem.UI.Controls
                 return;
 
             Disabled = false;
-
-            // ask for confirmation
-            if (AskForConfirmationAfterEdit && e.EditAction != DataGridEditAction.Cancel && !(e.EditingElement is TextBox textBox && textBox.Text == valueBeforeEdit))
-            {
-                MessageBoxResult result = MessageBox.Show("Sollen die Änderungen an den Merkmalen gespeichert werden?", "Merkmale wurden geändert", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
-
-                if (result == MessageBoxResult.No)
-                {
-                    e.Cancel = true;
-                    DataGrid dg = sender as DataGrid;
-                    dg.CancelEdit();
-                }
-            }
         }
 
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
@@ -143,6 +124,17 @@ namespace Warenwirtschaftssystem.UI.Controls
                 return;
 
             Disabled = false;
+
+            // ask for confirmation
+            if (AskForConfirmationAfterEdit && e.EditAction != DataGridEditAction.Cancel)
+            {
+                MessageBoxResult result = MessageBox.Show("Sollen die Änderungen an den Merkmalen gespeichert werden?", "Merkmale wurden geändert", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+
+                if (result == MessageBoxResult.No)
+                {
+                    (sender as DataGrid).CancelEdit();
+                }
+            }
         }
         #endregion
 

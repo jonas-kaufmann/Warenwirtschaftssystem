@@ -34,7 +34,7 @@ namespace Warenwirtschaftssystem.Model.Documents
         public ArticlesInStockDoc(DataModel data, Supplier supplier, bool printPriceInsteadOfPayout = false)
         {
             Data = data;
-            MainDb = new DbModel(data.MainConnectionString);
+            MainDb = Data.CreateDbConnection();
             Articles = supplier.Articles.Where(a => a.Status == Status.Sortiment || a.Status == Status.InStock);
             Supplier = supplier;
 
@@ -399,10 +399,17 @@ namespace Warenwirtschaftssystem.Model.Documents
                 grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
                 string defects = "*";
-                defects = article.Defects[0].Title;
-                for (int i = 1; i < article.Defects.Count; i++)
+
+                bool firstIteration = true;
+                foreach (var defect in article.Defects)
                 {
-                    defects += ", " + article.Defects[i].Title;
+                    if (firstIteration)
+                    {
+                        defects = defect.Name;
+                        firstIteration = false;
+                    }
+
+                    defects += ", " + defect.Name;
                 }
                 tb = new TextBlock { Text = defects, FontFamily = FontFamily, FontSize = FontSize - 2 * PtToPx };
                 Grid.SetColumn(tb, 2);

@@ -205,10 +205,10 @@ namespace Warenwirtschaftssystem.Model.Documents
 
             string headerText = "";
 
-            if (article.Type != null && !string.IsNullOrWhiteSpace(article.Type.Title))
-                headerText += article.Type.Title;
-            else if (article.Category != null && !string.IsNullOrWhiteSpace(article.Category.Title))
-                headerText += article.Category.Title;
+            if (article.SubCategory != null && !string.IsNullOrWhiteSpace(article.SubCategory.Name))
+                headerText += article.SubCategory.Name;
+            else if (article.Category != null && !string.IsNullOrWhiteSpace(article.Category.Name))
+                headerText += article.Category.Name;
 
             if (article.Gender != null && !string.IsNullOrWhiteSpace(article.Gender.Short))
             {
@@ -245,7 +245,7 @@ namespace Warenwirtschaftssystem.Model.Documents
             {
                 tB = new TextBlock
                 {
-                    Text = article.Size.Value,
+                    Text = article.Size.Name,
                     FontFamily = FontFamily,
                     FontSize = FontSize + 2 * PtToPx,
                     FontWeight = FontWeights.Bold,
@@ -286,7 +286,7 @@ namespace Warenwirtschaftssystem.Model.Documents
 
                 tB = new TextBlock
                 {
-                    Text = article.Parts.Title,
+                    Text = article.Parts.Name,
                     FontFamily = FontFamily,
                     FontSize = FontSize,
                     TextWrapping = TextWrapping.Wrap
@@ -303,10 +303,8 @@ namespace Warenwirtschaftssystem.Model.Documents
 
             if (article.Materials != null && article.Materials.Count > 0)
             {
-                string material = article.Materials[0].Title;
 
-                for (int i = 1; i < article.Materials.Count; i++)
-                    material += ", " + article.Materials[i].Title;
+                string material = ArticleAttributes.ToRepresentation(article.Materials);
 
                 tB = new TextBlock
                 {
@@ -329,7 +327,7 @@ namespace Warenwirtschaftssystem.Model.Documents
             {
                 tB = new TextBlock
                 {
-                    Text = article.Brand.Title,
+                    Text = article.Brand.Name,
                     FontFamily = FontFamily,
                     FontSize = FontSize,
                     TextWrapping = TextWrapping.Wrap,
@@ -346,10 +344,7 @@ namespace Warenwirtschaftssystem.Model.Documents
 
             if (article.Colors != null && article.Colors.Count > 0)
             {
-                string colors = article.Colors[0].Description;
-
-                for (int i = 1; i < article.Colors.Count; i++)
-                    colors += ", " + article.Colors[i].Description;
+                string colors = ArticleAttributes.ToRepresentation(article.Colors);
 
                 tB = new TextBlock
                 {

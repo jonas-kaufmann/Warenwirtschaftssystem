@@ -1,11 +1,10 @@
-﻿using System;
-using System.Data.Entity.Migrations;
-using System.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Warenwirtschaftssystem.Migrations;
 using Warenwirtschaftssystem.Model;
 using Warenwirtschaftssystem.Model.Db;
 using Warenwirtschaftssystem.UI.Windows;
@@ -68,13 +67,12 @@ namespace Warenwirtschaftssystem.UI.Pages
 
                 try
                 {
+                    MainDb = Data.CreateDbConnection();
+
                     //Datenbank auf den neusten Stand bringen
-                    Configuration configuration = new Configuration(Data.MainConnectionString, "System.Data.SqlClient");
-                    var migrator = new DbMigrator(configuration);
-                    migrator.Update();
+                    MainDb.Database.Migrate();
 
                     //Verbindung testen
-                    MainDb = new DbModel(Data.MainConnectionString);
                     MainDb.Settings.Add(new Setting
                     {
                         Key = "ConnectionTest",

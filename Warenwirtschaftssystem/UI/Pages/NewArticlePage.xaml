@@ -83,7 +83,7 @@
                                   ItemsSource="{Binding}"
                                   SelectedItem="{x:Null}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding Description}"
+                                <DataGridTextColumn Binding="{Binding Name}"
                                                     Header="Geschlecht"
                                                     Width="*" />
                                 <DataGridTextColumn Binding="{Binding Short}"
@@ -112,7 +112,7 @@
                                   ItemsSource="{Binding}"
                                   SelectedItem="{x:Null}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding Title}"
+                                <DataGridTextColumn Binding="{Binding Name}"
                                                     Header="Kategorie"
                                                     Width="*" />
                             </DataGrid.Columns>
@@ -138,7 +138,7 @@
                                   ItemsSource="{Binding}"
                                   SelectedItem="{x:Null}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding Title}"
+                                <DataGridTextColumn Binding="{Binding Name}"
                                                     Header="Art (abhängig von Kategorie)"
                                                     Width="*" />
                             </DataGrid.Columns>
@@ -164,7 +164,7 @@
                                   ItemsSource="{Binding}"
                                   SelectedItem="{x:Null}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding Title}"
+                                <DataGridTextColumn Binding="{Binding Name}"
                                                     Header="Marke"
                                                     Width="*" />
                             </DataGrid.Columns>
@@ -201,7 +201,7 @@
                                   ItemsSource="{Binding}"
                                   SelectedItem="{x:Null}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding Value}"
+                                <DataGridTextColumn Binding="{Binding Name}"
                                                     Header="Größe"
                                                     Width="*" />
                             </DataGrid.Columns>
@@ -241,7 +241,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellEditingTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTextColumn Binding="{Binding Description}"
+                                <DataGridTextColumn Binding="{Binding Name}"
                                                     Header="Bezeichnung"
                                                     Width="2*" />
                             </DataGrid.Columns>
@@ -267,7 +267,7 @@
                                   ItemsSource="{Binding}"
                                   SelectedItem="{x:Null}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding Title}"
+                                <DataGridTextColumn Binding="{Binding Name}"
                                                     Header="Material"
                                                     Width="*" />
                             </DataGrid.Columns>
@@ -293,7 +293,7 @@
                                   ItemsSource="{Binding}"
                                   SelectedItem="{x:Null}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding Title}"
+                                <DataGridTextColumn Binding="{Binding Name}"
                                                     Header="Teile"
                                                     Width="*" />
                             </DataGrid.Columns>
@@ -333,7 +333,7 @@
                                   ItemsSource="{Binding}"
                                   SelectedItem="{x:Null}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding Title}"
+                                <DataGridTextColumn Binding="{Binding Name}"
                                                     Header="Mängel"
                                                     Width="*" />
                             </DataGrid.Columns>

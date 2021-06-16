@@ -1,5 +1,4 @@
-﻿<Window
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="Warenwirtschaftssystem.UI.Windows.SettingsWindow"
         xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
@@ -9,34 +8,52 @@
         Height="600"
         Width="400"
         WindowStartupLocation="Manual">
-    
+
     <Window.Resources>
         <!-- Constants -->
         <system:Int16 x:Key="DefaultPickUpTb_MinValue">-1</system:Int16>
-        
-        <CollectionViewSource x:Key="graduationSupplierProportionViewSource" />
     </Window.Resources>
 
     <DockPanel Margin="8">
-        <StackPanel Margin="0 8 0 0" HorizontalAlignment="Right" DockPanel.Dock="Bottom" Orientation="Horizontal">
-            <Button Name="SaveBtn" Content="Speichern" Click="SaveBtn_Click" />
-            <Button Margin="2 0 0 0" Name="CancelBtn" Content="Abbrechen" Click="CancelBtn_Click" />
+        <StackPanel Margin="0 8 0 0"
+                    HorizontalAlignment="Right"
+                    DockPanel.Dock="Bottom"
+                    Orientation="Horizontal">
+            <Button Name="SaveBtn"
+                    Content="Speichern"
+                    Click="SaveBtn_Click" />
+            <Button Margin="2 0 0 0"
+                    Name="CancelBtn"
+                    Content="Abbrechen"
+                    Click="CancelBtn_Click" />
         </StackPanel>
-
 
         <TabControl>
             <TabItem Header="Standardwerte">
                 <StackPanel Margin="2">
-                    <GroupBox Padding="4" Header=" Abstufung Lieferantenanteil">
-                        <DataGrid DataContext="{StaticResource graduationSupplierProportionViewSource}" CanUserReorderColumns="False" CanUserSortColumns="False" RowHeaderWidth="0" RowDetailsVisibilityMode="VisibleWhenSelected" ItemsSource="{Binding}" EnableRowVirtualization="True" AutoGenerateColumns="False">
+                    <GroupBox Padding="4"
+                              Header=" Abstufung Lieferantenanteil">
+                        <DataGrid Name="SupplierProportionsDG"
+                                  CanUserReorderColumns="False"
+                                  CanUserSortColumns="False"
+                                  RowHeaderWidth="0"
+                                  RowDetailsVisibilityMode="VisibleWhenSelected"
+                                  EnableRowVirtualization="True"
+                                  AutoGenerateColumns="False">
                             <DataGrid.Columns>
-                                <DataGridTextColumn SortDirection="Descending" Width="*" Header="Von Betrag an" Binding="{Binding FromPrice, ConverterCulture=de-DE, StringFormat=C}" />
-                                <DataGridTextColumn Width="*" Header="Lieferantenanteil in %" Binding="{Binding SupplierProportion, ConverterCulture=de-DE}" />
+                                <DataGridTextColumn SortDirection="Descending"
+                                                    Width="*"
+                                                    Header="Von Betrag an"
+                                                    Binding="{Binding FromPrice, ConverterCulture=de-DE, StringFormat=C}" />
+                                <DataGridTextColumn Width="*"
+                                                    Header="Lieferantenanteil in %"
+                                                    Binding="{Binding Proportion, ConverterCulture=de-DE}" />
                             </DataGrid.Columns>
                         </DataGrid>
 
                     </GroupBox>
-                    <GroupBox Header="Abholung" Padding="4">
+                    <GroupBox Header="Abholung"
+                              Padding="4">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
@@ -44,15 +61,21 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock VerticalAlignment="Center" Text="Standardwert Abholung (Wochen)" />
-                            <toolkit:ValueRangeTextBox Name="DefaultPickUpTb" TextChanged="DefaultPickUpTb_TextChanged" MinValue="{StaticResource DefaultPickUpTb_MinValue}" ValueDataType="{x:Type system:Int16}" Grid.Column="2" />
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="Standardwert Abholung (Wochen)" />
+                            <toolkit:ValueRangeTextBox Name="DefaultPickUpTb"
+                                                       TextChanged="DefaultPickUpTb_TextChanged"
+                                                       MinValue="{StaticResource DefaultPickUpTb_MinValue}"
+                                                       ValueDataType="{x:Type system:Int16}"
+                                                       Grid.Column="2" />
                         </Grid>
                     </GroupBox>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Drucken">
                 <StackPanel Margin="2">
-                    <GroupBox Header="Standarddrucker" Padding="4">
+                    <GroupBox Header="Standarddrucker"
+                              Padding="4">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
@@ -60,26 +83,41 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="2"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="2"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="2"/>
-                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="2" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="2" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="2" />
+                                <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock VerticalAlignment="Center" Text="Bon"/>
-                            <ComboBox Name="BonPrinterCB" Grid.Column="2"/>
-                            <TextBlock VerticalAlignment="Center" Text="Hängeetikett" Grid.Row="2"/>
-                            <ComboBox Name="TagPrinterCB" Grid.Column="2" Grid.Row="2"/>
-                            <TextBlock VerticalAlignment="Center" Text="Klebeetikett" Grid.Row="4"/>
-                            <ComboBox Name="TagLandscapePrinterCB" Grid.Column="2" Grid.Row="4"/>
-                            <TextBlock VerticalAlignment="Center" Text="Dokument" Grid.Row="6"/>
-                            <ComboBox Name="DocumentPrinterCB" Grid.Column="2" Grid.Row="6"/>
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="Bon" />
+                            <ComboBox Name="BonPrinterCB"
+                                      Grid.Column="2" />
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="Hängeetikett"
+                                       Grid.Row="2" />
+                            <ComboBox Name="TagPrinterCB"
+                                      Grid.Column="2"
+                                      Grid.Row="2" />
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="Klebeetikett"
+                                       Grid.Row="4" />
+                            <ComboBox Name="TagLandscapePrinterCB"
+                                      Grid.Column="2"
+                                      Grid.Row="4" />
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="Dokument"
+                                       Grid.Row="6" />
+                            <ComboBox Name="DocumentPrinterCB"
+                                      Grid.Column="2"
+                                      Grid.Row="6" />
                         </Grid>
                     </GroupBox>
-                    <GroupBox Header="Dokumentenkopf" Padding="4">
+                    <GroupBox Header="Dokumentenkopf"
+                              Padding="4">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto" />
@@ -95,16 +133,28 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Text="Shopbezeichnung" />
-                            <TextBox Name="ShopdescriptionTb" Grid.Column="2" AcceptsReturn="True" Height="50" />
+                            <TextBox Name="ShopdescriptionTb"
+                                     Grid.Column="2"
+                                     AcceptsReturn="True"
+                                     Height="50" />
 
-                            <TextBlock Text="Shopinformationen" Grid.Row="2" />
-                            <TextBox Name="ShopinfoTb" Grid.Row="2" Grid.Column="2" AcceptsReturn="True" Height="75" />
-                            
-                            <TextBlock Text="Ort" Grid.Row="4" />
-                            <TextBox Name="PlaceTb" Grid.Row="4" Grid.Column="2" />
+                            <TextBlock Text="Shopinformationen"
+                                       Grid.Row="2" />
+                            <TextBox Name="ShopinfoTb"
+                                     Grid.Row="2"
+                                     Grid.Column="2"
+                                     AcceptsReturn="True"
+                                     Height="75" />
+
+                            <TextBlock Text="Ort"
+                                       Grid.Row="4" />
+                            <TextBox Name="PlaceTb"
+                                     Grid.Row="4"
+                                     Grid.Column="2" />
                         </Grid>
                     </GroupBox>
-                    <GroupBox Header="Bon-Fuß" Padding="4">
+                    <GroupBox Header="Bon-Fuß"
+                              Padding="4">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
@@ -113,7 +163,10 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Text="Fußtext" />
-                            <TextBox Name="bonFooterTb" Grid.Column="2" AcceptsReturn="True" Height="75" />
+                            <TextBox Name="bonFooterTb"
+                                     Grid.Column="2"
+                                     AcceptsReturn="True"
+                                     Height="75" />
                         </Grid>
                     </GroupBox>
                 </StackPanel>

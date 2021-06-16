@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Data.Entity;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -10,6 +9,7 @@ using System.Linq;
 using System;
 using System.Windows.Input;
 using Warenwirtschaftssystem.Model.Documents;
+using Microsoft.EntityFrameworkCore;
 
 namespace Warenwirtschaftssystem.UI.Pages
 {
@@ -28,7 +28,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             Data = data;
             OwnerWindow = ownerWindow;
-            MainDb = new DbModel(data.MainConnectionString);
+            MainDb = Data.CreateDbConnection();
 
             InitializeComponent();
 
@@ -37,7 +37,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             SuppliersCVS = FindResource("SuppliersCVS") as CollectionViewSource;
 
             MainDb.Suppliers.Load();
-            SuppliersCVS.Source = MainDb.Suppliers.Local;
+            SuppliersCVS.Source = MainDb.Suppliers.Local.ToObservableCollection();
 
             #endregion
 
@@ -142,7 +142,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             OwnerWindow.DisableClosingPrompt = true;
             OwnerWindow.RootWindow.RemoveToolWindow(OwnerWindow);
             OwnerWindow.Close();
-            MainDb.SaveChanges();
+            MainDb.SaveChangesRetryOnUserInput();
             MainDb.Dispose();
         }
 

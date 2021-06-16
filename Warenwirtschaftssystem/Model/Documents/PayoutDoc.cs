@@ -34,14 +34,14 @@ namespace Warenwirtschaftssystem.Model.Documents
         {
             Data = data;
             Document = document;
-            MainDb = new DbModel(data.MainConnectionString);
+            MainDb = Data.CreateDbConnection();
             Supplier = Document.Supplier;
 
             foreach (Article article in Document.Articles)
             {
                 SavedArticleAttributes sAA = null;
                 if (Document.SavedArticleAttributes != null)
-                    sAA = Document.SavedArticleAttributes.Where(s => s.ArticleId == article.Id).FirstOrDefault();
+                    sAA = Document.SavedArticleAttributes.Where(s => s.Article.Id == article.Id).FirstOrDefault();
 
                 if (sAA == null)
                     Articles.Add(article);
@@ -457,12 +457,8 @@ namespace Warenwirtschaftssystem.Model.Documents
             {
                 grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-                string defects = "*";
-                defects = article.Defects[0].Title;
-                for (int i = 1; i < article.Defects.Count; i++)
-                {
-                    defects += ", " + article.Defects[i].Title;
-                }
+                string defects = "*" + ArticleAttributes.ToRepresentation(article.Defects);
+
                 tb = new TextBlock { Text = defects, FontFamily = FontFamily, FontSize = FontSize - 2 * PtToPx };
                 Grid.SetColumn(tb, 2);
                 Grid.SetRow(tb, grid.RowDefinitions.Count - 1);

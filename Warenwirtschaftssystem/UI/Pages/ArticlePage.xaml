@@ -187,7 +187,8 @@
                       RowHeaderWidth="0"
                       CanUserReorderColumns="False"
                       AutoGenerateColumns="False"
-                      ItemsSource="{Binding}">
+                      ItemsSource="{Binding}"
+                      EnableRowVirtualization="True">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding ConvertedId, Mode=OneTime}"
                                         Header="Nr" />

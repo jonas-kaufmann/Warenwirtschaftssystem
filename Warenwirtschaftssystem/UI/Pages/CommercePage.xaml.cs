@@ -23,11 +23,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         private DbModel MainDb;
         private ObservableCollection<Article> Articles = new ObservableCollection<Article>();
         private decimal Sum = 0;
-        private List<Defect> EmptyDefectsList = new List<Defect> { new Defect { Title = "" } };
-
-        //Preisänderung
-        private bool IsSupplierProportionFixed = false;
-        private List<Article> ArticlesPriceChanged = new List<Article>();
+        private List<Defect> EmptyDefectsList = new List<Defect> { new Defect { Name = "" } };
 
         #region Initialisierung
 
@@ -36,7 +32,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             Data = data;
             OwnerWindow = ownerWindow;
-            MainDb = new DbModel(data.MainConnectionString);
+            MainDb = Data.CreateDbConnection();
 
             InitializeComponent();
 
@@ -132,21 +128,8 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         private void ClearArticlesBtn_Click(object sender, RoutedEventArgs e)
         {
-            foreach (Article article in Articles)
-            {
-                article.Price = Math.Abs(article.Price);
-                article.SupplierProportion = Math.Abs(article.SupplierProportion);
-            }
-            Articles.Clear();
-            ArticleIdTB.Focus();
-
-            Documents documents = new Documents(Data, MainDb);
-            foreach (Article article in ArticlesPriceChanged)
-            {
-                documents.NotifyArticlePropertiesChanged(article.Id);
-            }
-
-            MainDb.SaveChanges();
+            MainDb.Dispose();
+            MainDb = Data.CreateDbConnection();
         }
 
         private void SellBtn_Click(object sender, RoutedEventArgs e)
@@ -163,13 +146,14 @@ namespace Warenwirtschaftssystem.UI.Pages
 
                 List<SavedArticleAttributes> savedArticleAttributes = new List<SavedArticleAttributes>();
 
+                // negative price for returns
                 foreach (Article a in Articles)
                 {
                     if (a.Status == Status.Sold)
                     {
                         savedArticleAttributes.Add(new SavedArticleAttributes
                         {
-                            ArticleId = a.Id,
+                            Article = a,
                             Payout = a.SupplierProportion,
                             Price = a.Price
                         });
@@ -182,7 +166,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                 if (cMB.Result == PressedButton.One)
                 {
                     Document document = documents.AddDocument(DocumentType.Bill, Articles.ToList(), savedArticleAttributes, false);
-                    MainDb.SaveChanges();
+                    MainDb.SaveChangesRetryOnUserInput();
                     new InvoiceBon(Data, document).CreateAndPrint();
                 }
                 else if (cMB.Result == PressedButton.Two)
@@ -202,7 +186,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                     else
                     {
                         Document document = documents.AddDocument(DocumentType.Bill, Articles.ToList(), savedArticleAttributes, pSP.SelectedSupplier, false);
-                        MainDb.SaveChanges();
+                        MainDb.SaveChangesRetryOnUserInput();
                         new InvoiceDoc(Data, document).CreateAndPrintDocument();
                     }
                 }
@@ -211,8 +195,20 @@ namespace Warenwirtschaftssystem.UI.Pages
                     documents.AddDocument(DocumentType.Bill, Articles.ToList(), savedArticleAttributes, false);
                 }
 
+                SaveChanges();
                 ClearArticlesBtn_Click(null, null);
             }
+        }
+
+        private void SaveChanges()
+        {
+            foreach (Article article in Articles)
+            {
+                article.Price = Math.Abs(article.Price);
+                article.SupplierProportion = Math.Abs(article.SupplierProportion);
+            }
+
+            MainDb.SaveChangesRetryOnUserInput();
         }
 
         private void ReserveBtn_Click(object sender, RoutedEventArgs e)
@@ -262,7 +258,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                             Supplier = reservingSupplier,
                             From = dFUP.DateFrom,
                             Until = dFUP.DateUntil,
-                            ArticleId = a.Id
+                            Article = a
                         };
                     }
 
@@ -270,7 +266,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                     {
                         Documents documents = new Documents(Data, MainDb);
                         Document document = documents.AddDocument(DocumentType.Reservation, Articles.ToList(), null, reservingSupplier, false);
-                        MainDb.SaveChanges();
+                        MainDb.SaveChangesRetryOnUserInput();
                         ClearArticlesBtn_Click(null, null);
 
                         if (result == MessageBoxResult.Yes)
@@ -318,54 +314,6 @@ namespace Warenwirtschaftssystem.UI.Pages
             if (e.Key == Key.Enter) AddArticle();
         }
 
-        private void ArticlesDG_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-        {
-            //Auf gültige Eingabe überprüfen
-            string text = (e.EditingElement as TextBox).Text;
-
-            Article article = ArticlesDG.SelectedItem as Article;
-
-            if (decimal.TryParse(text, NumberStyles.Currency, CultureInfo.CreateSpecificCulture("de-DE"), out decimal newPrice) && newPrice >= 0)
-            {
-                if (newPrice != article.Price)
-                {
-                    if (IsSupplierProportionFixed)
-                    {
-                        if (newPrice < article.SupplierProportion)
-                        {
-                            e.Cancel = true;
-                            SellBtn.IsEnabled = false;
-                            ReserveBtn.IsEnabled = false;
-                            ClearArticlesBtn.IsEnabled = false;
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        if (article.Supplier.SupplierProportion.HasValue)
-                            article.SupplierProportion = newPrice * article.Supplier.SupplierProportion.Value / 100;
-                        else
-                            article.SupplierProportion = newPrice * MainDb.GraduationSupplierProportion.Where(g => g.FromPrice <= newPrice).OrderByDescending(g => g.FromPrice).First().SupplierProportion / 100;
-                    }
-
-                    if (newPrice != article.Price && !ArticlesPriceChanged.Contains(article))
-                        ArticlesPriceChanged.Add(article);
-                }
-            }
-            else
-            {
-                e.Cancel = true;
-                SellBtn.IsEnabled = false;
-                ReserveBtn.IsEnabled = false;
-                ClearArticlesBtn.IsEnabled = false;
-                return;
-            }
-
-            SellBtn.IsEnabled = true;
-            ReserveBtn.IsEnabled = true;
-            ClearArticlesBtn.IsEnabled = true;
-        }
-
         private void ArticlesDG_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!(ArticlesDG.SelectedItem is Article article) || article.Defects == null || article.Defects.Count == 0)
@@ -374,44 +322,15 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
             else
             {
-                List<Defect> defectsList = new List<Defect>();
+                var defectsList = new List<Defect>();
 
-                foreach (Defect defect in article.Defects)
+                foreach (var defect in article.Defects)
                 {
                     defectsList.Add(defect);
                 }
 
                 DefectsDG.ItemsSource = defectsList;
             }
-        }
-
-        private void ArticlesDG_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
-        {
-            if (ArticlesDG.SelectedItem is Article article)
-            {
-                if (article.Price < 0)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-                else
-                {
-                    decimal supplierProportion;
-                    if (article.Supplier.SupplierProportion.HasValue)
-                        supplierProportion = article.Supplier.SupplierProportion.Value / 100 * article.Price;
-                    else
-                    {
-                        GraduationSupplierProportion supplierGraduationProportion = MainDb.GraduationSupplierProportion.Where(sGP => article.Price >= sGP.FromPrice).OrderByDescending(sGP => sGP.FromPrice).First();
-                        supplierProportion = article.Price * supplierGraduationProportion.SupplierProportion / 100;
-                    }
-
-                    if (supplierProportion != article.SupplierProportion)
-                        IsSupplierProportionFixed = true;
-                    else
-                        IsSupplierProportionFixed = false;
-                }
-            }
-
         }
 
         private void OwnerWindow_KeyDown(object sender, KeyEventArgs e)

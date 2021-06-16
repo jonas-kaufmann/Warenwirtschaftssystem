@@ -26,7 +26,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             OwnerWindow = ownerWindow;
             Data = data;
 
-            MainDb = new DbModel(Data.MainConnectionString);
+            MainDb = Data.CreateDbConnection();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -78,27 +78,15 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             foreach (Document document in documents)
             {
+                // replace price and payout values of article by saved values
                 foreach (SavedArticleAttributes sAA in document.SavedArticleAttributes)
                 {
-                    Article article = document.Articles.Where(a => a.Id == sAA.ArticleId).FirstOrDefault();
+                    Article article = document.Articles.Where(a => a.Id == sAA.Article.Id).FirstOrDefault();
 
                     if (article != null)
                     {
-                        Article articleToAdd = new Article
-                        {
-                            Id = article.Id,
-                            Defects = article.Defects,
-                            PickUp = article.PickUp,
-                            Price = sAA.Price,
-                            SupplierProportion = sAA.Payout
-                        };
-
-                        articleToAdd.Description = article.Description;
-
-                        int index = document.Articles.IndexOf(article);
-
-                        document.Articles.RemoveAt(index);
-                        document.Articles.Insert(index, articleToAdd);
+                        article.Price = sAA.Price;
+                        article.SupplierProportion = sAA.Payout;
                     }
                 }
 

@@ -34,7 +34,7 @@
             </Expander>
         </StackPanel>
 
-        <DataGrid Name="SuppliersDG" MouseDoubleClick="SupplierDG_MouseDoubleClick" PreviewKeyDown="SuppliersDG_PreviewKeyDown" SelectionUnit="FullRow" IsReadOnly="True" CanUserReorderColumns="False" HorizontalScrollBarVisibility="Disabled" SelectionMode="Single" HeadersVisibility="Column" RowDetailsVisibilityMode="VisibleWhenSelected" ItemsSource="{Binding}" EnableRowVirtualization="True" AutoGenerateColumns="False">
+        <DataGrid Name="SuppliersDG" ItemsSource="{Binding}" MouseDoubleClick="SupplierDG_MouseDoubleClick" PreviewKeyDown="SuppliersDG_PreviewKeyDown" SelectionUnit="FullRow" IsReadOnly="True" CanUserReorderColumns="False" HorizontalScrollBarVisibility="Disabled" SelectionMode="Single" HeadersVisibility="Column" RowDetailsVisibilityMode="VisibleWhenSelected" EnableRowVirtualization="True" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" Binding="{Binding Id, Mode=OneTime}" SortDirection="Ascending"/>
                 <DataGridTextColumn Width="*" Header="Name" Binding="{Binding Name, Mode=OneTime}"/>

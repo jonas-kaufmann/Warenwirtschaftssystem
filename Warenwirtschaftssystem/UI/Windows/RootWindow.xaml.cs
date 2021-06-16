@@ -53,15 +53,16 @@ namespace Warenwirtschaftssystem.UI.Windows
             switch (result)
             {
                 case MessageBoxResult.Yes:
-                    SaveFileDialog sfd = new SaveFileDialog
+                    var sfd = new SaveFileDialog
                     {
                         Title = "Datenbankbackup speichern",
                         Filter = "BAK-Datei|*.bak",
+                        AddExtension = true,
+                        ValidateNames = true,
                         CheckFileExists = false,
                         CheckPathExists = true,
-                        OverwritePrompt = true,
-                        AddExtension = true,
-                        ValidateNames = true
+                        CreatePrompt = false,
+                        OverwritePrompt = true
                     };
 
                     bool? resultSFD = sfd.ShowDialog();
@@ -95,9 +96,9 @@ namespace Warenwirtschaftssystem.UI.Windows
 
                             backup.SqlBackup(server);
                         }
-                        catch
+                        catch (Exception exception)
                         {
-                            MessageBox.Show("Fehler beim Speichern des Backups. Möglicherweise liegen keine Berechtigungen für das Schreiben in diesen Ordner vor.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show(exception.ToString(), "Fehler beim Speichern des Backups", MessageBoxButton.OK, MessageBoxImage.Warning);
                             e.Cancel = true;
                             return;
                         }

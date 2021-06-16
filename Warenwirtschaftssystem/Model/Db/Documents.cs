@@ -1,8 +1,7 @@
-﻿using System;
-using System.CodeDom;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data.Entity;
 using System.Data.SqlTypes;
 using System.Linq;
 
@@ -28,7 +27,7 @@ namespace Warenwirtschaftssystem.Model.Db
             if (pregenerateId)
             {
                 if (ContextForGeneratingIds == null)
-                    ContextForGeneratingIds = new DbModel(Data.MainConnectionString);
+                    ContextForGeneratingIds = Data.CreateDbConnection();
 
                 Document pregeneratedId = new Document()
                 {
@@ -57,7 +56,7 @@ namespace Warenwirtschaftssystem.Model.Db
             if (pregenerateId)
             {
                 if (ContextForGeneratingIds == null)
-                    ContextForGeneratingIds = new DbModel(Data.MainConnectionString);
+                    ContextForGeneratingIds = Data.CreateDbConnection();
 
                 Document pregeneratedId = new Document()
                 {
@@ -80,30 +79,38 @@ namespace Warenwirtschaftssystem.Model.Db
 
         public void NotifyArticlePropertiesChanged(int articleId)
         {
-            DbModel oldValueDb = new DbModel(Data.MainConnectionString);
-            Article oldArticle = oldValueDb.Articles.Where(a => a.Id == articleId).Single();
+            // create or find an existing save of the values
+            var oldValueDb = Data.CreateDbConnection();
+            var oldArticle = oldValueDb.Articles.Where(a => a.Id == articleId).Single();
+            var article = MainDb.Articles.First(a => a.Id == articleId);
 
-            var savedArticleAttributes = MainDb.SalesSavedArticleAttributes.Where(c => c.ArticleId == articleId
+            // no changes
+            if (oldArticle.Price == article.Price && oldArticle.SupplierProportion == article.SupplierProportion)
+            {
+                return;
+            }
+
+            var savedArticleAttributes = MainDb.SavedArticleAttributes.Where(c => c.Article.Id == articleId
                 && c.Price == oldArticle.Price
                 && c.Payout == oldArticle.SupplierProportion).FirstOrDefault();
 
             if (savedArticleAttributes == null)
                 savedArticleAttributes = new SavedArticleAttributes
                 {
-                    ArticleId = articleId,
+                    Article = article,
                     Payout = oldArticle.SupplierProportion,
                     Price = oldArticle.Price
                 };
 
             oldValueDb.Dispose();
 
-            var affectedDocuments = MainDb.Documents.Where(d => d.Articles.Where(a => a.Id == articleId).FirstOrDefault() != null
-                && d.SavedArticleAttributes.Where(s => s.ArticleId == articleId).FirstOrDefault() == null).Include(d => d.SavedArticleAttributes).ToList();
+            // condition: document contains this article && hasn't already saved its attributes
+            var affectedDocuments = MainDb.Documents
+                .Include(d => d.SavedArticleAttributes)
+                .Where(d => d.Articles.FirstOrDefault(a => a.Id == articleId) != null && d.SavedArticleAttributes.FirstOrDefault(s => s.Article.Id == articleId) == null);
 
             foreach (var document in affectedDocuments)
             {
-                if (document.SavedArticleAttributes == null)
-                    document.SavedArticleAttributes = new ObservableCollection<SavedArticleAttributes>();
                 document.SavedArticleAttributes.Add(savedArticleAttributes);
             }
         }
@@ -122,7 +129,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 document.SavedArticleAttributes = new ObservableCollection<SavedArticleAttributes>();
                 foreach (var changedArticleAttribute in changedArticleAttributes)
                 {
-                    var sameElement = MainDb.SalesSavedArticleAttributes.Where(c => c.ArticleId == changedArticleAttribute.ArticleId
+                    var sameElement = MainDb.SavedArticleAttributes.Where(c => c.Article.Id == changedArticleAttribute.Article.Id
                         && c.Price == changedArticleAttribute.Price
                         && c.Payout == changedArticleAttribute.Payout
                     ).FirstOrDefault();

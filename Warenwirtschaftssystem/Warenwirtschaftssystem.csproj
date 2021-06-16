@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Authors>Jonas Kaufmann</Authors>
@@ -10,6 +10,9 @@
     <NeutralLanguage>de-DE</NeutralLanguage>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>1.1.22</Version>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>Personal Key File.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -39,19 +42,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.6.3">
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.6.4">
       <NoWarn>NU1701</NoWarn>
     </PackageReference>
-    <PackageReference Include="BarcodeLib" Version="2.2.6" />
-    <PackageReference Include="CsvHelper" Version="15.0.8" />
-    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="BarcodeLib" Version="2.4.0" />
+    <PackageReference Include="CsvHelper" Version="27.1.0" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="3.8.2">
       <NoWarn>NU1701</NoWarn>
     </PackageReference>
-    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="161.44091.28" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
-    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.7" />
+    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="161.46367.54" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>

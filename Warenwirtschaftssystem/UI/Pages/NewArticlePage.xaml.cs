@@ -1,29 +1,22 @@
-﻿using Microsoft.Xaml.Behaviors;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Xaml.Behaviors;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
-using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Media;
 using Warenwirtschaftssystem.Model;
 using Warenwirtschaftssystem.Model.Db;
 using Warenwirtschaftssystem.UI.Behaviors;
 using Warenwirtschaftssystem.UI.Controls;
 using Warenwirtschaftssystem.UI.Windows;
-using Xceed.Wpf.AvalonDock.Controls;
-using Xceed.Wpf.Toolkit;
 using Color = Warenwirtschaftssystem.Model.Db.Color;
-using MessageBox = System.Windows.MessageBox;
-using Type = Warenwirtschaftssystem.Model.Db.Type;
 
 namespace Warenwirtschaftssystem.UI.Pages
 {
@@ -46,12 +39,8 @@ namespace Warenwirtschaftssystem.UI.Pages
         private CollectionViewSource DefectsCVS;
         private CollectionViewSource CategoriesCVS;
         private CollectionViewSource ColorsCVS;
-        private CollectionViewSource TypesCVS;
+        private CollectionViewSource SubCategoryCVS;
         private FilterableDataGrid[] DataGrids;
-
-        //Überprüfung auf Datenänderung für Belege
-        private decimal? OldPrice;
-        private decimal? OldSupplierProportion;
 
         private bool IsNewArticle = false;
         private bool Editable = true;
@@ -75,7 +64,8 @@ namespace Warenwirtschaftssystem.UI.Pages
             {
                 Supplier = Supplier,
                 Status = Status.Sortiment,
-                AsNew = false
+                AsNew = false,
+                AddedToSortiment = DateTime.Now
             };
 
             OwnerWindow.Title = "Neuer Artikel L-Nr " + Article.Supplier.Id + " " + Article.Supplier.Name;
@@ -105,7 +95,8 @@ namespace Warenwirtschaftssystem.UI.Pages
             {
                 Supplier = Supplier,
                 Status = Status.Sortiment,
-                AsNew = false
+                AsNew = false,
+                AddedToSortiment = DateTime.Now
             };
 
             #endregion
@@ -146,7 +137,8 @@ namespace Warenwirtschaftssystem.UI.Pages
                 Price = articleToCopy.Price,
                 Size = articleToCopy.Size,
                 SupplierProportion = articleToCopy.SupplierProportion,
-                Type = articleToCopy.Type
+                SubCategory = articleToCopy.SubCategory,
+                AddedToSortiment = DateTime.Now
             };
 
             OwnerWindow.Title = "Neuer Artikel L-Nr " + Article.Supplier.Id + " " + Article.Supplier.Name;
@@ -188,9 +180,6 @@ namespace Warenwirtschaftssystem.UI.Pages
             Article = articleToEdit;
             OriginalArticle = Article.clone();
             Editable = editable;
-
-            OldPrice = Article.Price;
-            OldSupplierProportion = Article.SupplierProportion;
 
             OwnerWindow.Title = "A-Nr " + Article.ConvertedId + " L-Nr " + Article.Supplier.Id + " " + Article.Supplier.Name;
 
@@ -246,59 +235,59 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             // Gender
             GenderCVS = (CollectionViewSource)FindResource("GenderCVS");
-            MainDb.ArticleGender.Load();
+            MainDb.Genders.Load();
             GenderCVS.SortDescriptions.Clear();
-            GenderCVS.SortDescriptions.Add(new SortDescription(nameof(Gender.Description), ListSortDirection.Ascending));
-            GenderCVS.Source = MainDb.ArticleGender.Local;
+            GenderCVS.SortDescriptions.Add(new SortDescription(nameof(Gender.Name), ListSortDirection.Ascending));
+            GenderCVS.Source = MainDb.Genders.Local.ToObservableCollection();
             // Brands
             BrandsCVS = (CollectionViewSource)FindResource("BrandsCVS");
-            MainDb.ArticleBrands.Load();
+            MainDb.Brands.Load();
             BrandsCVS.SortDescriptions.Clear();
-            BrandsCVS.SortDescriptions.Add(new SortDescription(nameof(Brand.Title), ListSortDirection.Ascending));
-            BrandsCVS.Source = MainDb.ArticleBrands.Local;
+            BrandsCVS.SortDescriptions.Add(new SortDescription(nameof(ArticleAttributeBase.Name), ListSortDirection.Ascending));
+            BrandsCVS.Source = MainDb.Brands.Local.ToObservableCollection();
             // Sizes
             SizesCVS = (CollectionViewSource)FindResource("SizesCVS");
-            MainDb.ArticleSizes.Load();
+            MainDb.Sizes.Load();
             SizesCVS.SortDescriptions.Clear();
-            SizesCVS.SortDescriptions.Add(new SortDescription(nameof(Model.Db.Size.Value), ListSortDirection.Ascending));
-            SizesCVS.Source = MainDb.ArticleSizes.Local;
+            SizesCVS.SortDescriptions.Add(new SortDescription(nameof(ArticleAttributeBase.Name), ListSortDirection.Ascending));
+            SizesCVS.Source = MainDb.Sizes.Local.ToObservableCollection();
             // Materials
             MaterialsCVS = (CollectionViewSource)FindResource("MaterialsCVS");
-            MainDb.ArticleMaterials.Load();
+            MainDb.Materials.Load();
             MaterialsCVS.SortDescriptions.Clear();
-            MaterialsCVS.SortDescriptions.Add(new SortDescription(nameof(Material.Title), ListSortDirection.Ascending));
-            MaterialsCVS.Source = MainDb.ArticleMaterials.Local;
+            MaterialsCVS.SortDescriptions.Add(new SortDescription(nameof(ArticleAttributeBase.Name), ListSortDirection.Ascending));
+            MaterialsCVS.Source = MainDb.Materials.Local.ToObservableCollection();
             // Parts
             PartsCVS = (CollectionViewSource)FindResource("PartsCVS");
-            MainDb.ArticleParts.Load();
+            MainDb.Parts.Load();
             PartsCVS.SortDescriptions.Clear();
-            PartsCVS.SortDescriptions.Add(new SortDescription(nameof(Part.Title), ListSortDirection.Ascending));
-            PartsCVS.Source = MainDb.ArticleParts.Local;
+            PartsCVS.SortDescriptions.Add(new SortDescription(nameof(ArticleAttributeBase.Name), ListSortDirection.Ascending));
+            PartsCVS.Source = MainDb.Parts.Local.ToObservableCollection();
             // Defects
             DefectsCVS = (CollectionViewSource)FindResource("DefectsCVS");
-            MainDb.ArticleDefects.Load();
+            MainDb.Defects.Load();
             DefectsCVS.SortDescriptions.Clear();
-            DefectsCVS.SortDescriptions.Add(new SortDescription(nameof(Defect.Title), ListSortDirection.Ascending));
-            DefectsCVS.Source = MainDb.ArticleDefects.Local;
+            DefectsCVS.SortDescriptions.Add(new SortDescription(nameof(ArticleAttributeBase.Name), ListSortDirection.Ascending));
+            DefectsCVS.Source = MainDb.Defects.Local.ToObservableCollection();
             // Categories
             CategoriesCVS = (CollectionViewSource)FindResource("CategoriesCVS");
-            MainDb.ArticleCategories.Load();
+            MainDb.Categories.Include(c => c.SubCategories).Load();
             CategoriesCVS.SortDescriptions.Clear();
-            CategoriesCVS.SortDescriptions.Add(new SortDescription(nameof(Category.Title), ListSortDirection.Ascending));
-            CategoriesCVS.Source = MainDb.ArticleCategories.Local;
+            CategoriesCVS.SortDescriptions.Add(new SortDescription(nameof(ArticleAttributeBase.Name), ListSortDirection.Ascending));
+            CategoriesCVS.Source = MainDb.Categories.Local.ToObservableCollection();
 
             // Colors
             ColorsCVS = (CollectionViewSource)FindResource("ColorsCVS");
-            MainDb.ArticleColors.Load();
+            MainDb.Colors.Load();
             ColorsCVS.SortDescriptions.Clear();
-            ColorsCVS.SortDescriptions.Add(new SortDescription(nameof(Color.Description), ListSortDirection.Ascending));
-            ColorsCVS.Source = MainDb.ArticleColors.Local;
+            ColorsCVS.SortDescriptions.Add(new SortDescription(nameof(ArticleAttributeBase.Name), ListSortDirection.Ascending));
+            ColorsCVS.Source = MainDb.Colors.Local.ToObservableCollection();
 
             // Types
-            TypesCVS = (CollectionViewSource)FindResource("TypesCVS");
-            TypesCVS.SortDescriptions.Clear();
-            TypesCVS.SortDescriptions.Add(new SortDescription(nameof(Type.Title), ListSortDirection.Ascending));
-            TypesCVS.Source = Article == null || Article.Category == null ? null : Article.Category.Types;
+            SubCategoryCVS = (CollectionViewSource)FindResource("TypesCVS");
+            SubCategoryCVS.SortDescriptions.Clear();
+            SubCategoryCVS.SortDescriptions.Add(new SortDescription(nameof(Type.Name), ListSortDirection.Ascending));
+            SubCategoryCVS.Source = Article == null || Article.Category == null ? null : Article.Category.SubCategories;
 
             SelectArticleAttributes();
         }
@@ -310,7 +299,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             // Categories
             CategoriesDG.DataGrid.SelectedItem = Article.Category;
             // Type
-            TypesDG.DataGrid.SelectedItem = Article.Type;
+            TypesDG.DataGrid.SelectedItem = Article.SubCategory;
             // Brand
             BrandsDG.DataGrid.SelectedItem = Article.Brand;
             // Size
@@ -322,10 +311,20 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
             else
             {
-                MaterialsDG.DataGrid.SelectedItem = Article.Materials[0];
+                bool firstIteration = true;
 
-                for (int i = 1; i < Article.Materials.Count; i++)
-                    MaterialsDG.DataGrid.SelectedItems.Add(Article.Materials[i]);
+                foreach (var material in Article.Materials)
+                {
+                    if (firstIteration)
+                    {
+                        MaterialsDG.DataGrid.SelectedItem = material;
+                        firstIteration = false;
+                    }
+                    else
+                    {
+                        MaterialsDG.DataGrid.SelectedItems.Add(material);
+                    }
+                }
             }
             // Parts
             PartsDG.DataGrid.SelectedItem = Article.Parts;
@@ -336,10 +335,20 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
             else
             {
-                DefectsDG.DataGrid.SelectedItem = Article.Defects[0];
+                bool firstIteration = true;
 
-                for (int i = 1; i < Article.Defects.Count; i++)
-                    DefectsDG.DataGrid.SelectedItems.Add(Article.Defects[i]);
+                foreach (var defect in Article.Defects)
+                {
+                    if (firstIteration)
+                    {
+                        DefectsDG.DataGrid.SelectedItem = defect;
+                        firstIteration = false;
+                    }
+                    else
+                    {
+                        DefectsDG.DataGrid.SelectedItems.Add(defect);
+                    }
+                }
             }
             // Colors
             if (Article.Colors == null || Article.Colors.Count == 0)
@@ -348,10 +357,20 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
             else
             {
-                ColorsDG.DataGrid.SelectedItem = Article.Colors[0];
+                bool firstIteration = true;
 
-                for (int i = 1; i < Article.Colors.Count; i++)
-                    ColorsDG.DataGrid.SelectedItems.Add(Article.Colors[i]);
+                foreach (var color in Article.Colors)
+                {
+                    if (firstIteration)
+                    {
+                        ColorsDG.DataGrid.SelectedItem = color;
+                        firstIteration = false;
+                    }
+                    else
+                    {
+                        ColorsDG.DataGrid.SelectedItems.Add(color);
+                    }
+                }
             }
         }
 
@@ -402,8 +421,8 @@ namespace Warenwirtschaftssystem.UI.Pages
                         }
                         else
                         {
-                            GraduationSupplierProportion supplierGraduationProportion = MainDb.GraduationSupplierProportion.Where(sGP => sGP.FromPrice <= Article.Price).OrderByDescending(sGP => sGP.FromPrice).First();
-                            Article.SupplierProportion = Article.Price * supplierGraduationProportion.SupplierProportion / 100;
+                            SupplierProportion supplierGraduationProportion = MainDb.SupplierProportions.Where(sGP => sGP.FromPrice <= Article.Price).OrderByDescending(sGP => sGP.FromPrice).First();
+                            Article.SupplierProportion = Article.Price * supplierGraduationProportion.Proportion / 100;
                         }
 
                         if (Editable)
@@ -462,11 +481,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             DeleteEmptyItemsInDGs();
 
-            if (Article.AddedToSortiment == null)
-                Article.AddedToSortiment = DateTime.Now;
-
-            if (!IsNewArticle && OldPrice != null && OldSupplierProportion != null
-                       && (Article.Price != OldPrice || Article.SupplierProportion != OldSupplierProportion))
+            if (!IsNewArticle)
                 new Documents(Data, MainDb).NotifyArticlePropertiesChanged(Article.Id);
 
             if (IsNewArticle)
@@ -476,7 +491,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
 
             if (Editable)
-                MainDb.SaveChanges();
+                MainDb.SaveChangesRetryOnUserInput();
 
             if (NewArticlesPage == null)
             {
@@ -515,7 +530,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             Category c = new Category
             {
-                Types = new ObservableCollection<Type>()
+                SubCategories = new ObservableCollection<SubCategory>()
             };
             e.NewItem = c;
         }
@@ -524,9 +539,9 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             if (CategoriesDG.DataGrid.SelectedItem is Category category)
             {
-                TypesCVS.Source = category.Types;
-                TypesCVS.SortDescriptions.Clear();
-                TypesCVS.SortDescriptions.Add(new SortDescription(nameof(Type.Title), ListSortDirection.Ascending));
+                SubCategoryCVS.Source = category.SubCategories;
+                SubCategoryCVS.SortDescriptions.Clear();
+                SubCategoryCVS.SortDescriptions.Add(new SortDescription(nameof(Type.Name), ListSortDirection.Ascending));
                 TypesDG.IsEnabled = true;
             }
             else
@@ -550,10 +565,10 @@ namespace Warenwirtschaftssystem.UI.Pages
             else
                 Article.Category = null;
             // Type
-            if (TypesDG.DataGrid.SelectedItem is Model.Db.Type type)
-                Article.Type = type;
+            if (TypesDG.DataGrid.SelectedItem is SubCategory type)
+                Article.SubCategory = type;
             else
-                Article.Type = null;
+                Article.SubCategory = null;
             // Brand
             if (BrandsDG.DataGrid.SelectedItem is Brand brand)
                 Article.Brand = brand;
@@ -575,7 +590,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             else
                 Article.Materials = null;
             // Parts
-            if (PartsDG.DataGrid.SelectedItem is Part part && !string.IsNullOrWhiteSpace(part.Title))
+            if (PartsDG.DataGrid.SelectedItem is Parts part && !string.IsNullOrWhiteSpace(part.Name))
                 Article.Parts = part;
             else
                 Article.Parts = null;
@@ -600,7 +615,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                 while (i < genders.Count)
                 {
                     Gender gender = genders[i];
-                    if (gender.Id == 0 && gender.Description == null && gender.Short == null)
+                    if (gender.Id == 0 && gender.Name == null && gender.Short == null)
                     {
                         genders.Remove(gender);
                         continue;
@@ -617,7 +632,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                 while (i < categories.Count)
                 {
                     Category category = categories[i];
-                    if (category.Id == 0 && category.Title == null && (category.Types == null || category.Types.Count == 0))
+                    if (category.Id == 0 && category.Name == null && (category.SubCategories == null || category.SubCategories.Count == 0))
                     {
                         categories.Remove(category);
                         continue;
@@ -628,13 +643,13 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
 
             i = 0;
-            ObservableCollection<Type> types = TypesCVS.Source as ObservableCollection<Type>;
+            var types = SubCategoryCVS.Source as ObservableCollection<SubCategory>;
             if (types != null)
             {
                 while (i < types.Count)
                 {
-                    Type type = types[i];
-                    if (type.Id == 0 && type.Title == null)
+                    var type = types[i];
+                    if (type.Id == 0 && type.Name == null)
                     {
                         types.Remove(type);
                         continue;
@@ -645,13 +660,13 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
 
             i = 0;
-            ObservableCollection<Brand> brands = BrandsCVS.Source as ObservableCollection<Brand>;
+            var brands = BrandsCVS.Source as ObservableCollection<Brand>;
             if (brands != null)
             {
                 while (i < brands.Count)
                 {
-                    Brand brand = brands[i];
-                    if (brand.Id == 0 && brand.Title == null && (brand.Articles == null || brand.Articles.Count == 0))
+                    var brand = brands[i];
+                    if (brand.Id == 0 && brand.Name == null && (brand.Articles == null || brand.Articles.Count == 0))
                     {
                         brands.Remove(brand);
                         continue;
@@ -662,13 +677,13 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
 
             i = 0;
-            ObservableCollection<Model.Db.Size> sizes = SizesCVS.Source as ObservableCollection<Model.Db.Size>;
+            var sizes = SizesCVS.Source as ObservableCollection<Model.Db.Size>;
             if (sizes != null)
             {
                 while (i < sizes.Count)
                 {
-                    Model.Db.Size size = sizes[i];
-                    if (size.Id == 0 && size.Value == null)
+                    var size = sizes[i];
+                    if (size.Id == 0 && size.Name == null)
                     {
                         sizes.Remove(size);
                         continue;
@@ -686,7 +701,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                 {
 
                     Color color = colors[i];
-                    if (color.Id == 0 && color.ColorCode == null && color.Description == null && (color.Articles == null || color.Articles.Count == 0))
+                    if (color.Id == 0 && color.ColorCode == null && color.Name == null && (color.Articles == null || color.Articles.Count == 0))
                     {
                         colors.Remove(color);
                         continue;
@@ -702,8 +717,8 @@ namespace Warenwirtschaftssystem.UI.Pages
             {
                 while (i < materials.Count)
                 {
-                    Material material = materials[i];
-                    if (material.Id == 0 && material.Title == null && (material.Articles == null || material.Articles.Count == 0))
+                    var material = materials[i];
+                    if (material.Id == 0 && material.Name == null && (material.Articles == null || material.Articles.Count == 0))
                     {
                         materials.Remove(material);
                         continue;
@@ -714,13 +729,13 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
 
             i = 0;
-            var parts = PartsCVS.Source as ObservableCollection<Part>;
+            var parts = PartsCVS.Source as ObservableCollection<Parts>;
             if (parts != null)
             {
                 while (i < parts.Count)
                 {
-                    Part part = parts[i];
-                    if (part.Id == 0 && part.Title == null)
+                    var part = parts[i];
+                    if (part.Id == 0 && part.Name == null)
                     {
                         parts.Remove(part);
                         continue;
@@ -736,8 +751,8 @@ namespace Warenwirtschaftssystem.UI.Pages
             {
                 while (i < defects.Count)
                 {
-                    Defect defect = defects[i];
-                    if (defect.Id == 0 && defect.Title == null && (defect.Articles == null || defect.Articles.Count == 0))
+                    var defect = defects[i];
+                    if (defect.Id == 0 && defect.Name == null && (defect.Articles == null || defect.Articles.Count == 0))
                     {
                         defects.Remove(defect);
                         continue;
@@ -756,19 +771,19 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             SuggestionsProvider.Suggestions.Clear();
 
-            if (Article.Category == null || Article.Type == null || Article.Brand == null)
+            if (Article.Category == null || Article.SubCategory == null || Article.Brand == null)
                 return;
 
             List<decimal> results;
             if (Article.Gender == null)
-                results = MainDb.Articles.Where(a => a.Category != null && a.Category.Id == Article.Category.Id && a.Type != null && a.Type.Id == Article.Type.Id && a.Brand != null && a.Brand.Id == Article.Brand.Id)
+                results = MainDb.Articles.Where(a => a.Category != null && a.Category.Id == Article.Category.Id && a.SubCategory != null && a.SubCategory.Id == Article.SubCategory.Id && a.Brand != null && a.Brand.Id == Article.Brand.Id)
                     .Select(a => a.Price)
                     .Distinct()
                     .OrderByDescending(p => p)
                     .Take(20)
                     .ToList();
             else
-                results = MainDb.Articles.Where(a => a.Gender != null && a.Gender.Id == Article.Gender.Id && a.Category != null && a.Category.Id == Article.Category.Id && a.Type != null && a.Type.Id == Article.Type.Id && a.Brand != null && a.Brand.Id == Article.Brand.Id)
+                results = MainDb.Articles.Where(a => a.Gender != null && a.Gender.Id == Article.Gender.Id && a.Category != null && a.Category.Id == Article.Category.Id && a.SubCategory != null && a.SubCategory.Id == Article.SubCategory.Id && a.Brand != null && a.Brand.Id == Article.Brand.Id)
                     .Select(a => a.Price)
                     .Distinct()
                     .OrderByDescending(p => p)
