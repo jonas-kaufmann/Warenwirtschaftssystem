@@ -16,7 +16,9 @@ namespace Warenwirtschaftssystem.UI.Controls
         public bool DisableEnteringEditThroughTyping { get; set; } = false;
 
         private CollectionViewSource CollectionViewSource;
-        private bool Disabled = false;
+        private bool Disabled;
+        private string OldValue;
+        private bool SkipConfirmation; // used to skip confirmation when cell leaves edit state and nothing was changed
 
         public FilterableDataGrid()
         {
@@ -108,6 +110,9 @@ namespace Warenwirtschaftssystem.UI.Controls
                 return;
 
             Disabled = true;
+
+            // store old value for TextBox-Cells else set OldValue to null to indicate that old value could not be retrieved
+            OldValue = e.EditingEventArgs.Source is TextBlock tb ? tb.Text : null;
         }
 
         private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
@@ -116,6 +121,7 @@ namespace Warenwirtschaftssystem.UI.Controls
                 return;
 
             Disabled = false;
+            SkipConfirmation = OldValue != null && e.EditingElement is TextBox tb && OldValue == tb.Text;
         }
 
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
@@ -123,10 +129,8 @@ namespace Warenwirtschaftssystem.UI.Controls
             if (e.Cancel)
                 return;
 
-            Disabled = false;
-
             // ask for confirmation
-            if (AskForConfirmationAfterEdit && e.EditAction != DataGridEditAction.Cancel)
+            if (AskForConfirmationAfterEdit && e.EditAction != DataGridEditAction.Cancel && !SkipConfirmation)
             {
                 MessageBoxResult result = MessageBox.Show("Sollen die Änderungen an den Merkmalen gespeichert werden?", "Merkmale wurden geändert", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
 
@@ -135,6 +139,10 @@ namespace Warenwirtschaftssystem.UI.Controls
                     (sender as DataGrid).CancelEdit();
                 }
             }
+
+            Disabled = false;
+            OldValue = null;
+            SkipConfirmation = false;
         }
         #endregion
 
