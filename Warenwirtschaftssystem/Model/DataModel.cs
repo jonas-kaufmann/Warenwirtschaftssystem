@@ -3,12 +3,14 @@ using System;
 using System.IO;
 using Warenwirtschaftssystem.Model.LocalAppData;
 using Warenwirtschaftssystem.Model.Db;
+using System.Globalization;
 
 namespace Warenwirtschaftssystem.Model
 {
     public class DataModel
     {
-        // Attribute
+        public static readonly CultureInfo CultureInfo = CultureInfo.CreateSpecificCulture("de-DE");
+
         public ConnectionInfo ConnectionInfo { get; set; }
         private readonly string ConnInfoJSONPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Warenwirtschaftssystem\\Database\\ConnectionInfo.json";
         private readonly string StandardPrintersJSONPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Warenwirtschaftssystem\\Settings\\StandardPrinters.json";
@@ -18,7 +20,6 @@ namespace Warenwirtschaftssystem.Model
 
         public DbModel CreateDbConnection() => new DbModel(MainConnectionString);
 
-        // Konstruktor
         public DataModel()
         {
             #region Connection Info aus JSON laden

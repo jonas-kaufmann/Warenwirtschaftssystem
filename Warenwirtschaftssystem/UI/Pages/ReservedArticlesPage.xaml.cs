@@ -34,12 +34,12 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             if (e.Item is Article article)
             {
-                if (int.TryParse(SupplierIdTb.Text, out int id) && article.Reservation.Supplier.Id != id)
+                if (int.TryParse(SupplierIdTb.Text, out int id) && article.ReservingSupplier.Id != id)
                 {
                     e.Accepted = false;
                     return;
                 }
-                if (ShowReservationExpired.IsChecked.GetValueOrDefault(false) && article.Reservation != null && article.Reservation.Until.HasValue && article.Reservation.Until > DateTime.Now)
+                if (ShowReservationExpired.IsChecked.GetValueOrDefault(false) && article.ReservedUntil.HasValue && article.ReservedUntil > DateTime.Now)
                 {
                     e.Accepted = false;
                     return;
@@ -77,12 +77,9 @@ namespace Warenwirtschaftssystem.UI.Pages
                 foreach (Article article in selectedItems)
                 {
                     article.Status = Status.Sortiment;
-
-                    if (article.Reservation != null)
-                    {
-                        MainDb.ArticleReservations.Remove(article.Reservation);
-                        article.Reservation = null;
-                    }
+                    article.ReservedFrom = null;
+                    article.ReservedUntil = null;
+                    article.ReservingSupplier = null;
 
                     (ArticlesCVS.Source as ObservableCollection<Article>).Remove(article);
                 }

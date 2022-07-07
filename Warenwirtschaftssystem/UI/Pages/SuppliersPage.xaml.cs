@@ -8,7 +8,7 @@ using Warenwirtschaftssystem.UI.Windows;
 using System.Linq;
 using System;
 using System.Windows.Input;
-using Warenwirtschaftssystem.Model.Documents;
+using Warenwirtschaftssystem.Model.Printing;
 using Microsoft.EntityFrameworkCore;
 
 namespace Warenwirtschaftssystem.UI.Pages

@@ -7,11 +7,12 @@ using Warenwirtschaftssystem.Model;
 using Warenwirtschaftssystem.Model.Db;
 using Warenwirtschaftssystem.UI.Windows;
 using System.Windows.Input;
+using Warenwirtschaftssystem.Model.Printing;
+using System.Collections.Generic;
+using System.Windows.Media;
 using System;
 using Warenwirtschaftssystem.Model.Documents;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Windows.Media;
+using Microsoft.EntityFrameworkCore;
 
 namespace Warenwirtschaftssystem.UI.Pages
 {
@@ -21,9 +22,10 @@ namespace Warenwirtschaftssystem.UI.Pages
         private DataModel Data;
         private Window OwnerWindow;
         private DbModel MainDb;
-        private ObservableCollection<Article> Articles = new ObservableCollection<Article>();
         private decimal Sum = 0;
         private List<Defect> EmptyDefectsList = new List<Defect> { new Defect { Name = "" } };
+        private DocumentBase document;
+        private readonly CollectionViewSource ArticlesCVS;
 
         #region Initialisierung
 
@@ -36,9 +38,8 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             InitializeComponent();
 
-            (FindResource("ArticlesCVS") as CollectionViewSource).Source = Articles;
+            ArticlesCVS = FindResource("ArticlesCVS") as CollectionViewSource;
             DefectsDG.ItemsSource = EmptyDefectsList;
-            Articles.CollectionChanged += Articles_CollectionChanged;
 
             ArticleIdTB.Focus();
             OwnerWindow.KeyDown += OwnerWindow_KeyDown;
@@ -46,95 +47,108 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         #endregion
 
+        private void NewDocument()
+        {
+            if (document != null)
+                document.Dispose();
+
+            document = new InvoiceDocument(MainDb);
+
+            ArticlesCVS.Source = document.Document.DisplayArticles;
+            document.Document.PropertyChanged += Document_PropertyChanged;
+        }
+
         private void AddArticle()
         {
+            if (document == null)
+                NewDocument();
+
             string articleId = ArticleIdTB.Text;
-            Article article;
 
             if (int.TryParse(articleId, out int id))
             {
+
                 id -= 100000;
-                if ((article = Articles.Where(a => a.Id == id).FirstOrDefault()) != null)
-                    ArticlesDG.SelectedItem = article;
-                else
+                if (MainDb.Articles.FirstOrDefault(a => a.Id == id) is Article article)
                 {
-                    if ((article = MainDb.Articles.Where(a => a.Id == id).SingleOrDefault()) != null && !(article.Status == Status.ClosedOut || article.Status == Status.PayedOut || article.Status == Status.Returned))
+                    MainDb.Entry(article).Reload();
+                    if (article.Status == Status.Reserved)
                     {
-                        MainDb.Entry(article).Reload();
+                        MessageBoxResult result;
 
-                        if (article.Status == Status.Reserved)
+                        if (article.ReservingSupplier != null)
+                            result = MessageBox.Show("Dieser Artikel ist auf den Lieferanten " + article.ReservingSupplier.Name + " (" + article.ReservingSupplier.Id + ") reserviert. Soll der Artikel wieder für den Verkauf freigegeben werden?", "Artikel ist reserviert", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
+                        else
+                            result = MessageBox.Show("Dieser Artikel ist reserviert. Soll der Artikel wieder für den Verkauf freigegeben werden?", "Artikel ist reserviert", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
+
+                        if (result == MessageBoxResult.Yes)
                         {
-                            MessageBoxResult result;
-
-                            if (article.Reservation != null)
-                                result = MessageBox.Show("Dieser Artikel ist auf den Lieferanten " + article.Reservation.Supplier.Name + " (" + article.Reservation.Supplier.Id + ") reserviert. Soll der Artikel wieder für den Verkauf freigegeben werden?", "Artikel ist reserviert", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
-                            else
-                                result = MessageBox.Show("Dieser Artikel ist reserviert. Soll der Artikel wieder für den Verkauf freigegeben werden?", "Artikel ist reserviert", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
-
-                            if (result == MessageBoxResult.Yes)
-                            {
-                                article.Status = Status.Sortiment;
-                                if (article.Reservation != null)
-                                {
-                                    MainDb.ArticleReservations.Remove(article.Reservation);
-                                    article.Reservation = null;
-                                }
-                            }
-                            else return;
+                            article.Status = Status.Sortiment;
+                            article.ReservingSupplier = null;
+                            article.ReservedFrom = null;
+                            article.ReservedUntil = null;
                         }
-
-                        if (article.Status == Status.Sold)
+                        else
                         {
-                            article.Price *= -1;
-                            article.SupplierProportion *= -1;
-
-                            Document document = MainDb.Documents.Where(d => d.Articles.Where(a => a.Id == article.Id).FirstOrDefault() != null).OrderByDescending(d => d.Id).FirstOrDefault();
-                            if (document != null)
-                            {
-                                article.Sold = document.DateTime;
-                            }
-                        }
-
-                        Articles.Add(article);
-
-                        ArticleIdTB.Text = "";
-                        ArticleIdTB.Focus();
-
-                        article.PropertyChanged += Article_PropertyChanged;
-
-                        //Column-Width anpassen
-                        ArticlesDG.Columns[1].Width = 0;
-                        ArticlesDG.UpdateLayout();
-                        ArticlesDG.Columns[1].Width = new DataGridLength(1, DataGridLengthUnitType.Star);
-
-                        // Scroll to end
-                        if (ArticlesDG.Items.Count > 0)
-                        {
-                            if (VisualTreeHelper.GetChild(ArticlesDG, 0) is Decorator border)
-                            {
-                                if (border.Child is ScrollViewer scroll) scroll.ScrollToEnd();
-                            }
+                            return;
                         }
                     }
+
+                    try
+                    {
+                        document.AddArticle(article);
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        _ = MessageBox.Show(e.ToString(), "Artikel konnte nicht hinzugefügt werden", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+
+                    var displayArticle = document.Document.DisplayArticles.Single(a => a.Id == article.Id);
+                    ArticlesDG.SelectedItem = displayArticle;
+                    ArticlesDG.ScrollIntoView(displayArticle);
                 }
+
             }
+
+            ArticleIdTB.Text = "";
+            _ = ArticleIdTB.Focus();
         }
 
-        private void Article_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void Document_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "Price")
-                Articles_CollectionChanged(null, null);
+            if (e.PropertyName != nameof(document.Document.DisplayArticles))
+                return;
+
+            // update ArticlesDG's column width
+            ArticlesDG.Columns[1].Width = 0;
+            ArticlesDG.UpdateLayout();
+            ArticlesDG.Columns[1].Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+
+            // calculate sum
+            Sum = 0;
+            var articles = document.Document.DisplayArticles;
+            if (articles.Count > 0)
+            {
+                foreach (Article a in articles)
+                {
+                    Sum += a.Price;
+                }
+            }
+            SumTB.Text = "Anzahl " + articles.Count + " - Summe " + Sum.ToString("C");
         }
 
         private void ClearArticlesBtn_Click(object sender, RoutedEventArgs e)
         {
-            MainDb.Dispose();
-            MainDb = Data.CreateDbConnection();
+            if (document != null)
+            {
+                document.Dispose();
+                document = null;
+            }
         }
 
         private void SellBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (Articles.Count > 0)
+            if (document != null && document.Document.Articles.Count > 0)
             {
                 CustomMessageBox cMB = new CustomMessageBox(OwnerWindow, "Bon drucken?", "Soll ein Bon gedruckt werden?", "Bon", "Kaufbeleg (A4)", "Kein Beleg");
                 cMB.ShowDialog();
@@ -142,171 +156,101 @@ namespace Warenwirtschaftssystem.UI.Pages
                 if (cMB.Result == PressedButton.None)
                     return;
 
-                Documents documents = new Documents(Data, MainDb);
-
-                List<SavedArticleAttributes> savedArticleAttributes = new List<SavedArticleAttributes>();
-
-                // negative price for returns
-                foreach (Article a in Articles)
+                switch (cMB.Result)
                 {
-                    if (a.Status == Status.Sold)
-                    {
-                        savedArticleAttributes.Add(new SavedArticleAttributes
+                    case PressedButton.First:
+                        new InvoiceBon(Data, document.Document).CreateAndPrint();
+                        break;
+                    case PressedButton.Second:
+                        PopupWindow pW = new PopupWindow(OwnerWindow, Data)
                         {
-                            Article = a,
-                            Payout = a.SupplierProportion,
-                            Price = a.Price
-                        });
-                        a.Status = Status.Sortiment;
-                    }
-                    else
-                        a.Status = Status.Sold;
+                            Title = "Kunde auswählen"
+                        };
+
+                        PickSupplierPage pSP = new PickSupplierPage(pW, Data, MainDb);
+                        pW.Content = pSP;
+                        pW.Initialize();
+                        pW.ShowDialog();
+
+                        if (pSP.SelectedSupplier == null)
+                            return;
+
+                        document.Save();
+                        new InvoiceDoc(Data, document.Document).CreateAndPrintDocument();
+                        break;
+                    case PressedButton.Third:
+                        document.Save();
+                        break;
+
                 }
 
-                if (cMB.Result == PressedButton.One)
-                {
-                    Document document = documents.AddDocument(DocumentType.Bill, Articles.ToList(), savedArticleAttributes, false);
-                    MainDb.SaveChangesRetryOnUserInput();
-                    new InvoiceBon(Data, document).CreateAndPrint();
-                }
-                else if (cMB.Result == PressedButton.Two)
-                {
-                    PopupWindow pW = new PopupWindow(OwnerWindow, Data)
-                    {
-                        Title = "Kunde auswählen"
-                    };
-
-                    PickSupplierPage pSP = new PickSupplierPage(pW, Data, MainDb);
-                    pW.Content = pSP;
-                    pW.Initialize();
-                    pW.ShowDialog();
-
-                    if (pSP.SelectedSupplier == null)
-                        return;
-                    else
-                    {
-                        Document document = documents.AddDocument(DocumentType.Bill, Articles.ToList(), savedArticleAttributes, pSP.SelectedSupplier, false);
-                        MainDb.SaveChangesRetryOnUserInput();
-                        new InvoiceDoc(Data, document).CreateAndPrintDocument();
-                    }
-                }
-                else if (cMB.Result == PressedButton.Three)
-                {
-                    documents.AddDocument(DocumentType.Bill, Articles.ToList(), savedArticleAttributes, false);
-                }
-
-                SaveChanges();
                 ClearArticlesBtn_Click(null, null);
             }
         }
 
-        private void SaveChanges()
-        {
-            foreach (Article article in Articles)
-            {
-                article.Price = Math.Abs(article.Price);
-                article.SupplierProportion = Math.Abs(article.SupplierProportion);
-            }
-
-            MainDb.SaveChangesRetryOnUserInput();
-        }
-
         private void ReserveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (Articles.Count > 0 && Articles.Where(a => a.Status != Status.Sortiment && a.Status != Status.InStock).SingleOrDefault() == null)
-            {
-                #region Supplier, auf den reserviert werden soll, auswählen
+            //if (document.Document.Articles.Count > 0)
+            //{
+            //    #region Supplier, auf den reserviert werden soll, auswählen
 
-                PopupWindow popup = new PopupWindow(OwnerWindow, Data);
-                PickSupplierPage pickSupplierPage = new PickSupplierPage(popup, Data, MainDb);
-                popup.Content = pickSupplierPage;
-                popup.Initialize();
-                popup.ShowDialog();
+            //    PopupWindow popup = new PopupWindow(OwnerWindow, Data);
+            //    PickSupplierPage pickSupplierPage = new PickSupplierPage(popup, Data, MainDb);
+            //    popup.Content = pickSupplierPage;
+            //    popup.Initialize();
+            //    popup.ShowDialog();
 
-                Supplier reservingSupplier = pickSupplierPage.SelectedSupplier;
+            //    Supplier reservingSupplier = pickSupplierPage.SelectedSupplier;
 
-                if (reservingSupplier == null)
-                    return;
+            //    if (reservingSupplier == null)
+            //        return;
 
-                #endregion
+            //    #endregion
 
-                #region Daten ermitteln
+            //    #region Daten ermitteln
 
-                PopupWindow pW = new PopupWindow(OwnerWindow, Data)
-                {
-                    Title = "Reservierung abschließen"
-                };
-                DateFromUntilPage dFUP = new DateFromUntilPage(pW);
-                pW.Content = dFUP;
-                pW.Initialize();
-                pW.ShowDialog();
+            //    PopupWindow pW = new PopupWindow(OwnerWindow, Data)
+            //    {
+            //        Title = "Reservierung abschließen"
+            //    };
+            //    DateFromUntilPage dFUP = new DateFromUntilPage(pW);
+            //    pW.Content = dFUP;
+            //    pW.Initialize();
+            //    pW.ShowDialog();
 
-                if (!dFUP.Result)
-                    return;
+            //    if (!dFUP.Result)
+            //        return;
 
-                #endregion
+            //    #endregion
 
-                if (reservingSupplier != null)
-                {
-                    MessageBoxResult result = MessageBox.Show("Soll ein Bon gedruckt werden?", "Bon drucken?", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+            //    if (reservingSupplier != null)
+            //    {
+            //        MessageBoxResult result = MessageBox.Show("Soll ein Bon gedruckt werden?", "Bon drucken?", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
 
-                    foreach (Article a in Articles)
-                    {
-                        a.Status = Status.Reserved;
-                        a.Reservation = new ArticleReservation
-                        {
-                            Supplier = reservingSupplier,
-                            From = dFUP.DateFrom,
-                            Until = dFUP.DateUntil,
-                            Article = a
-                        };
-                    }
+            //        foreach (Article a in Articles)
+            //        {
+            //            a.Status = Status.Reserved;
+            //            a.Reservation = new ArticleReservation
+            //            {
+            //                Supplier = reservingSupplier,
+            //                From = dFUP.DateFrom,
+            //                Until = dFUP.DateUntil,
+            //                Article = a
+            //            };
+            //        }
 
-                    if (result == MessageBoxResult.Yes || result == MessageBoxResult.No)
-                    {
-                        Documents documents = new Documents(Data, MainDb);
-                        Document document = documents.AddDocument(DocumentType.Reservation, Articles.ToList(), null, reservingSupplier, false);
-                        MainDb.SaveChangesRetryOnUserInput();
-                        ClearArticlesBtn_Click(null, null);
+            //        if (result == MessageBoxResult.Yes || result == MessageBoxResult.No)
+            //        {
+            //            DocumentManager documents = new DocumentManager(Data, MainDb);
+            //            Document document = documents.AddDocument(DocumentType.Reservation, Articles.ToList(), null, reservingSupplier, false);
+            //            MainDb.SaveChangesRetryOnUserInput();
+            //            ClearArticlesBtn_Click(null, null);
 
-                        if (result == MessageBoxResult.Yes)
-                            new ReserveBon(Data, document).CreateAndPrint(1);
-                    }
-                }
-            }
-        }
-
-        private void Articles_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e != null && (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove))
-            {
-                foreach (Article a in e.OldItems)
-                {
-                    a.Price = Math.Abs(a.Price);
-                }
-            }
-
-            #region ArticlesDG Spaltenbreite aktualisieren
-
-            ArticlesDG.Columns[1].Width = 0;
-            ArticlesDG.UpdateLayout();
-            ArticlesDG.Columns[1].Width = new DataGridLength(1, DataGridLengthUnitType.Star);
-
-            #endregion
-
-            #region Summe berechnen
-
-            Sum = 0;
-            if (Articles.Count > 0)
-            {
-                foreach (Article a in Articles)
-                {
-                    Sum += a.Price;
-                }
-            }
-            SumTB.Text = "Anzahl " + Articles.Count + " - Summe " + Sum.ToString("C");
-
-            #endregion
+            //            if (result == MessageBoxResult.Yes)
+            //                new ReserveBon(Data, document).CreateAndPrint(1);
+            //        }
+            //    }
+            //}
         }
 
         private void ArticleIdTB_KeyDown(object sender, KeyEventArgs e)
@@ -347,12 +291,23 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         private void ReservedArticlesBtn_Click(object sender, RoutedEventArgs e)
         {
-            PopupWindow pW = new PopupWindow(OwnerWindow, Data);
-            ReservedArticlesPage rAP = new ReservedArticlesPage(pW, MainDb);
-            pW.Content = rAP;
-            pW.Initialize();
-            pW.Closing += rAP.OwnerWindow_Closing;
-            pW.ShowDialog();
+            //PopupWindow pW = new PopupWindow(OwnerWindow, Data);
+            //ReservedArticlesPage rAP = new ReservedArticlesPage(pW, MainDb);
+            //pW.Content = rAP;
+            //pW.Initialize();
+            //pW.Closing += rAP.OwnerWindow_Closing;
+            //pW.ShowDialog();
+        }
+
+        // deletion of articles
+        private void ArticlesDG_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            foreach (Article article in ArticlesDG.SelectedItems)
+            {
+                document.RemoveArticle(article.Id);
+                MainDb.Entry(article).State = EntityState.Unchanged;
+                e.Handled = true;
+            }
         }
 
         private void ChangePriceBtn_Click(object sender, RoutedEventArgs e)

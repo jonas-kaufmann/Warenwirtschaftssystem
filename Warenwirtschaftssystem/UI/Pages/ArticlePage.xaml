@@ -13,8 +13,7 @@
       d:DesignHeight="700">
 
     <Page.Resources>
-        <CollectionViewSource x:Key="ArticlesCVS"
-                              d:DesignSource="{d:DesignInstance {x:Type db:Article}, CreateList=True}" />
+        <CollectionViewSource x:Key="ArticlesCVS" />
     </Page.Resources>
 
     <DockPanel DataContext="{StaticResource ArticlesCVS}"

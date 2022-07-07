@@ -37,7 +37,7 @@
                     <Button Name="ClearArticlesBtn"
                             Click="ClearArticlesBtn_Click"
                             Margin="0 2 0 0"
-                            Content="Leeren &amp; Speichern" />
+                            Content="Verwerfen" />
                 </StackPanel>
             </Expander>
             <Expander Header="Reservierungen"
@@ -58,7 +58,7 @@
                       BorderBrush="LightGray">
                 <StackPanel>
                     <Button Name="ChangePriceBtn"
-                            Content="Preis/Lieferantenanteil&#xD;&#xA;ändern"
+                            Content="Preis ändern"
                             Click="ChangePriceBtn_Click"
                             TextBlock.TextAlignment="Center" />
                 </StackPanel>
@@ -91,13 +91,13 @@
                       Grid.Row="0"
                       Margin="8 0 0 0"
                       CanUserAddRows="False"
-                      CanUserDeleteRows="True"
                       CanUserResizeRows="False"
                       HorizontalScrollBarVisibility="Disabled"
                       RowHeaderWidth="0"
                       CanUserReorderColumns="False"
                       AutoGenerateColumns="False"
                       EnableRowVirtualization="True"
+                      PreviewKeyDown="ArticlesDG_PreviewKeyDown"
                       ItemsSource="{Binding}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Nr"

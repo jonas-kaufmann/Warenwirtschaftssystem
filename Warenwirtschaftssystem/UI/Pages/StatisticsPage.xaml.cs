@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Warenwirtschaftssystem.Model;
 using Warenwirtschaftssystem.Model.Db;
-using Warenwirtschaftssystem.Model.Documents;
+using Warenwirtschaftssystem.Model.Printing;
 using Warenwirtschaftssystem.UI.Windows;
 
 namespace Warenwirtschaftssystem.UI.Pages

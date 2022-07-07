@@ -11,6 +11,7 @@ using System.Windows.Input;
 using Warenwirtschaftssystem.Model;
 using Warenwirtschaftssystem.Model.Db;
 using Warenwirtschaftssystem.Model.Documents;
+using Warenwirtschaftssystem.Model.Printing;
 using Warenwirtschaftssystem.UI.Windows;
 
 namespace Warenwirtschaftssystem.UI.Pages
@@ -20,12 +21,11 @@ namespace Warenwirtschaftssystem.UI.Pages
         // Attribute
         private DataModel Data;
         private ToolWindow OwnerWindow;
-        private DbModel MainDb;
+        private DbModel DbModel;
         private CollectionViewSource ArticlesCVS;
         public Article SelectedArticle;
         public bool ArticlesAdded = false;
 
-        private Documents Documents;
         private CancellationTokenSource CancelLoadingToken;
         private IInputElement FocusedElementBeforeLoading = null;
 
@@ -36,7 +36,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             Data = data;
             OwnerWindow = ownerWindow;
-            MainDb = Data.CreateDbConnection();
+            DbModel = Data.CreateDbConnection();
 
             InitializeComponent();
 
@@ -53,7 +53,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             Data = data;
             OwnerWindow = ownerWindow;
-            MainDb = Data.CreateDbConnection();
+            DbModel = Data.CreateDbConnection();
 
             InitializeComponent();
 
@@ -78,7 +78,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             Data = data;
             OwnerWindow = ownerWindow;
-            MainDb = Data.CreateDbConnection();
+            DbModel = Data.CreateDbConnection();
 
             InitializeComponent();
 
@@ -163,7 +163,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             try
             {
-                articles = await MainDb.Articles.Where(a => (!artIdSet || a.Id == artId)
+                articles = await DbModel.Articles.Where(a => (!artIdSet || a.Id == artId)
                     && (!statusSet || a.Status == status.Value)
                     && (!suppIdSet || a.Supplier.Id == suppId)
                     && (!genderSet || a.Gender.Name.ToLower().Contains(gender))
@@ -241,15 +241,8 @@ namespace Warenwirtschaftssystem.UI.Pages
             OwnerWindow.DisableClosingPrompt = true;
             OwnerWindow.RootWindow.RemoveToolWindow(OwnerWindow);
 
-            if (Documents != null)
-                Documents.DiscardChanges();
-
             OwnerWindow.Close();
-
-            if (Documents != null)
-                Documents.DiscardChanges();
-
-            MainDb.Dispose();
+            DbModel.Dispose();
         }
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
@@ -257,12 +250,8 @@ namespace Warenwirtschaftssystem.UI.Pages
             OwnerWindow.DisableClosingPrompt = true;
             OwnerWindow.RootWindow.RemoveToolWindow(OwnerWindow);
             OwnerWindow.Close();
-
-            if (Documents != null)
-                Documents.PrepareDocumentsToBeSaved();
-
-            MainDb.SaveChangesRetryOnUserInput();
-            MainDb.Dispose();
+            DbModel.SaveChangesRetryOnUserInput();
+            DbModel.Dispose();
         }
 
         private void NewArticlesBtn_Click(object sender, RoutedEventArgs e)
@@ -299,7 +288,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             {
                 DbModel mainDb = Data.CreateDbConnection();
                 Supplier supplier = null;
-                if (!(int.TryParse(FilterSupplierTb.Text, out int id) && (supplier = MainDb.Suppliers.Where(s => s.Id == id).SingleOrDefault()) != null))
+                if (!(int.TryParse(FilterSupplierTb.Text, out int id) && (supplier = DbModel.Suppliers.Where(s => s.Id == id).SingleOrDefault()) != null))
                 {
                     // Fenster zum auswählen eines Lieferanten öffnen
                     PopupWindow popupWindow = new PopupWindow(OwnerWindow, Data)
@@ -338,7 +327,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             {
                 NewArticlePage newArticlePage;
 
-                newArticlePage = new NewArticlePage(Data, MainDb, OwnerWindow, SelectedArticle, this, SelectedArticle.Status != Status.PayedOut && SelectedArticle.Status != Status.Sold);
+                newArticlePage = new NewArticlePage(Data, DbModel, OwnerWindow, SelectedArticle, this, SelectedArticle.Status != Status.PayedOut && SelectedArticle.Status != Status.Sold);
 
                 OwnerWindow.Content = newArticlePage;
             }
@@ -390,91 +379,57 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         private void PrintSubmissionDocBtn_Click(object sender, RoutedEventArgs e)
         {
-            var articles = new List<Article>();
-            Supplier supplier = null;
-
-            foreach (var item in ArticlesDG.SelectedItems)
+            using (var document = new SubmissionDocument(DbModel))
             {
-                if (item is Article article)
-                {
-                    if (supplier == null)
-                    {
-                        supplier = article.Supplier;
-                    }
 
-                    if (article.Supplier != supplier)
+                foreach (Article article in ArticlesDG.SelectedItems)
+                {
+                    try
                     {
-                        MessageBox.Show("Kann keinen Annahmebeleg erstellen, da die Lieferanten der ausgewählten Artikel unterschiedlich sind.", "Kann keinen Annahmebeleg erstellen", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        document.AddArticle(article);
+                    }
+                    catch (InvalidOperationException exception)
+                    {
+                        _ = MessageBox.Show(exception.Message, "Kann keinen Annahmebeleg erstellen", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
-
-                    switch (article.Status)
-                    {
-                        case Status.Sortiment:
-                        case Status.InStock:
-                            break;
-
-                        default:
-                            MessageBox.Show("Kann keinen Annahmebeleg erstellen, da mindestens einer der ausgewählten Artikel einen ungültigen Status besitzt.", "Kann keinen Annahmebeleg erstellen", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            return;
-                    }
-
-                    articles.Add(article);
                 }
-            }
 
-            if (Documents == null)
-            {
-                Documents = new Documents(Data, MainDb);
+                document.Save();
+                new SubmissionDoc(Data, document.Document).CreateAndPrintDocument();
             }
-
-            Document document = Documents.AddDocument(DocumentType.Submission, articles, null, supplier, true);
-            new SubmissionDoc(Data, document).CreateAndPrintDocument();
         }
 
         #endregion
 
         private void PayoutBtn_Click(object sender, RoutedEventArgs e)
         {
-            List<Article> articles = new List<Article>();
-            Supplier supplier = null;
-
-            foreach (Article article in ArticlesDG.SelectedItems)
+            using (var document = new PayoutDocument(DbModel))
             {
-                if (article.Status == Status.Sold && (supplier == null || supplier == article.Supplier))
+                foreach (Article article in ArticlesDG.SelectedItems)
                 {
-                    if (supplier == null)
-                        supplier = article.Supplier;
-                    else if (supplier != article.Supplier)
-                        return;
-                    articles.Add(article);
+                    try
+                    {
+                        document.AddArticle(article);
+                    }
+                    catch (ArgumentException exception)
+                    {
+                        MessageBox.Show(exception.Message, "Artikel konnten Dokument nicht hinzugefügt werden", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                 }
-                else
-                    return;
-            }
 
-            MessageBoxResult result = MessageBox.Show("Soll ein Auszahlungsbeleg gedruckt werden?", "Auszahlungsbeleg drucken?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
-            if (result == MessageBoxResult.Cancel)
-                return;
-
-            foreach (Article article in articles)
-            {
-                article.Status = Status.PayedOut;
-                article.EnteredFinalState = DateTime.Now;
-                article.OnPropertyChanged("Status");
-            }
-
-            if (result == MessageBoxResult.Yes || result == MessageBoxResult.No)
-            {
-                if (Documents == null)
-                    Documents = new Documents(Data, MainDb);
-
-                if (result == MessageBoxResult.No)
-                    Documents.AddDocument(DocumentType.Payout, articles, null, supplier, false);
-                else
+                MessageBoxResult result = MessageBox.Show("Soll ein Auszahlungsbeleg gedruckt werden?", "Auszahlungsbeleg drucken?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
+                switch (result)
                 {
-                    Document document = Documents.AddDocument(DocumentType.Payout, articles, null, supplier, true);
-                    new PayoutDoc(Data, document).CreateAndPrintDocument();
+                    case MessageBoxResult.Yes:
+                        document.Save();
+                        new PayoutDoc(Data, document.Document).CreateAndPrintDocument();
+                        break;
+                    case MessageBoxResult.No:
+                        document.Save();
+                        break;
+                    default:
+                        return;
                 }
             }
         }
@@ -584,39 +539,32 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         private void ReturnBtn_Click(object sender, RoutedEventArgs e)
         {
-            List<Article> articlesToReturn = new List<Article>();
-
-            Supplier supplier = null;
-            foreach (Article article in ArticlesDG.SelectedItems)
+            using (var document = new ReturnDocument(DbModel))
             {
-                if (supplier == null)
-                    supplier = article.Supplier;
-                else if (article.Supplier != supplier || (article.Status != Status.Sortiment && article.Status != Status.InStock))
-                    return;
-
-                articlesToReturn.Add(article);
-            }
-
-            MessageBoxResult result = MessageBox.Show("Soll ein Rückgabebeleg gedruckt werden?", "Rückgabebeleg drucken?", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
-
-            if (result == MessageBoxResult.Yes || result == MessageBoxResult.No)
-            {
-                foreach (Article article in articlesToReturn)
+                foreach (Article article in ArticlesDG.SelectedItems)
                 {
-                    article.Status = Status.Returned;
-                    article.EnteredFinalState = DateTime.Now;
+                    try
+                    {
+                        document.AddArticle(article);
+                    }
+                    catch (ArgumentException exception)
+                    {
+                        MessageBox.Show(exception.Message, "Artikel konnten Dokument nicht hinzugefügt werden", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                 }
 
-                if (Documents == null)
-                    Documents = new Documents(Data, MainDb);
-
-                if (result == MessageBoxResult.No)
-                    Documents.AddDocument(DocumentType.Return, articlesToReturn, null, supplier, false);
-                else
+                MessageBoxResult result = MessageBox.Show("Soll ein Rückgabebeleg gedruckt werden?", "Rückgabebeleg drucken?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
+                switch (result)
                 {
-                    Document document = Documents.AddDocument(DocumentType.Return, articlesToReturn, null, supplier, false);
-                    MainDb.SaveChangesRetryOnUserInput();
-                    new ReturnDoc(Data, document).CreateAndPrintDocument();
+                    case MessageBoxResult.Yes:
+                        document.Save();
+                        new ReturnDoc(Data, document.Document).CreateAndPrintDocument();
+                        break;
+                    case MessageBoxResult.No:
+                        document.Save();
+                        break;
+                    default:
+                        return;
                 }
             }
         }
@@ -688,7 +636,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
                 PopupWindow pW = new PopupWindow(OwnerWindow, Data) { Title = "Neues Abholdatum" };
                 DatePickerPage dPP = new DatePickerPage(pW,
-                    DateTime.Now.Date.AddDays(int.Parse(MainDb.Settings.Where(s => s.Key == "DefaultPickUp").First().Value) * 7)
+                    DateTime.Now.Date.AddDays(int.Parse(DbModel.Settings.Where(s => s.Key == "DefaultPickUp").First().Value) * 7)
                     );
                 pW.Content = dPP;
                 pW.Initialize();
@@ -734,7 +682,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
 
             PopupWindow pW = new PopupWindow(OwnerWindow, Data) { Title = "Neuen Lieferanten für Artikel auswählen" };
-            PickSupplierPage pSP = new PickSupplierPage(pW, Data, MainDb);
+            PickSupplierPage pSP = new PickSupplierPage(pW, Data, DbModel);
 
             pW.Content = pSP;
             pW.Initialize();

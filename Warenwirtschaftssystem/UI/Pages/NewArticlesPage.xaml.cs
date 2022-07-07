@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -7,6 +8,7 @@ using System.Windows.Data;
 using Warenwirtschaftssystem.Model;
 using Warenwirtschaftssystem.Model.Db;
 using Warenwirtschaftssystem.Model.Documents;
+using Warenwirtschaftssystem.Model.Printing;
 using Warenwirtschaftssystem.UI.Windows;
 
 namespace Warenwirtschaftssystem.UI.Pages
@@ -81,22 +83,34 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            #region Artikelliste
+                using (var document = new SubmissionDocument(MainDb))
+                {
+                    foreach (var article in Articles)
+                    {
+                        try
+                        {
+                            document.AddArticle(article);
+                        }
+                        catch (ArgumentException exception)
+                        {
+                            MessageBox.Show(exception.Message, "Artikel konnten Dokument nicht hinzugefügt werden", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
 
-            MessageBoxResult result = MessageBox.Show("Soll ein Abgabebeleg gedruckt werden?", "Abgabebeleg drucken?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-
-            if (result != MessageBoxResult.Yes && result != MessageBoxResult.No)
-                return;
-
-            Document document = new Documents(Data, MainDb).AddDocument(DocumentType.Submission, Articles.ToList(), null, Supplier, false);
-            MainDb.SaveChangesRetryOnUserInput();
-
-            if (result == MessageBoxResult.Yes)
-            {
-                new SubmissionDoc(Data, document).CreateAndPrintDocument();
-            }
-
-            #endregion
+                    MessageBoxResult result = MessageBox.Show("Soll ein Abgabebeleg gedruckt werden?", "Abgabebeleg drucken?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
+                    switch (result)
+                    {
+                        case MessageBoxResult.Yes:
+                            document.Save();
+                        new SubmissionDoc(Data, document.Document).CreateAndPrintDocument();
+                            break;
+                        case MessageBoxResult.No:
+                            document.Save();
+                            break;
+                        default:
+                            return;
+                    }
+                }
 
             OwnerWindow.Title = "Artikel";
             ArticlePage.ArticlesAdded = true;
@@ -104,7 +118,6 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             DisableClosedEvent = true;
         }
-
         private void NewArticleBtn_Click(object sender, RoutedEventArgs e)
         {
             // NewArticlePage Toolwindow zuweisen

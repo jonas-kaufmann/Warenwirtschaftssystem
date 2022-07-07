@@ -15,9 +15,9 @@ namespace Warenwirtschaftssystem.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.1");
+                .HasAnnotation("ProductVersion", "5.0.8")
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("ArticleColor", b =>
                 {
@@ -99,7 +99,7 @@ namespace Warenwirtschaftssystem.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("AddedToSortiment")
                         .HasColumnType("datetime2");
@@ -134,6 +134,15 @@ namespace Warenwirtschaftssystem.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<DateTime?>("ReservedFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ReservedUntil")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ReservingSupplierId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("SizeId")
                         .HasColumnType("int");
 
@@ -159,6 +168,8 @@ namespace Warenwirtschaftssystem.Migrations
 
                     b.HasIndex("PartsId");
 
+                    b.HasIndex("ReservingSupplierId");
+
                     b.HasIndex("SizeId");
 
                     b.HasIndex("SubCategoryId");
@@ -168,33 +179,12 @@ namespace Warenwirtschaftssystem.Migrations
                     b.ToTable("Articles");
                 });
 
-            modelBuilder.Entity("Warenwirtschaftssystem.Model.Db.ArticleReservation", b =>
-                {
-                    b.Property<int>("ArticleId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("From")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Until")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("ArticleId");
-
-                    b.HasIndex("SupplierId");
-
-                    b.ToTable("ArticleReservations");
-                });
-
             modelBuilder.Entity("Warenwirtschaftssystem.Model.Db.Brand", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -209,7 +199,7 @@ namespace Warenwirtschaftssystem.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -224,7 +214,7 @@ namespace Warenwirtschaftssystem.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ColorCode")
                         .HasColumnType("nvarchar(max)");
@@ -242,7 +232,7 @@ namespace Warenwirtschaftssystem.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -257,7 +247,7 @@ namespace Warenwirtschaftssystem.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
@@ -280,7 +270,7 @@ namespace Warenwirtschaftssystem.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -298,7 +288,7 @@ namespace Warenwirtschaftssystem.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -313,7 +303,7 @@ namespace Warenwirtschaftssystem.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -328,7 +318,7 @@ namespace Warenwirtschaftssystem.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("ArticleId")
                         .HasColumnType("int");
@@ -364,7 +354,7 @@ namespace Warenwirtschaftssystem.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -379,7 +369,7 @@ namespace Warenwirtschaftssystem.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
@@ -399,7 +389,7 @@ namespace Warenwirtschaftssystem.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Company")
                         .HasColumnType("nvarchar(max)");
@@ -550,6 +540,10 @@ namespace Warenwirtschaftssystem.Migrations
                         .WithMany("Articles")
                         .HasForeignKey("PartsId");
 
+                    b.HasOne("Warenwirtschaftssystem.Model.Db.Supplier", "ReservingSupplier")
+                        .WithMany("Reservations")
+                        .HasForeignKey("ReservingSupplierId");
+
                     b.HasOne("Warenwirtschaftssystem.Model.Db.Size", "Size")
                         .WithMany("Articles")
                         .HasForeignKey("SizeId");
@@ -570,26 +564,11 @@ namespace Warenwirtschaftssystem.Migrations
 
                     b.Navigation("Parts");
 
+                    b.Navigation("ReservingSupplier");
+
                     b.Navigation("Size");
 
                     b.Navigation("SubCategory");
-
-                    b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("Warenwirtschaftssystem.Model.Db.ArticleReservation", b =>
-                {
-                    b.HasOne("Warenwirtschaftssystem.Model.Db.Article", "Article")
-                        .WithOne("Reservation")
-                        .HasForeignKey("Warenwirtschaftssystem.Model.Db.ArticleReservation", "ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Warenwirtschaftssystem.Model.Db.Supplier", "Supplier")
-                        .WithMany("Reservations")
-                        .HasForeignKey("SupplierId");
-
-                    b.Navigation("Article");
 
                     b.Navigation("Supplier");
                 });
@@ -619,11 +598,6 @@ namespace Warenwirtschaftssystem.Migrations
                         .HasForeignKey("CategoryId");
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("Warenwirtschaftssystem.Model.Db.Article", b =>
-                {
-                    b.Navigation("Reservation");
                 });
 
             modelBuilder.Entity("Warenwirtschaftssystem.Model.Db.Brand", b =>

@@ -7,7 +7,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Warenwirtschaftssystem.Model;
 using Warenwirtschaftssystem.Model.Db;
-using Warenwirtschaftssystem.Model.Documents;
+using Warenwirtschaftssystem.Model.Printing;
 using Warenwirtschaftssystem.UI.Windows;
 
 namespace Warenwirtschaftssystem.UI.Pages
@@ -152,9 +152,9 @@ namespace Warenwirtschaftssystem.UI.Pages
                             CustomMessageBox cMB = new CustomMessageBox(OwnerWindow, "Format?", "Welches Format soll gedruckt werden?", "Bon", "Kaufbeleg (A4)", "Abbrechen");
                             cMB.ShowDialog();
 
-                            if (cMB.Result == PressedButton.One)
+                            if (cMB.Result == PressedButton.First)
                                 new InvoiceBon(Data, document).CreateAndPrint();
-                            else if (cMB.Result == PressedButton.Two)
+                            else if (cMB.Result == PressedButton.Second)
                                 new InvoiceDoc(Data, document).CreateAndPrintDocument();
                         }
                         break;

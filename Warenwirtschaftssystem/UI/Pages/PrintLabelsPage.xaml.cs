@@ -5,8 +5,8 @@ using System.Windows.Controls;
 using Warenwirtschaftssystem.Model;
 using Warenwirtschaftssystem.Model.Db;
 using System.Linq;
-using Label = Warenwirtschaftssystem.Model.Documents.Label;
-using Warenwirtschaftssystem.Model.Documents;
+using Label = Warenwirtschaftssystem.Model.Printing.Label;
+using Warenwirtschaftssystem.Model.Printing;
 
 namespace Warenwirtschaftssystem.UI.Pages
 {

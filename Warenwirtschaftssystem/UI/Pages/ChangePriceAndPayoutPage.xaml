@@ -5,8 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" 
       Width="224" Height="140"
-      Title="ChangePriceAndPayoutPage"
-      Loaded="Page_Loaded" Unloaded="Page_Unloaded">
+      Title="ChangePriceAndPayoutPage">
 
     <Grid Margin="12">
         <Grid.RowDefinitions>
@@ -25,14 +24,13 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Text="Preis" />
-        <TextBox x:Name="PriceTB"
-                 Text="{Binding Price, ConverterCulture=de-DE, Mode=TwoWay, StringFormat=C, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" HorizontalContentAlignment="Right" />
+        <TextBox x:Name="PriceTB" Grid.Column="2" HorizontalContentAlignment="Right" />
 
         <TextBlock Text="Auszahlungsbetrag" Grid.Row="2" />
-        <TextBox x:Name="SupplierProportionTB" Text="{Binding SupplierProportion, ConverterCulture=de-DE, Mode=TwoWay, StringFormat=C, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Right" />
+        <TextBox x:Name="SupplierProportionTB" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Right" />
 
         <TextBlock Text="Verhältnis" Grid.Row="4" />
-        <TextBox Text="{Binding Percentage, ConverterCulture=de-DE, Mode=OneWay, StringFormat=P}" IsEnabled="False" Grid.Row="4" Grid.Column="2" HorizontalContentAlignment="Right" />
+        <TextBox Name="PercentageTB" IsEnabled="False" Grid.Row="4" Grid.Column="2" HorizontalContentAlignment="Right" />
 
         <StackPanel Grid.Row="6" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Name="SaveBtn" Click="SaveBtn_Click" Content="Speichern" />

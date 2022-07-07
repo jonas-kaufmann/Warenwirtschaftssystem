@@ -1764,9 +1764,7 @@ namespace Warenwirtschaftssystem.Model.Db
                                 AddedToSortiment = DateTime.Now,
                                 AsNew = false,
                                 EnteredFinalState = DateTime.Now,
-                                Status = Status.ClosedOut,
-                                SupplierProportion = 0,
-                                Price = 0
+                                Status = Status.ClosedOut
                             });
 
                             Console.WriteLine(articleId + i);
@@ -1783,9 +1781,10 @@ namespace Warenwirtschaftssystem.Model.Db
                     int supplierId = (int)reader["artPartnerID"];
                     article.Supplier = Suppliers.Where(s => s.Id == supplierId).First();
 
-                    article.Price = (decimal)reader["artVKInklMWSt"];
+                    var price = (decimal)reader["artVKInklMWSt"];
                     decimal realShopProportion = (decimal)(float)reader["artEigenanteil"];
-                    article.SupplierProportion = Math.Round((realShopProportion - 1) * article.Price / (-1 - (decimal)0.19 * realShopProportion), 2);
+                    var supplierProportion = Math.Round((realShopProportion - 1) * article.Price / (-1 - (decimal)0.19 * realShopProportion), 2);
+                    article.SetPriceAndPayoutSkipChecks(price, supplierProportion);
                     if (reader["artAbholdatum"] is DateTime pickUp)
                         article.PickUp = pickUp;
                     article.AddedToSortiment = ((DateTime)reader["artErfassungsdatum"]);

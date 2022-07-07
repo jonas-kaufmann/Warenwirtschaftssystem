@@ -3,11 +3,8 @@
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Threading;
     using System.Windows;
 
     public class DbModel : DbContext
@@ -27,7 +24,6 @@
         public DbSet<SupplierProportion> SupplierProportions { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<SavedArticleAttributes> SavedArticleAttributes { get; set; }
-        public DbSet<ArticleReservation> ArticleReservations { get; set; }
 
         private readonly string ConnectionString;
 
@@ -71,6 +67,10 @@
             modelBuilder.Entity<SupplierProportion>()
                 .Property(p => p.Proportion)
                 .HasPrecision(5, 2);
+
+            // Relationships
+            modelBuilder.Entity<Article>().HasOne<Supplier>(a => a.Supplier).WithMany(s => s.Articles);
+            modelBuilder.Entity<Article>().HasOne<Supplier>(a => a.ReservingSupplier).WithMany(s => s.Reservations);
         }
 
         /// <summary>
@@ -102,63 +102,12 @@
         public string Value { get; set; }
     }
 
-    public class Document
-    {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
-        public DateTime DateTime { get; set; }
-        public DocumentType DocumentType { get; set; }
-
-        [NotMapped]
-        public decimal? Sum { get; set; }
-        [NotMapped]
-        public decimal? SupplierSum { get; set; }
-
-        public virtual ICollection<Article> Articles { get; set; }
-        public virtual ICollection<SavedArticleAttributes> SavedArticleAttributes { get; set; }
-
-        public virtual Supplier Supplier { get; set; }
-    }
-
-
-
-    public class SavedArticleAttributes
-    {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
-        public virtual Article Article { get; set; }
-
-        public decimal Price { get; set; }
-        public decimal Payout { get; set; }
-
-        public virtual ICollection<Document> Documents { get; set; }
-    }
-
-    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
-    public enum DocumentType
-    {
-        [Description("Annahme")]
-        Submission,
-        [Description("Reservierung")]
-        Reservation,
-        [Description("Rechnung")]
-        Bill,
-        [Description("Auszahlung")]
-        Payout,
-        [Description("Rückgabe")]
-        Return
-    }
-
     //Dient dazu UI bei Veränderung eines Attributes zu benachrichtigen, sodass sie updated 
     public class ObservableObject : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void OnPropertyChanged(string name)
+        protected void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }

@@ -5,7 +5,7 @@ namespace Warenwirtschaftssystem.UI.Windows
 {
     public enum PressedButton
     {
-        None, One, Two, Three
+        None, First, Second, Third
     };
 
     public partial class CustomMessageBox : Window
@@ -29,19 +29,19 @@ namespace Warenwirtschaftssystem.UI.Windows
 
         private void BtnOne_Click(object sender, RoutedEventArgs e)
         {
-            Result = PressedButton.One;
+            Result = PressedButton.First;
             Close();
         }
 
         private void BtnTwo_Click(object sender, RoutedEventArgs e)
         {
-            Result = PressedButton.Two;
+            Result = PressedButton.Second;
             Close();
         }
 
         private void BtnThree_Click(object sender, RoutedEventArgs e)
         {
-            Result = PressedButton.Three;
+            Result = PressedButton.Third;
             Close();
         }
 

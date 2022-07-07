@@ -157,7 +157,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             Data = data;
             OwnerWindow = ownerWindow;
             Article = articleToEdit;
-            OriginalArticle = Article.clone();
+            OriginalArticle = Article.Clone();
             Supplier = Article.Supplier;
             NewArticlesPage = newArticlesPage;
             MainDb = mainDb;
@@ -178,7 +178,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             MainDb = mainDb;
             OwnerWindow = ownerWindow;
             Article = articleToEdit;
-            OriginalArticle = Article.clone();
+            OriginalArticle = Article.Clone();
             Editable = editable;
 
             OwnerWindow.Title = "A-Nr " + Article.ConvertedId + " L-Nr " + Article.Supplier.Id + " " + Article.Supplier.Name;
@@ -439,7 +439,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             // restore original article
             if (Editable && OriginalArticle != null)
-                Article.takePropertiesFrom(OriginalArticle);
+                Article.TakePropertiesFrom(OriginalArticle);
 
             DeleteEmptyItemsInDGs();
 
@@ -482,7 +482,15 @@ namespace Warenwirtschaftssystem.UI.Pages
             DeleteEmptyItemsInDGs();
 
             if (!IsNewArticle)
-                new Documents(Data, MainDb).NotifyArticlePropertiesChanged(Article.Id);
+            {
+                var newPrice = Article.Price;
+                var newPayout = Article.SupplierProportion;
+
+                Article.Price = OriginalArticle.Price;
+                Article.SupplierProportion = OriginalArticle.SupplierProportion;
+
+                Article.ChangePriceAndPayout(MainDb, Article.Id, newPrice, newPayout);
+            }
 
             if (IsNewArticle)
             {
@@ -600,8 +608,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             else
                 Article.Defects = null;
 
-            Article.GenerateDescription();
-            Article.OnPropertyChanged(nameof(Article.Description));
+            Article.RegenerateDescription();
 
             PopulateAutoCompleteEntries();
         }

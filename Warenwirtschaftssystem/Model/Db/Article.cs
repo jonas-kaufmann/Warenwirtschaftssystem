@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace Warenwirtschaftssystem.Model.Db
 {
@@ -53,20 +54,22 @@ namespace Warenwirtschaftssystem.Model.Db
             {
                 if (string.IsNullOrEmpty(_description))
                 {
-                    GenerateDescription();
+                    RegenerateDescription();
                 }
 
                 return _description;
             }
-            set
-            {
-                _description = value;
-                OnPropertyChanged(nameof(Description));
-            }
+            //private set
+            //{
+            //    _description = value;
+            //    OnPropertyChanged(nameof(Description));
+            //}
         }
 
-        public void GenerateDescription()
+        public void RegenerateDescription()
         {
+            bool wasNull = _description == null;
+
             _description = "";
             bool firstElement = true;
 
@@ -151,6 +154,11 @@ namespace Warenwirtschaftssystem.Model.Db
                     _description += "-";
                 _description += Parts.Name;
             }
+
+            if (!wasNull)
+            {
+                OnPropertyChanged(nameof(Description));
+            }
         }
 
         [NotMapped] public DateTime? Sold { get; set; }
@@ -162,25 +170,26 @@ namespace Warenwirtschaftssystem.Model.Db
             {
                 return _price;
             }
-            set
-            {
-                _price = value;
-                OnPropertyChanged("Price");
-                OnPropertyChanged("Percentage");
-            }
+            //set
+            //{
+            //    _price = value;
+            //    OnPropertyChanged("Price");
+            //    OnPropertyChanged("Percentage");
+            //}
         }
 
         private decimal _supplierProportion;
         public decimal SupplierProportion
         {
             get => _supplierProportion;
-            set
-            {
-                _supplierProportion = Math.Round(value, 2);
-                OnPropertyChanged("SupplierProportion");
-                OnPropertyChanged("Percentage");
-            }
+            //set
+            //{
+            //    _supplierProportion = Math.Round(value, 2);
+            //    OnPropertyChanged("SupplierProportion");
+            //    OnPropertyChanged("Percentage");
+            //}
         }
+
 
         [NotMapped]
         public decimal? Percentage
@@ -231,34 +240,22 @@ namespace Warenwirtschaftssystem.Model.Db
         }
 
         public virtual Supplier Supplier { get; set; }
-        public virtual ArticleReservation Reservation { get; set; }
+
+
+        #region Reservation
+
+        public virtual Supplier ReservingSupplier { get; set; }
+        public DateTime? ReservedFrom { get; set; }
+        public DateTime? ReservedUntil { get; set; }
+
+        #endregion
 
         public virtual ICollection<Document> Documents { get; set; }
 
-        public void notifyAllPropertiesChanged()
-        {
-            OnPropertyChanged("PickUp");
-            OnPropertyChanged("Description");
-            OnPropertyChanged("Price");
-            OnPropertyChanged("SupplierProportion");
-            OnPropertyChanged("Percentage");
-            OnPropertyChanged("Colors");
-            OnPropertyChanged("Gender");
-            OnPropertyChanged("Category");
-            OnPropertyChanged("Type");
-            OnPropertyChanged("Size");
-            OnPropertyChanged("Materials");
-            OnPropertyChanged("Parts");
-            OnPropertyChanged("Brand");
-            OnPropertyChanged("Defects");
-            OnPropertyChanged("AsNew");
-            OnPropertyChanged("Notes");
-        }
-
-        public void takePropertiesFrom(Article article)
+        public void TakePropertiesFrom(DbModel dbContext, Article article)
         {
             AddedToSortiment = article.AddedToSortiment;
-            Description = article.Description;
+            _description = article.Description;
             AsNew = article.AsNew;
             Brand = article.Brand;
             Category = article.Category;
@@ -272,61 +269,119 @@ namespace Warenwirtschaftssystem.Model.Db
             Notes = article.Notes;
             Parts = article.Parts;
             PickUp = article.PickUp;
-            Price = article.Price;
-            Reservation = article.Reservation;
+            ReservedFrom = article.ReservedFrom;
+            ReservedUntil = article.ReservedUntil;
+            ReservingSupplier = article.ReservingSupplier;
             Size = article.Size;
             Sold = article.Sold;
             Status = article.Status;
             Supplier = article.Supplier;
-            SupplierProportion = article.SupplierProportion;
             SubCategory = article.SubCategory;
+
+            ChangePriceAndPayout(dbContext, article.Price, article.SupplierProportion);
         }
 
-        public Article clone()
+        public Article Clone()
         {
-            return new Article()
+            var cloned = new Article();
+
+            foreach (var field in typeof(Article).GetFields())
             {
-                AddedToSortiment = AddedToSortiment,
-                Description = Description,
-                AsNew = AsNew,
-                Brand = Brand,
-                Category = Category,
-                Colors = Colors,
-                Defects = Defects,
-                Documents = Documents,
-                EnteredFinalState = EnteredFinalState,
-                Gender = Gender,
-                Id = Id,
-                Materials = Materials,
-                Notes = Notes,
-                Parts = Parts,
-                PickUp = PickUp,
-                Price = Price,
-                Reservation = Reservation,
-                Size = Size,
-                Sold = Sold,
-                Status = Status,
-                Supplier = Supplier,
-                SupplierProportion = SupplierProportion,
-                SubCategory = SubCategory
-            };
+                field.SetValue(cloned, field.GetValue(this));
+            }
+
+            //cloned.AddedToSortiment = article.AddedToSortiment;
+            //Description = article.Description;
+            //AsNew = article.AsNew;
+            //Brand = article.Brand;
+            //Category = article.Category;
+            //Colors = article.Colors;
+            //Defects = article.Defects;
+            //Documents = article.Documents;
+            //EnteredFinalState = article.EnteredFinalState;
+            //Gender = article.Gender;
+            //Id = article.Id;
+            //Materials = article.Materials;
+            //Notes = article.Notes;
+            //Parts = article.Parts;
+            //PickUp = article.PickUp;
+            //Price = article.Price;
+            //ReservingSupplier = article.ReservingSupplier;
+            //ReservedFrom = article.ReservedFrom;
+            //ReservedUntil = article.ReservedUntil;
+            //Size = article.Size;
+            //Sold = article.Sold;
+            //Status = article.Status;
+            //Supplier = article.Supplier;
+            //SupplierProportion = article.SupplierProportion;
+            //SubCategory = article.SubCategory;
+
+            return cloned;
         }
 
         public override string ToString()
         {
             return Description;
         }
-    }
 
-    public class ArticleReservation
-    {
-        [Key]
-        public int ArticleId { get; set; }
-        public virtual Article Article { get; set; }
+        public void ChangePriceAndPayout(DbModel dbContext, decimal newPrice, decimal newPayout)
+        {
+            // no changes
+            if (newPrice == _price && newPayout == _supplierProportion)
+            {
+                return;
+            }
 
-        public virtual Supplier Supplier { get; set; }
-        public DateTime? From { get; set; }
-        public DateTime? Until { get; set; }
+            var savedArticleAttributes = dbContext.SavedArticleAttributes.Where(c => c.Article == this
+                && c.Price == _price
+                && c.Payout == _supplierProportion).FirstOrDefault();
+
+            if (savedArticleAttributes == null)
+                savedArticleAttributes = new SavedArticleAttributes
+                {
+                    Article = this,
+                    Payout = _supplierProportion,
+                    Price = _price
+                };
+
+            // affected documents that contain this article && don't already contain saved values
+            var affectedDocuments = dbContext.Documents
+                .Include(d => d.SavedArticleAttributes)
+                .Where(d => d.Articles.Contains(this) && d.SavedArticleAttributes.FirstOrDefault(s => s.Article == this) == null);
+
+            foreach (var document in affectedDocuments)
+            {
+                document.SavedArticleAttributes.Add(savedArticleAttributes);
+            }
+
+            _price = newPrice;
+            _supplierProportion = newPayout;
+
+            OnPropertyChanged(nameof(Price));
+            OnPropertyChanged(nameof(SupplierProportion));
+        }
+
+        public void SetPriceAndPayoutSkipChecks(decimal newPrice, decimal newPayout)
+        {
+            _price = newPrice;
+            _supplierProportion = newPayout;
+        }
+
+        public decimal SuggestedPayoutFromPrice(DbModel dbContext)
+        {
+            decimal newPayout;
+            if (Supplier.SupplierProportion.HasValue)
+            {
+                newPayout = Price * Supplier.SupplierProportion.Value / 100;
+            }
+            else
+            {
+                SupplierProportion supplierGraduationProportion = dbContext.SupplierProportions.Where(sGP => sGP.FromPrice <= Price).OrderByDescending(sGP => sGP.FromPrice).First();
+                newPayout = Price * supplierGraduationProportion.Proportion / 100;
+            }
+
+            return newPayout;
+        }
     }
 
     [TypeConverter(typeof(EnumDescriptionTypeConverter))]

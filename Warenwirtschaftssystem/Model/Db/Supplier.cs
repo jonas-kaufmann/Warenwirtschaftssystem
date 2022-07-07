@@ -23,7 +23,7 @@ namespace Warenwirtschaftssystem.Model.Db
         public string Company { get; set; }
 
         public virtual ICollection<Article> Articles { get; set; }
-        public virtual ICollection<ArticleReservation> Reservations { get; set; }
+        public virtual ICollection<Article> Reservations { get; set; }
 
         public override string ToString()
         {
