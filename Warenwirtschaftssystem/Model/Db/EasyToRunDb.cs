@@ -152,14 +152,14 @@ namespace Warenwirtschaftssystem.Model.Db
                     supplierId++;
 
                     supplier.Company = reader["parFirma"] as string;
-                    supplier.Name = (reader["parVorname"] as string + " " + reader["parNachname"] as string).Trim();
+                    supplier.Name = $"({reader["parVorname"]} {reader["parNachname"]}".Trim();
                     supplier.Street = reader["parStrasse"] as string;
                     supplier.Postcode = reader["parPLZ"] as string;
                     supplier.Place = reader["parOrt"] as string;
                     supplier.Phone = "";
                     supplier.EMail = reader["parEMail"] as string;
                     supplier.PickUp = (short)reader["parAbholungWo"];
-                    supplier.Notes = reader["parBesonderes"] as string + "\n\n" + reader["parAufgabe"] as string;
+                    supplier.Notes = $"{reader["parBesonderes"]}\n\n{reader["parAufgabe"]}";
                     supplier.CreationDate = (DateTime)reader["parDatumNeuanlage"];
 
                     if (reader["parAnrede"] as string == "Frau")
@@ -244,9 +244,8 @@ namespace Warenwirtschaftssystem.Model.Db
 
                 #region Gender
                 using (var reader = File.OpenText(ConversionFolder + "\\Geschlecht.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)
@@ -274,9 +273,8 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Category and Type
 
                 using (var reader = File.OpenText(ConversionFolder + "\\KategorienUndArten.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<CategoryType>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)
@@ -316,9 +314,8 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Brand
 
                 using (var reader = File.OpenText(ConversionFolder + "\\Marken.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)
@@ -345,9 +342,8 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Size
 
                 using (var reader = new StreamReader(ConversionFolder + "\\Größen.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)
@@ -374,9 +370,8 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Color
 
                 using (var reader = new StreamReader(ConversionFolder + "\\Farben.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)
@@ -403,9 +398,8 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Material
 
                 using (var reader = new StreamReader(ConversionFolder + "\\Materialien.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)
@@ -432,9 +426,8 @@ namespace Warenwirtschaftssystem.Model.Db
                 #region Part
 
                 using (var reader = new StreamReader(ConversionFolder + "\\Teile.csv"))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8 }))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Encoding = Encoding.UTF8, HasHeaderRecord = false }))
                 {
-                    csv.Configuration.HasHeaderRecord = false;
                     var records = csv.GetRecords<Attribute>().ToArray();
 
                     for (int i = 2; i < records.Length; i++)

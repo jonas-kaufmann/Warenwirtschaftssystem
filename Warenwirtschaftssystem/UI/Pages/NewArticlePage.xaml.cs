@@ -462,7 +462,7 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             DeleteEmptyItemsInDGs();
 
-            if (Article.AddedToSortiment == null)
+            if (Article.AddedToSortiment == default)
                 Article.AddedToSortiment = DateTime.Now;
 
             if (!IsNewArticle && OldPrice != null && OldSupplierProportion != null
