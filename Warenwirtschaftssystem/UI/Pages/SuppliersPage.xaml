@@ -192,7 +192,7 @@
                                               Validation.ErrorTemplate="{x:Null}"
                                               Name="SupplierProportionTb"
                                               TextChanged="SupplierProportionTb_TextChanged"
-                                              Text="{Binding SupplierProportion, Mode=OneWayToSource, ConverterCulture=de-DE}" />
+                                              Text="{Binding SupplierProportion, Mode=TwoWay, ConverterCulture=de-DE}" />
                     <Border Name="SupplierProportionBorder"
                             BorderBrush="Red"
                             BorderThickness="0" />
@@ -220,13 +220,13 @@
 
                 <TextBlock Text="Firma"
                            Grid.Column="4" />
-                <TextBox Text="{Binding Company, Mode=OneWayToSource, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
+                <TextBox Text="{Binding Company, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
                          AcceptsReturn="True"
                          Grid.Column="6" />
                 <TextBlock Text="Bemerkungen"
                            Grid.Column="4"
                            Grid.Row="2" />
-                <TextBox Text="{Binding Notes, Mode=OneWayToSource, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
+                <TextBox Text="{Binding Notes, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
                          AcceptsReturn="True"
                          Grid.Column="6"
                          Grid.RowSpan="8"
