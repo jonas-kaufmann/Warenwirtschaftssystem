@@ -4,10 +4,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using Warenwirtschaftssystem.Model.Db;
-using BarcodeLib;
-using System.Drawing;
-using System.Windows.Media.Imaging;
-using System.IO;
+using BarcodeStandard;
+using SkiaSharp.Views.WPF;
 
 namespace Warenwirtschaftssystem.Model.Documents
 {
@@ -119,26 +117,13 @@ namespace Warenwirtschaftssystem.Model.Documents
             if (id.Length % 2 == 1)
                 id.Insert(0, "0");
 
-            Bitmap bmp = new Bitmap(new Barcode().Encode(TYPE.Interleaved2of5, id));
-
-            BitmapImage bI;
-
-            using (var ms = new MemoryStream())
-            {
-                bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                ms.Position = 0;
-
-                bI = new BitmapImage();
-                bI.BeginInit();
-                bI.CacheOption = BitmapCacheOption.OnLoad;
-                bI.StreamSource = ms;
-                bI.EndInit();
-            }
+            Barcode barcode = new();
+            var img = barcode.Encode(BarcodeStandard.Type.Interleaved2Of5, id);
 
             System.Windows.Controls.Image image = new System.Windows.Controls.Image
             {
                 Height = 0.75 * CmToPx,
-                Source = bI,
+                Source = WPFExtensions.ToWriteableBitmap(img),
                 Stretch = System.Windows.Media.Stretch.Fill
             };
 

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Authors>Jonas Kaufmann</Authors>
@@ -39,19 +39,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.5">
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.4">
       <NoWarn>NU1701</NoWarn>
     </PackageReference>
-    <PackageReference Include="BarcodeLib" Version="2.4.0" />
-    <PackageReference Include="CsvHelper" Version="28.0.1" />
+    <PackageReference Include="BarcodeLib" Version="3.0.3" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="3.8.2">
       <NoWarn>NU1701</NoWarn>
     </PackageReference>
-    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="161.47027.0" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
-    <PackageReference Include="System.Text.Json" Version="6.0.5" />
+    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="170.18.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
+    <PackageReference Include="SkiaSharp.Views.WPF" Version="2.88.6" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.0" />
+    <PackageReference Include="System.Text.Json" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
