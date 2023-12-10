@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
@@ -21,38 +20,9 @@ namespace Warenwirtschaftssystem.Model.Db
             MainDb = mainDb;
         }
 
-        public Document AddDocument(DocumentType documentType, List<Article> articles, List<SavedArticleAttributes> changedArticleAttributes, bool pregenerateId)
-        {
-            Document document = CreateDocument(documentType, articles, changedArticleAttributes);
-
-            if (pregenerateId)
-            {
-                if (ContextForGeneratingIds == null)
-                    ContextForGeneratingIds = new DbModel(Data.MainConnectionString);
-
-                Document pregeneratedId = new Document()
-                {
-                    DateTime = SqlDateTime.MinValue.Value
-                };
-                ContextForGeneratingIds.Documents.Add(pregeneratedId);
-                ContextForGeneratingIds.SaveChanges();
-
-                document.Id = pregeneratedId.Id;
-
-                DocumentsWithId.Add(document);
-            }
-            else
-            {
-                MainDb.Documents.Add(document);
-            }
-
-            return document;
-        }
-
         public Document AddDocument(DocumentType documentType, List<Article> articles, List<SavedArticleAttributes> changedArticleAttributes, Supplier supplier, bool pregenerateId)
         {
-            Document document = CreateDocument(documentType, articles, changedArticleAttributes);
-            document.Supplier = supplier;
+            Document document = CreateDocument(MainDb, documentType, articles, changedArticleAttributes, supplier);
 
             if (pregenerateId)
             {
@@ -108,12 +78,13 @@ namespace Warenwirtschaftssystem.Model.Db
             }
         }
 
-        private Document CreateDocument(DocumentType documentType, List<Article> articles, List<SavedArticleAttributes> changedArticleAttributes)
+        public static Document CreateDocument(DbModel dbContext, DocumentType documentType, List<Article> articles, List<SavedArticleAttributes> changedArticleAttributes, Supplier supplier)
         {
             Document document = new Document
             {
                 DateTime = DateTime.Now,
                 Articles = new ObservableCollection<Article>(articles),
+                Supplier = supplier,
                 DocumentType = documentType
             };
 
@@ -122,7 +93,7 @@ namespace Warenwirtschaftssystem.Model.Db
                 document.SavedArticleAttributes = new ObservableCollection<SavedArticleAttributes>();
                 foreach (var changedArticleAttribute in changedArticleAttributes)
                 {
-                    var sameElement = MainDb.SalesSavedArticleAttributes.Where(c => c.ArticleId == changedArticleAttribute.ArticleId
+                    var sameElement = dbContext.SalesSavedArticleAttributes.Where(c => c.ArticleId == changedArticleAttribute.ArticleId
                         && c.Price == changedArticleAttribute.Price
                         && c.Payout == changedArticleAttribute.Payout
                     ).FirstOrDefault();
@@ -137,6 +108,14 @@ namespace Warenwirtschaftssystem.Model.Db
             }
 
             return document;
+        }
+
+        public static Document AddDocumentAndSave(DbModel dbContext, DocumentType documentType, List<Article> articles, List<SavedArticleAttributes> changedArticleAttributes, Supplier supplier)
+        {
+            Document doc = CreateDocument(dbContext, documentType, articles, changedArticleAttributes, supplier);
+            dbContext.Documents.Add(doc);
+            dbContext.SaveChanges();
+            return doc;
         }
 
         public void PrepareDocumentsToBeSaved()

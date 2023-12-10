@@ -25,7 +25,6 @@ namespace Warenwirtschaftssystem.UI.Pages
         public Article SelectedArticle;
         public bool ArticlesAdded = false;
 
-        private Documents Documents;
         private CancellationTokenSource CancelLoadingToken;
         private IInputElement FocusedElementBeforeLoading = null;
 
@@ -237,14 +236,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             OwnerWindow.DisableClosingPrompt = true;
             OwnerWindow.RootWindow.RemoveToolWindow(OwnerWindow);
 
-            if (Documents != null)
-                Documents.DiscardChanges();
-
             OwnerWindow.Close();
-
-            if (Documents != null)
-                Documents.DiscardChanges();
-
             MainDb.Dispose();
         }
 
@@ -253,9 +245,6 @@ namespace Warenwirtschaftssystem.UI.Pages
             OwnerWindow.DisableClosingPrompt = true;
             OwnerWindow.RootWindow.RemoveToolWindow(OwnerWindow);
             OwnerWindow.Close();
-
-            if (Documents != null)
-                Documents.PrepareDocumentsToBeSaved();
 
             MainDb.SaveChanges();
             MainDb.Dispose();
@@ -400,7 +389,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
                     if (article.Supplier != supplier)
                     {
-                        MessageBox.Show("Kann keinen Annahmebeleg erstellen, da die Lieferanten der ausgewählten Artikel unterschiedlich sind.", "Kann keinen Annahmebeleg erstellen", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show("Die Lieferanten der ausgewählten Artikel sind unterschiedlich", "Kann keinen Annahmebeleg erstellen", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
 
@@ -411,7 +400,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                             break;
 
                         default:
-                            MessageBox.Show("Kann keinen Annahmebeleg erstellen, da mindestens einer der ausgewählten Artikel einen ungültigen Status besitzt.", "Kann keinen Annahmebeleg erstellen", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            MessageBox.Show("Mindestens einer der ausgewählten Artikel besitzt einen ungültigen Status", "Kann keinen Annahmebeleg erstellen", MessageBoxButton.OK, MessageBoxImage.Warning);
                             return;
                     }
 
@@ -419,12 +408,11 @@ namespace Warenwirtschaftssystem.UI.Pages
                 }
             }
 
-            if (Documents == null)
-            {
-                Documents = new Documents(Data, MainDb);
-            }
+            var result = MessageBox.Show("Alle bisherigen Änderungen werden nachfolgend gespeichert. Außerdem erstellt diese Aktion einen zusätzlichen Annahmebeleg. Wirklich fortfahren?", "Wirklich Annahmebeleg erstellen?", MessageBoxButton.OKCancel, MessageBoxImage.Information, MessageBoxResult.OK);
+            if (result != MessageBoxResult.OK)
+                return;
 
-            Document document = Documents.AddDocument(DocumentType.Submission, articles, null, supplier, true);
+            Document document = Documents.AddDocumentAndSave(MainDb, DocumentType.Submission, articles, null, supplier);
             new SubmissionDoc(Data, document).CreateAndPrintDocument();
         }
 
@@ -435,21 +423,20 @@ namespace Warenwirtschaftssystem.UI.Pages
             List<Article> articles = new List<Article>();
             Supplier supplier = null;
 
+            // check selected articles
             foreach (Article article in ArticlesDG.SelectedItems)
             {
-                if (article.Status == Status.Sold && (supplier == null || supplier == article.Supplier))
+                if (supplier == null)
+                    supplier = article.Supplier;
+                if (article.Status != Status.Sold || article.Supplier != supplier)
                 {
-                    if (supplier == null)
-                        supplier = article.Supplier;
-                    else if (supplier != article.Supplier)
-                        return;
-                    articles.Add(article);
-                }
-                else
+                    MessageBox.Show("Die ausgewählten Artikel können nicht ausgezahlt werden", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
+                }
+                articles.Add(article);
             }
 
-            MessageBoxResult result = MessageBox.Show("Soll ein Auszahlungsbeleg gedruckt werden?", "Auszahlungsbeleg drucken?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
+            MessageBoxResult result = MessageBox.Show("Alle bisherigen Änderungen werden nachfolgend gespeichert. Soll ein Auszahlungsbeleg gedruckt werden?", "Auszahlungsbeleg drucken?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
             if (result == MessageBoxResult.Cancel)
                 return;
 
@@ -460,19 +447,10 @@ namespace Warenwirtschaftssystem.UI.Pages
                 article.OnPropertyChanged("Status");
             }
 
-            if (result == MessageBoxResult.Yes || result == MessageBoxResult.No)
-            {
-                if (Documents == null)
-                    Documents = new Documents(Data, MainDb);
+            Document doc = Documents.AddDocumentAndSave(MainDb, DocumentType.Payout, articles, null, supplier);
 
-                if (result == MessageBoxResult.No)
-                    Documents.AddDocument(DocumentType.Payout, articles, null, supplier, false);
-                else
-                {
-                    Document document = Documents.AddDocument(DocumentType.Payout, articles, null, supplier, true);
-                    new PayoutDoc(Data, document).CreateAndPrintDocument();
-                }
-            }
+            if (result == MessageBoxResult.Yes)
+                new PayoutDoc(Data, doc).CreateAndPrintDocument();
         }
 
         private void CloseOutBtn_Click(object sender, RoutedEventArgs e)
@@ -485,7 +463,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                         articlesToDelete.Add(article);
                     else
                     {
-                        MessageBox.Show("Artikel können nicht ausgebucht werden", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Artikel können nicht ausgebucht werden", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
 
@@ -503,22 +481,22 @@ namespace Warenwirtschaftssystem.UI.Pages
 
         private void ChangeStatusBtn_Click(object sender, RoutedEventArgs e)
         {
-            Status articleStatus;
+            Status expectedStatus;
             if (ArticlesDG.SelectedItem is Article selectedArticle)
-                articleStatus = selectedArticle.Status;
-            else
-                return;
+                expectedStatus = selectedArticle.Status;
+            else return;
 
             foreach (Article article in ArticlesDG.SelectedItems)
             {
-                if (article.Status != articleStatus)
+                if (article.Status != expectedStatus)
                 {
-                    MessageBoxResult mBR = MessageBox.Show("Die Artikel in der Auswahl haben nicht den gleichen Status. Fortfahren?", "Unterschiedliche Status", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
-
-                    if (mBR == MessageBoxResult.No)
-                        return;
-                    else
-                        break;
+                    MessageBox.Show("Die ausgewählten Artikel haben unterschiedliche Status", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                if (article.Status != Status.Sortiment || article.Status != Status.InStock)
+                {
+                    MessageBox.Show("Die ausgewählten Artikel können nicht zwischen Sortiment und Lager umgeschalten werden", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
             }
 
@@ -587,13 +565,16 @@ namespace Warenwirtschaftssystem.UI.Pages
             {
                 if (supplier == null)
                     supplier = article.Supplier;
-                else if (article.Supplier != supplier || (article.Status != Status.Sortiment && article.Status != Status.InStock))
+                if (article.Supplier != supplier || (article.Status != Status.Sortiment && article.Status != Status.InStock))
+                {
+                    MessageBox.Show("Die ausgewählten Artikel können nicht zurückgegeben werden", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
+                }   
 
                 articlesToReturn.Add(article);
             }
 
-            MessageBoxResult result = MessageBox.Show("Soll ein Rückgabebeleg gedruckt werden?", "Rückgabebeleg drucken?", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
+            MessageBoxResult result = MessageBox.Show("Alle bisherigen Änderungen werden nachfolgend gespeichert. Soll ein Rückgabebeleg gedruckt werden?", "Rückgabebeleg drucken?", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
 
             if (result == MessageBoxResult.Yes || result == MessageBoxResult.No)
             {
@@ -603,17 +584,10 @@ namespace Warenwirtschaftssystem.UI.Pages
                     article.EnteredFinalState = DateTime.Now;
                 }
 
-                if (Documents == null)
-                    Documents = new Documents(Data, MainDb);
+                Document doc = Documents.AddDocumentAndSave(MainDb, DocumentType.Return, articlesToReturn, null, supplier);
 
-                if (result == MessageBoxResult.No)
-                    Documents.AddDocument(DocumentType.Return, articlesToReturn, null, supplier, false);
-                else
-                {
-                    Document document = Documents.AddDocument(DocumentType.Return, articlesToReturn, null, supplier, false);
-                    MainDb.SaveChanges();
-                    new ReturnDoc(Data, document).CreateAndPrintDocument();
-                }
+                if (result == MessageBoxResult.Yes)
+                    new ReturnDoc(Data, doc).CreateAndPrintDocument();
             }
         }
 

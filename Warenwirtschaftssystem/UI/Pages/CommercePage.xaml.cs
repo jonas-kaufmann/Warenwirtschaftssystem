@@ -181,7 +181,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
                 if (cMB.Result == PressedButton.One)
                 {
-                    Document document = documents.AddDocument(DocumentType.Bill, Articles.ToList(), savedArticleAttributes, false);
+                    Document document = documents.AddDocument(DocumentType.Bill, Articles.ToList(), savedArticleAttributes, null, false);
                     MainDb.SaveChanges();
                     new InvoiceBon(Data, document).CreateAndPrint();
                 }
@@ -208,7 +208,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                 }
                 else if (cMB.Result == PressedButton.Three)
                 {
-                    documents.AddDocument(DocumentType.Bill, Articles.ToList(), savedArticleAttributes, false);
+                    documents.AddDocument(DocumentType.Bill, Articles.ToList(), savedArticleAttributes, null, false);
                 }
 
                 ClearArticlesBtn_Click(null, null);
