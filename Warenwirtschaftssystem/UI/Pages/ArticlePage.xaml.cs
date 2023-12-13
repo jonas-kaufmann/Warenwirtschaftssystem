@@ -493,7 +493,7 @@ namespace Warenwirtschaftssystem.UI.Pages
                     MessageBox.Show("Die ausgewählten Artikel haben unterschiedliche Status", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-                if (article.Status != Status.Sortiment || article.Status != Status.InStock)
+                if (article.Status != Status.Sortiment && article.Status != Status.InStock)
                 {
                     MessageBox.Show("Die ausgewählten Artikel können nicht zwischen Sortiment und Lager umgeschalten werden", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
