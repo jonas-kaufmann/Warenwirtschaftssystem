@@ -48,7 +48,7 @@
     <PackageReference Include="Extended.Wpf.Toolkit" Version="3.8.2">
       <NoWarn>NU1701</NoWarn>
     </PackageReference>
-    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="170.18.0" />
+    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="170.21.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
     <PackageReference Include="SkiaSharp.Views.WPF" Version="2.88.6" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.0" />
