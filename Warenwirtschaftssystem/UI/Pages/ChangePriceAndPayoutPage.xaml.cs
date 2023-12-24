@@ -59,7 +59,7 @@ namespace Warenwirtschaftssystem.UI.Pages
             OwnerWindow.Close();
 
             if (Article.Price != oldPrice || Article.SupplierProportion != oldPayout)
-                new Documents(Data, MainDb).NotifyArticlePropertiesChanged(Article.Id);
+                Documents.NotifyArticlePropertiesChanged(MainDb, Data, Article.Id);
         }
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)

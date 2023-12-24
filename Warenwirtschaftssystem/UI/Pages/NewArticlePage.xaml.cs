@@ -467,7 +467,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
             if (!IsNewArticle && OldPrice != null && OldSupplierProportion != null
                        && (Article.Price != OldPrice || Article.SupplierProportion != OldSupplierProportion))
-                new Documents(Data, MainDb).NotifyArticlePropertiesChanged(Article.Id);
+                Documents.NotifyArticlePropertiesChanged(MainDb, Data, Article.Id);
 
             if (IsNewArticle)
             {

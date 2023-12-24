@@ -140,10 +140,9 @@ namespace Warenwirtschaftssystem.UI.Pages
             Articles.Clear();
             ArticleIdTB.Focus();
 
-            Documents documents = new Documents(Data, MainDb);
             foreach (Article article in ArticlesPriceChanged)
             {
-                documents.NotifyArticlePropertiesChanged(article.Id);
+                Documents.NotifyArticlePropertiesChanged(MainDb, Data, article.Id);
             }
 
             MainDb.SaveChanges();
@@ -158,8 +157,6 @@ namespace Warenwirtschaftssystem.UI.Pages
 
                 if (cMB.Result == PressedButton.None)
                     return;
-
-                Documents documents = new Documents(Data, MainDb);
 
                 List<SavedArticleAttributes> savedArticleAttributes = new List<SavedArticleAttributes>();
 
@@ -181,8 +178,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
                 if (cMB.Result == PressedButton.One)
                 {
-                    Document document = documents.AddDocument(DocumentType.Bill, Articles.ToList(), savedArticleAttributes, null, false);
-                    MainDb.SaveChanges();
+                    Document document = Documents.AddDocumentAndSave(MainDb, DocumentType.Bill, Articles.ToList(), savedArticleAttributes, null);
                     new InvoiceBon(Data, document).CreateAndPrint();
                 }
                 else if (cMB.Result == PressedButton.Two)
@@ -201,14 +197,13 @@ namespace Warenwirtschaftssystem.UI.Pages
                         return;
                     else
                     {
-                        Document document = documents.AddDocument(DocumentType.Bill, Articles.ToList(), savedArticleAttributes, pSP.SelectedSupplier, false);
-                        MainDb.SaveChanges();
+                        Document document = Documents.AddDocumentAndSave(MainDb, DocumentType.Bill, Articles.ToList(), savedArticleAttributes, pSP.SelectedSupplier);
                         new InvoiceDoc(Data, document).CreateAndPrintDocument();
                     }
                 }
                 else if (cMB.Result == PressedButton.Three)
                 {
-                    documents.AddDocument(DocumentType.Bill, Articles.ToList(), savedArticleAttributes, null, false);
+                    Documents.AddDocumentAndSave(MainDb, DocumentType.Bill, Articles.ToList(), savedArticleAttributes, null);
                 }
 
                 ClearArticlesBtn_Click(null, null);
@@ -268,9 +263,7 @@ namespace Warenwirtschaftssystem.UI.Pages
 
                     if (result == MessageBoxResult.Yes || result == MessageBoxResult.No)
                     {
-                        Documents documents = new Documents(Data, MainDb);
-                        Document document = documents.AddDocument(DocumentType.Reservation, Articles.ToList(), null, reservingSupplier, false);
-                        MainDb.SaveChanges();
+                        Document document = Documents.AddDocumentAndSave(MainDb, DocumentType.Reservation, Articles.ToList(), null, reservingSupplier);
                         ClearArticlesBtn_Click(null, null);
 
                         if (result == MessageBoxResult.Yes)

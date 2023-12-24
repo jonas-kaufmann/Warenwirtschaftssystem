@@ -83,13 +83,12 @@ namespace Warenwirtschaftssystem.UI.Pages
         {
             #region Artikelliste
 
-            MessageBoxResult result = MessageBox.Show("Soll ein Abgabebeleg gedruckt werden?", "Abgabebeleg drucken?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            MessageBoxResult result = MessageBox.Show("Soll ein Abgabebeleg gedruckt werden? Außerdem werden alle Änderungen bis hierhin gespeichert.", "Abgabebeleg drucken?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
 
             if (result != MessageBoxResult.Yes && result != MessageBoxResult.No)
                 return;
 
-            Document document = new Documents(Data, MainDb).AddDocument(DocumentType.Submission, Articles.ToList(), null, Supplier, false);
-            MainDb.SaveChanges();
+            Document document = Documents.AddDocumentAndSave(MainDb, DocumentType.Submission, Articles.ToList(), null, Supplier);
 
             if (result == MessageBoxResult.Yes)
             {
