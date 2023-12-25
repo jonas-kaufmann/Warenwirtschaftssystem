@@ -351,7 +351,7 @@
                         BorderThickness="1"
                         CornerRadius="1"
                         Grid.Row="6">
-                    <Grid Margin="4">
+                    <Grid Margin="5,4,3,4">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="4" />
@@ -396,10 +396,29 @@
 
                         <TextBlock Grid.Row="6"
                                    Text="Auszahlungsbetrag" />
-                        <TextBox Name="SupplierProportionTB"
-                                 Text="{Binding SupplierProportion, ConverterCulture=de-DE, StringFormat=C, Mode=TwoWay}"
-                                 Grid.Row="6"
-                                 Grid.Column="2" />
+                        <Grid Grid.Row="6"
+                              Grid.Column="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="4" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Name="SupplierProportionTB"
+                                     Text="{Binding SupplierProportion, ConverterCulture=de-DE, StringFormat=C, Mode=TwoWay}" />
+                            <ToggleButton Grid.Column="2"
+                                          Content="🔒"
+                                          VerticalAlignment="Center"
+                                          Name="IsSupplierProportionFixedTB"
+                                          Checked="IsSupplierProportionFixedTB_Changed"
+                                          Unchecked="IsSupplierProportionFixedTB_Changed"
+                                          IsChecked="{Binding IsSupplierProportionFixed}" />
+                            <!--<CheckBox Grid.Column="2"
+                                      Name="IsSupplierProportionFixedCB"
+                                      Checked="IsSupplierProportionFixedCB_Changed"
+                                      Unchecked="IsSupplierProportionFixedCB_Changed"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding IsSupplierProportionFixed}" />-->
+                        </Grid>
 
                         <TextBlock Grid.Row="8"
                                    Text="Verhältnis" />

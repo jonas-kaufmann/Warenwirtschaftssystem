@@ -350,6 +350,8 @@
             }
         }
 
+        public bool IsSupplierProportionFixed { get; set; }
+
         [NotMapped]
         public decimal? Percentage
         {

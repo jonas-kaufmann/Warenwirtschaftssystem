@@ -8,21 +8,15 @@ using System.Data;
 using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
-using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Media;
 using Warenwirtschaftssystem.Model;
 using Warenwirtschaftssystem.Model.Db;
 using Warenwirtschaftssystem.UI.Behaviors;
 using Warenwirtschaftssystem.UI.Controls;
 using Warenwirtschaftssystem.UI.Windows;
-using Xceed.Wpf.AvalonDock.Controls;
-using Xceed.Wpf.Toolkit;
 using Color = Warenwirtschaftssystem.Model.Db.Color;
-using MessageBox = System.Windows.MessageBox;
 using Type = Warenwirtschaftssystem.Model.Db.Type;
 
 namespace Warenwirtschaftssystem.UI.Pages
@@ -396,6 +390,11 @@ namespace Warenwirtschaftssystem.UI.Pages
                 case "Price":
                     if (Article.Price >= 0)
                     {
+                        if (Editable)
+                            SaveBtn.IsEnabled = true;
+
+                        if (Article.IsSupplierProportionFixed && Article.SupplierProportion <= Article.Price) break;
+
                         if (Article.Supplier.SupplierProportion.HasValue)
                         {
                             Article.SupplierProportion = Article.Price * Article.Supplier.SupplierProportion.Value / 100;
@@ -405,9 +404,6 @@ namespace Warenwirtschaftssystem.UI.Pages
                             GraduationSupplierProportion supplierGraduationProportion = MainDb.GraduationSupplierProportion.Where(sGP => sGP.FromPrice <= Article.Price).OrderByDescending(sGP => sGP.FromPrice).First();
                             Article.SupplierProportion = Article.Price * supplierGraduationProportion.SupplierProportion / 100;
                         }
-
-                        if (Editable)
-                            SaveBtn.IsEnabled = true;
                     }
 
                     break;
@@ -781,5 +777,10 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
         }
         #endregion
+
+        private void IsSupplierProportionFixedTB_Changed(object sender, RoutedEventArgs e)
+        {
+            SupplierProportionTB.IsEnabled = !(IsSupplierProportionFixedTB.IsChecked ?? false);
+        }
     }
 }
