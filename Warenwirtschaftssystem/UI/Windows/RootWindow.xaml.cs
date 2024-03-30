@@ -95,9 +95,9 @@ namespace Warenwirtschaftssystem.UI.Windows
 
                             backup.SqlBackup(server);
                         }
-                        catch
+                        catch (Exception exception)
                         {
-                            MessageBox.Show("Fehler beim Speichern des Backups. Möglicherweise liegen keine Berechtigungen für das Schreiben in diesen Ordner vor.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show(exception.ToString(), "Fehler beim Speichern des Backups", MessageBoxButton.OK, MessageBoxImage.Error);
                             e.Cancel = true;
                             return;
                         }
@@ -207,7 +207,7 @@ namespace Warenwirtschaftssystem.UI.Windows
                     }
                     catch (Exception exception)
                     {
-                        MessageBox.Show(exception.ToString(), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(exception.ToString(), "Fehler beim Wiederherstellen des Backups", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
