@@ -9,3 +9,19 @@ Feel free to use whatever you find helpful though.
 
 I made this repository public mostly so that I can point to this project for applications.
 It's also interesting to see my personal development in terms of code quality over time.
+
+## Screenshots
+
+![main_window.png](Screenshots/main_window.png)
+
+![supplier_window.png](Screenshots/supplier_window.png)
+
+![article_window.png](Screenshots/article_window.png)
+
+![new_article_page.png](Screenshots/new_article_page.png)
+
+![selling_window.png](Screenshots/selling_window.png)
+
+![statistics_window.png](Screenshots/statistics_window.png)
+
+![documents_window.png](Screenshots/documents_window.png)
