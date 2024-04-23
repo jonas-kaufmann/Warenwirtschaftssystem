@@ -12,16 +12,23 @@ It's also interesting to see my personal development in terms of code quality ov
 
 ## Screenshots
 
+Main Window
 ![main_window.png](Screenshots/main_window.png)
 
+Managing Suppliers
 ![supplier_window.png](Screenshots/supplier_window.png)
 
+Managing Articles
 ![article_window.png](Screenshots/article_window.png)
 
+Adding a New Article
 ![new_article_page.png](Screenshots/new_article_page.png)
 
+Selling Articles
 ![selling_window.png](Screenshots/selling_window.png)
 
+Sale Statistics
 ![statistics_window.png](Screenshots/statistics_window.png)
 
+Document Archive
 ![documents_window.png](Screenshots/documents_window.png)
