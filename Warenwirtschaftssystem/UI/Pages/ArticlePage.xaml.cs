@@ -433,6 +433,12 @@ namespace Warenwirtschaftssystem.UI.Pages
                     MessageBox.Show("Die ausgewählten Artikel können nicht ausgezahlt werden", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
+                if (article.SupplierProportion < 0)
+                {
+                    MessageBox.Show("Mindestens einer der ausgewählten Artikel hat einen negativen Lieferantenanteil", "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 articles.Add(article);
             }
 
