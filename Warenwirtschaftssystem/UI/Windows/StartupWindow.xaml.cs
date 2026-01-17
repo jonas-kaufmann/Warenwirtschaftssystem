@@ -33,10 +33,7 @@ namespace Warenwirtschaftssystem.UI.Windows
         {
             // AutoUpdater
             AutoUpdater.RunUpdateAsAdmin = true;
-            if (Environment.Is64BitOperatingSystem)
-            AutoUpdater.Start("http://wp10597435.server-he.de/WWS/AutoUpdater.xml");
-            else
-                AutoUpdater.Start("http://wp10597435.server-he.de/WWS/AutoUpdater_x86.xml");
+            AutoUpdater.Start("https://wws.mokka-mode.de/AutoUpdater.xml");
         }
     }
 }
