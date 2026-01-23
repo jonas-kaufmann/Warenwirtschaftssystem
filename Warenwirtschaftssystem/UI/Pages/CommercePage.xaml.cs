@@ -10,7 +10,6 @@ using System.Windows.Input;
 using System;
 using Warenwirtschaftssystem.Model.Documents;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Windows.Media;
 
 namespace Warenwirtschaftssystem.UI.Pages
@@ -24,10 +23,6 @@ namespace Warenwirtschaftssystem.UI.Pages
         private ObservableCollection<Article> Articles = new ObservableCollection<Article>();
         private decimal Sum = 0;
         private List<Defect> EmptyDefectsList = new List<Defect> { new Defect { Title = "" } };
-
-        //Preisänderung
-        private bool IsSupplierProportionFixed = false;
-        private List<Article> ArticlesPriceChanged = new List<Article>();
 
         #region Initialisierung
 
@@ -139,11 +134,6 @@ namespace Warenwirtschaftssystem.UI.Pages
             }
             Articles.Clear();
             ArticleIdTB.Focus();
-
-            foreach (Article article in ArticlesPriceChanged)
-            {
-                Documents.NotifyArticlePropertiesChanged(MainDb, Data, article.Id);
-            }
 
             MainDb.SaveChanges();
         }
@@ -311,54 +301,6 @@ namespace Warenwirtschaftssystem.UI.Pages
             if (e.Key == Key.Enter) AddArticle();
         }
 
-        private void ArticlesDG_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-        {
-            //Auf gültige Eingabe überprüfen
-            string text = (e.EditingElement as TextBox).Text;
-
-            Article article = ArticlesDG.SelectedItem as Article;
-
-            if (decimal.TryParse(text, NumberStyles.Currency, CultureInfo.CreateSpecificCulture("de-DE"), out decimal newPrice) && newPrice >= 0)
-            {
-                if (newPrice != article.Price)
-                {
-                    if (IsSupplierProportionFixed)
-                    {
-                        if (newPrice < article.SupplierProportion)
-                        {
-                            e.Cancel = true;
-                            SellBtn.IsEnabled = false;
-                            ReserveBtn.IsEnabled = false;
-                            ClearArticlesBtn.IsEnabled = false;
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        if (article.Supplier.SupplierProportion.HasValue)
-                            article.SupplierProportion = newPrice * article.Supplier.SupplierProportion.Value / 100;
-                        else
-                            article.SupplierProportion = newPrice * MainDb.GraduationSupplierProportion.Where(g => g.FromPrice <= newPrice).OrderByDescending(g => g.FromPrice).First().SupplierProportion / 100;
-                    }
-
-                    if (newPrice != article.Price && !ArticlesPriceChanged.Contains(article))
-                        ArticlesPriceChanged.Add(article);
-                }
-            }
-            else
-            {
-                e.Cancel = true;
-                SellBtn.IsEnabled = false;
-                ReserveBtn.IsEnabled = false;
-                ClearArticlesBtn.IsEnabled = false;
-                return;
-            }
-
-            SellBtn.IsEnabled = true;
-            ReserveBtn.IsEnabled = true;
-            ClearArticlesBtn.IsEnabled = true;
-        }
-
         private void ArticlesDG_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!(ArticlesDG.SelectedItem is Article article) || article.Defects == null || article.Defects.Count == 0)
@@ -376,35 +318,6 @@ namespace Warenwirtschaftssystem.UI.Pages
 
                 DefectsDG.ItemsSource = defectsList;
             }
-        }
-
-        private void ArticlesDG_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
-        {
-            if (ArticlesDG.SelectedItem is Article article)
-            {
-                if (article.Price < 0)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-                else
-                {
-                    decimal supplierProportion;
-                    if (article.Supplier.SupplierProportion.HasValue)
-                        supplierProportion = article.Supplier.SupplierProportion.Value / 100 * article.Price;
-                    else
-                    {
-                        GraduationSupplierProportion supplierGraduationProportion = MainDb.GraduationSupplierProportion.Where(sGP => article.Price >= sGP.FromPrice).OrderByDescending(sGP => sGP.FromPrice).First();
-                        supplierProportion = article.Price * supplierGraduationProportion.SupplierProportion / 100;
-                    }
-
-                    if (supplierProportion != article.SupplierProportion)
-                        IsSupplierProportionFixed = true;
-                    else
-                        IsSupplierProportionFixed = false;
-                }
-            }
-
         }
 
         private void OwnerWindow_KeyDown(object sender, KeyEventArgs e)
