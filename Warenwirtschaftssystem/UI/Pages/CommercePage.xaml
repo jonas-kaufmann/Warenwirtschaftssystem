@@ -55,16 +55,16 @@
                 <RowDefinition Height="8"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <DataGrid Name="ArticlesDG" IsReadOnly="True" SelectionChanged="ArticlesDG_SelectionChanged" Grid.Row="0" Margin="8 0 0 0" CanUserAddRows="False" CanUserDeleteRows="True"  CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" RowHeaderWidth="0" CanUserReorderColumns="False" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}">
+            <DataGrid Name="ArticlesDG" SelectionChanged="ArticlesDG_SelectionChanged" Grid.Row="0" Margin="8 0 0 0" CanUserAddRows="False" CanUserDeleteRows="True" CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled" RowHeaderWidth="0" CanUserReorderColumns="False" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Nr" Binding="{Binding ConvertedId, Mode=OneTime}" />
-                    <DataGridTextColumn Header="Beschreibung" Binding="{Binding Description, Mode=OneTime}" Width="*" />
+                    <DataGridTextColumn Header="Nr" Binding="{Binding ConvertedId, Mode=OneWay}" />
+                    <DataGridTextColumn Header="Beschreibung" Binding="{Binding Description, Mode=OneWay}" Width="*" />
                     <DataGridTextColumn Header="Status" Binding="{Binding Status, Mode=OneWay}" />
-                    <DataGridTextColumn Header="Preis" Binding="{Binding Price, ConverterCulture=de-DE, StringFormat=C, Mode=TwoWay}" />
+                    <DataGridTextColumn Header="Preis" Binding="{Binding Price, ConverterCulture=de-DE, StringFormat=C, Mode=OneWay}" />
                     <DataGridTextColumn Header="L-Anteil" Binding="{Binding SupplierProportion, ConverterCulture=de-DE, StringFormat=C, Mode=OneWay}" />
                     <DataGridTextColumn Header="Verhältnis" Binding="{Binding Percentage, ConverterCulture=de-DE, StringFormat=P, Mode=OneWay}" />
-                    <DataGridTextColumn Header="Verkauft" Binding="{Binding Sold, ConverterCulture=de-DE, StringFormat=d, Mode=OneTime}" />
-                    <DataGridTextColumn Header="Abholung" Binding="{Binding PickUp, ConverterCulture=de-DE, StringFormat=d, Mode=OneTime}" />
+                    <DataGridTextColumn Header="Verkauft" Binding="{Binding Sold, ConverterCulture=de-DE, StringFormat=d, Mode=OneWay}" />
+                    <DataGridTextColumn Header="Abholung" Binding="{Binding PickUp, ConverterCulture=de-DE, StringFormat=d, Mode=OneWay}" />
                     
                 </DataGrid.Columns>
             </DataGrid>
