@@ -6,7 +6,6 @@ using System.Windows.Documents;
 using Warenwirtschaftssystem.Model.Db;
 using System.Windows.Media;
 using BarcodeStandard;
-using SkiaSharp.Views.WPF;
 
 namespace Warenwirtschaftssystem.Model.Documents
 {
@@ -128,17 +127,12 @@ namespace Warenwirtschaftssystem.Model.Documents
                 id.Insert(0, "0");
 
             Barcode barcode = new();
-            var img = barcode.Encode(BarcodeStandard.Type.Interleaved2Of5, id);
+            barcode.Encode(BarcodeStandard.Type.Interleaved2Of5, id);
 
-            Image image = new Image
-            {
-                Height = 0.75 * CmToPx,
-                Source = WPFExtensions.ToWriteableBitmap(img),
-                Stretch = Stretch.Fill
-            };
+            Viewbox barcodeView = VectorBarcode.Create(barcode, 0.75 * CmToPx);
 
-            Grid.SetRow(image, 2);
-            grid.Children.Add(image);
+            Grid.SetRow(barcodeView, 2);
+            grid.Children.Add(barcodeView);
 
             tb = new TextBlock
             {
