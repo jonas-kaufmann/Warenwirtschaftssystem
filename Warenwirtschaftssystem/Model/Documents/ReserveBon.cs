@@ -6,7 +6,6 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Warenwirtschaftssystem.Model.Db;
-using System.Printing;
 using System.Collections.Generic;
 
 namespace Warenwirtschaftssystem.Model.Documents
@@ -19,7 +18,7 @@ namespace Warenwirtschaftssystem.Model.Documents
         private const double PtToPx = 96d / 72d;
         private const double FontSize = 8 * PtToPx;
         private FontFamily FontFamily = new FontFamily("Arial");
-        private Thickness PageMargin = new Thickness(20, 1, 12, 12);
+        private Thickness PageMargin = new Thickness(0, 1, 0, 12);
         private double PageWidth;
 
         private DataModel Data;
@@ -63,33 +62,14 @@ namespace Warenwirtschaftssystem.Model.Documents
 
         public bool? CreateAndPrint(int copies)
         {
-            PrintQueue pQ = null;
+            BitmapPrintDialog pD = new BitmapPrintDialog(Data.StandardPrinters.BonPrinter);
 
-            foreach (PrintQueue p in new LocalPrintServer().GetPrintQueues(new[] { EnumeratedPrintQueueTypes.Local, EnumeratedPrintQueueTypes.Connections }))
-            {
-                if (p.FullName == Data.StandardPrinters.BonPrinter)
-                {
-                    pQ = p;
-                    break;
-                }
-            }
-
-            PrintDialog pD = new PrintDialog
-            {
-                PageRangeSelection = PageRangeSelection.AllPages,
-                UserPageRangeEnabled = false
-            };
-
-            if (pQ == null)
+            if (!pD.IsPrinterSelected)
             {
                 bool? result = pD.ShowDialog();
 
                 if (result != true)
                     return result;
-            }
-            else
-            {
-                pD.PrintQueue = pQ;
             }
 
             PageWidth = pD.PrintableAreaWidth;
@@ -358,8 +338,8 @@ namespace Warenwirtschaftssystem.Model.Documents
             PageContent pC = new PageContent { Child = fP };
             Bon.Pages.Add(pC);
 
-            pD.PrintTicket.CopyCount = copies;
-            pD.PrintDocument(Bon.DocumentPaginator, "Warenwirtschaftssystem - Rechnungsbon");
+            pD.CopyCount = (short)copies;
+            pD.PrintDocument(Bon, "Warenwirtschaftssystem - Rechnungsbon");
             return true;
 
             #endregion

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Printing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -30,33 +29,14 @@ namespace Warenwirtschaftssystem.Model.Documents
 
         public bool? CreateAndPrint()
         {
-            PrintQueue pQ = null;
+            BitmapPrintDialog pD = new BitmapPrintDialog(Data.StandardPrinters.TagPrinter);
 
-            foreach (PrintQueue p in new LocalPrintServer().GetPrintQueues(new[] { EnumeratedPrintQueueTypes.Local, EnumeratedPrintQueueTypes.Connections }))
-            {
-                if (p.FullName == Data.StandardPrinters.TagPrinter)
-                {
-                    pQ = p;
-                    break;
-                }
-            }
-
-            PrintDialog pD = new PrintDialog
-            {
-                PageRangeSelection = PageRangeSelection.AllPages,
-                UserPageRangeEnabled = false
-            };
-
-            if (pQ == null)
+            if (!pD.IsPrinterSelected)
             {
                 bool? result = pD.ShowDialog();
 
                 if (result != true)
                     return result;
-            }
-            else
-            {
-                pD.PrintQueue = pQ;
             }
 
             PageHeight = pD.PrintableAreaHeight;
@@ -83,7 +63,7 @@ namespace Warenwirtschaftssystem.Model.Documents
 
             #region Drucken
 
-            pD.PrintDocument(Labels.DocumentPaginator, "Warenwirtschaftssystem - Etikettendruck");
+            pD.PrintDocument(Labels, "Warenwirtschaftssystem - Etikettendruck");
             return true;
 
             #endregion
