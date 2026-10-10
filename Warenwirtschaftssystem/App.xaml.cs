@@ -43,6 +43,12 @@ namespace Warenwirtschaftssystem
                 new RoutedEventHandler(SelectAllText));
             EventManager.RegisterClassHandler(typeof(TextBox), TextBox.MouseDoubleClickEvent,
                 new RoutedEventHandler(SelectAllText));
+
+            // Snap text and layout to whole pixels to avoid blurry text
+            EventManager.RegisterClassHandler(typeof(Window), FrameworkElement.LoadedEvent,
+                new RoutedEventHandler(SnapToPixels));
+            EventManager.RegisterClassHandler(typeof(Page), FrameworkElement.LoadedEvent,
+                new RoutedEventHandler(SnapToPixels));
              base.OnStartup(e);
         }
 
@@ -70,6 +76,15 @@ namespace Warenwirtschaftssystem
         {
             if (e.OriginalSource is TextBox textBox)
                 textBox.SelectAll();
+        }
+
+        void SnapToPixels(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement element)
+            {
+                TextOptions.SetTextFormattingMode(element, TextFormattingMode.Display);
+                element.UseLayoutRounding = true;
+            }
         }
     }
 }
