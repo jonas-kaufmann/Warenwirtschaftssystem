@@ -18,7 +18,7 @@ namespace Warenwirtschaftssystem.Model.Documents
         private const double PtToPx = 96d / 72d;
         private const double FontSize = 8 * PtToPx;
         private FontFamily FontFamily = new FontFamily("Arial");
-        private Thickness PageMargin = new Thickness(0, 1, 0, 12);
+        private Thickness PageMargin = new Thickness(20, 1, 12, 12);
         private double PageWidth;
 
         private DataModel Data;
